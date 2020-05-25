@@ -1,0 +1,62 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    
+
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="{% static 'uni/style2.css' %}">
+</head>
+<body>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <ul>
+      <li><a href="{% url 'uni:home' %}">خانه</a></li>
+      <li><a href="{% url 'uni:login' %}">ورود</a></li>
+      <li><a href="#contact">مخاطبان</a></li>
+      <li><a href="#about">درباره</a></li>
+    </ul>
+    
+  <form id = "dem"class="modal-content animate" method="post">{% csrf_token %}
+    <div class="imgcontainer">
+      <span onclick="document.getElementById('dem').style.display='none'" class="close" title="Close Modal">&times;</span>
+      <img src= "{% static 'D:/Amir/Project/mysite/uni/static/uni/images/12.jpg' %}" alt="Avatar" class="avatar">
+    </div>
+    
+    <div class="container">
+      <!-- <label for="uname"><b>Username</b></label> -->
+      <!-- <input id = "usernamee" type="text" placeholder="Enter Username" name="uname" value="awmxr"> -->
+      {{ form.as_p }}
+
+      <label for="psw"><b>Password</b></label>
+      <input type="password" placeholder="Enter Password" name="psw" required>
+        
+      <button type="submit">Login</button>
+      <label>
+        <input type="checkbox" checked="checked" name="remember"> Remember me
+      </label>
+    </div>
+
+    <div class="container" style="background-color:#f1f1f1">
+      <button type="button"  onclick="document.getElementById('dem').style.display='none'" class="cancelbtn">Cancel</button>
+      <span class="psw">Forgot <a href="#">password?</a></span>
+    </div>
+
+  </form>
+
+
+<script>
+// Get the modal
+username = document.getElementsById("usernamee").value
+var modal = document.getElementById('id01');
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+</script>
+
+</body>
+</html>

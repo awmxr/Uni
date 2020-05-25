@@ -3,7 +3,8 @@ from django.db import models
 from django.utils import timezone
 import datetime
 
-class student(models.Model):
+class Student(models.Model):
+    student_username = models.CharField(max_length=200)
     student_name = models.CharField(max_length=200)
     student_last_name = models.CharField(max_length=200)
     student_password = models.CharField(max_length=200)
@@ -18,6 +19,7 @@ class student(models.Model):
         return now - datetime.timedelta(days=1) <= self.pub_date <= now
 
 class Admin(models.Model):
+    Admin_username = models.CharField(max_length=200)
     admin_name = models.CharField(max_length=200)
     admin_last_name = models.CharField(max_length=200)
     admin_password = models.CharField(max_length=200)
