@@ -8,6 +8,8 @@ class Student(models.Model):
     student_name = models.CharField(max_length=200)
     student_last_name = models.CharField(max_length=200)
     student_password = models.CharField(max_length=200)
+    student_phone = models.CharField(max_length=11)
+    student_field = models.CharField(max_length=200)
     pub_date = models.DateTimeField('date published')
 
 

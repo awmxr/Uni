@@ -7,22 +7,28 @@ from django.utils import timezone
 from .forms import Loginform,Loginform2
 
 
-class HomeView(generic.ListView):
-    model = Student
+class HomeView(generic.TemplateView):
+    # model = Student
     template_name = 'uni/home.html'
 
 
 class PageView(generic.ListView):
-
     model = Student
-    template_name = 'uni/page.html'
     
+    template_name = 'uni/page.html'
     def ren(self,request):
-        return render(request ,self.template_name,{'12':12})
+        return render(request ,self.template_name,{'user':Student.objects.all()})
     
 class LoginView(generic.ListView):
+    
     model = Student
     template_name = 'uni/login.html'
+    def get_queryset(self):
+        """
+        Excludes any questions that aren't published yet.
+        """
+        return Student.objects.filter(pub_date__lte=timezone.now())
+
     def get(self , request):
         form = Loginform()
         form2 = Loginform2()
@@ -37,8 +43,15 @@ class LoginView(generic.ListView):
 
             users = Student.objects.all()
             for user in users:
-                if user.student_username == form.cleaned_data['username'] and user.student_password == form2.cleaned_data['password']:
-                    return HttpResponseRedirect(reverse('uni:page',args = (user.id,)))
+                if user.student_username == form.cleaned_data['username'] :
+                    if user.student_password == form2.cleaned_data['password']:
+                        
+                        return HttpResponseRedirect(reverse('uni:page',args = [user.id]))
+                    
+            error_message = "The username or password not currect"
+            return render(request ,'uni/login.html',{'error_message':error_message,
+                                                    'form' : form , 'form2' : form2})
+                                                    
                     
                     
 
