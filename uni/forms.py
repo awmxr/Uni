@@ -5,3 +5,4 @@ class Loginform(forms.Form):
 
 class Loginform2(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput)
+

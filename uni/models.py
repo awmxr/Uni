@@ -34,4 +34,11 @@ class Admin(models.Model):
         now = timezone.now()
         return now - datetime.timedelta(days=1) <= self.pub_date <= now
 
+class Exter(models.Model):
+    exter_name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.exter_name
+    
+
 # Create your models here.

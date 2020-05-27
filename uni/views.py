@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, Http404 ,HttpResponseRedirect
-from .models import Student,Admin
+from .models import Student,Admin,Exter
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
@@ -10,14 +10,25 @@ from .forms import Loginform,Loginform2
 class HomeView(generic.TemplateView):
     # model = Student
     template_name = 'uni/home.html'
+    context_object_name = 'last_obgect'
 
 
 class PageView(generic.ListView):
-    model = Student
-    
+    # model = Student
+    context_object_name = 'student'
     template_name = 'uni/page.html'
+    def get_queryset(self):
+        """
+        Return the last five published questions (not including those set to be
+        published in the future).
+        """
+        s1 = Student.objects.filter(student_username = Exter.objects.all()[0])
+        s2 = s1[0]
+        return s2
+
+        
     def ren(self,request):
-        return render(request ,self.template_name,{'user':Student.objects.all()})
+        return render(request ,'uni/page.html',{})
     
 class LoginView(generic.ListView):
     
@@ -45,7 +56,9 @@ class LoginView(generic.ListView):
             for user in users:
                 if user.student_username == form.cleaned_data['username'] :
                     if user.student_password == form2.cleaned_data['password']:
-                        
+                        Exter.objects.all().delete()
+                        q = Exter(exter_name = form.cleaned_data['username'])
+                        q.save()
                         return HttpResponseRedirect(reverse('uni:page',args = [user.id]))
                     
             error_message = "The username or password not currect"
