@@ -23,14 +23,17 @@
       <img src= "{% static 'D:/Amir/Project/mysite/uni/static/uni/images/12.jpg' %}" alt="Avatar" class="avatar">
     </div>
     
-    <div class="container">
+    <div style="text-align: right;" class="container">
       <!-- <label for="uname"><b>Username</b></label> -->
       <!-- <input id = "usernamee" type="text" placeholder="Enter Username" name="uname" value="awmxr"> -->
+      <h3>: شماره دانشجویی</h3>
       {{ form.as_p }}
+      
+      <h3>: رمز عبور</h3>
       {{ form2.as_p }}
-      <label >Admin</label>
+      <label >ادمین</label>
       <input id="radio1" name="tip" type="radio" value="radio1">
-      <label >Student</label>
+      <label  >دانشجو</label>
       <input id="radio2" name="tip" type="radio" value="radio2">
     
       {% if error_message %}<p style="color: red;"><strong>{{ error_message }}</strong></p>{% endif %}
@@ -40,15 +43,15 @@
       <!-- <label for="psw"><b>Password</b></label> -->
       <!-- <input type="password" placeholder="Enter Password" name="psw" required> -->
         
-      <button type="submit">Login</button>
+      <button style="background-color: #333333; font-size: large;" type="submit">ورود</button>
       <label>
-        <input type="checkbox" checked="checked" name="remember"> Remember me
+        <input type="checkbox" checked="checked" name="remember"> مرا بخاطر بسپار
       </label>
     </div>
 
     <div class="container" style="background-color:#f1f1f1">
-      <button type="button"  onclick="document.getElementById('dem').style.display='none'" class="cancelbtn">Cancel</button>
-      <span class="psw">Forgot <a href="#">password?</a></span>
+      <button type="button"  onclick="document.getElementById('dem').style.display='none'" class="cancelbtn">لغو</button>
+      <span class="psw"><a href="#"> رمز خود را فراموش کرده اید؟</a></span>
     </div>
 
   </form>

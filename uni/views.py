@@ -79,7 +79,7 @@ class LoginView(generic.ListView):
                 context = {'error_message':error_message,'form' : form , 'form2' : form2 }
                 return render(request,self.template_name,context)
             else:
-                if select_choice == "radio2":
+                if select_choice == "radio1":
                     users = Student.objects.all()
                     for user in users:
                         if user.student_username == form.cleaned_data['username'] :
@@ -89,9 +89,9 @@ class LoginView(generic.ListView):
                                 q.save()
                                 return HttpResponseRedirect(reverse('uni:page',args = [user.id]))
                             break
-                    lis1 = ['Admin','Student']
+                    # lis1 = ['Admin','Student']
                     error_message = "The username or password not currect"
-                    context = {'error_message':error_message,'form' : form , 'form2' : form2 , 'list1':lis1}
+                    context = {'error_message':error_message,'form' : form , 'form2' : form2 }
                     return render(request ,'uni/login.html',context)
                 else:
                     users2 = Admin.objects.all()
@@ -103,9 +103,9 @@ class LoginView(generic.ListView):
                                 q.save()
                                 return HttpResponseRedirect(reverse('uni:page2',args = [user.id]))
                             break
-                    lis1 = ['Admin','Student']
+                    
                     error_message = "The username or password not currect"
-                    context = {'error_message':error_message,'form' : form , 'form2' : form2 , 'list1':lis1}
+                    context = {'error_message':error_message,'form' : form , 'form2' : form2 }
                     return render(request ,'uni/login.html',context)
 
             # lis1 = ['Admin','Student']
