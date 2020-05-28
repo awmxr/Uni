@@ -43,12 +43,15 @@ class LoginView(generic.ListView):
     def get(self , request):
         form = Loginform()
         form2 = Loginform2()
-        return render(request ,'uni/login.html',{'form' : form , 'form2' : form2})
+        list1 = ['Admin','Student']
+        context = {'form' : form , 'form2' : form2 ,'lis1':list1}
+        return render(request ,'uni/login.html',context)
         
     def post(self,request):
 
         form = Loginform(request.POST)
         form2 = Loginform2(request.POST)
+        
 
         if (form.is_valid() and form2.is_valid()):
 
@@ -60,10 +63,10 @@ class LoginView(generic.ListView):
                         q = Exter(exter_name = form.cleaned_data['username'])
                         q.save()
                         return HttpResponseRedirect(reverse('uni:page',args = [user.id]))
-                    
+            lis1 = ['Admin','Student']
             error_message = "The username or password not currect"
-            return render(request ,'uni/login.html',{'error_message':error_message,
-                                                    'form' : form , 'form2' : form2})
+            context = {'error_message':error_message,'form' : form , 'form2' : form2 , 'list1':lis1}
+            return render(request ,'uni/login.html',context)
                                                     
                     
                     
