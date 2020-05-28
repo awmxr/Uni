@@ -28,11 +28,11 @@
       <!-- <input id = "usernamee" type="text" placeholder="Enter Username" name="uname" value="awmxr"> -->
       {{ form.as_p }}
       {{ form2.as_p }}
-      {% for name in lis1 %}
-        <input type="radio" name="tip" id="name{{ forloop.counter }}" value="{{ name.id }}">
-        <label for="name{{ forloop.counter }}">{{ name }}</label>
-      {% endfor %}
-     
+      <label >Admin</label>
+      <input id="radio1" name="tip" type="radio" value="radio1">
+      <label >Student</label>
+      <input id="radio2" name="tip" type="radio" value="radio2">
+    
       {% if error_message %}<p style="color: red;"><strong>{{ error_message }}</strong></p>{% endif %}
       
       

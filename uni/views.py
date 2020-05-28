@@ -22,14 +22,31 @@ class PageView(generic.ListView):
         Return the last five published questions (not including those set to be
         published in the future).
         """
-        s1 = Student.objects.filter(student_username = Exter.objects.all()[0])
-        s2 = s1[0]
-        return s2
-
+        s1 = Student.objects.filter(student_username = Exter.objects.all()[0].exter_name).first()
+        # s2 = s1[0]
         
+        return s1
+            
     def ren(self,request):
         return render(request ,'uni/page.html',{})
-    
+
+class Page2View(generic.ListView):
+    # model = Student
+    context_object_name = 'admin'
+    template_name = 'uni/page2.html'
+    def get_queryset(self):
+        """
+        Return the last five published questions (not including those set to be
+        published in the future).
+        """
+        s1 = Admin.objects.filter(Admin_username = Exter.objects.all()[0].exter_name).first()
+        # s2 = s1
+        # Exter.objects.all().delete()
+        return s1
+            
+    def ren(self,request):
+        return render(request ,'uni/page2.html',{})
+
 class LoginView(generic.ListView):
     
     model = Student
@@ -52,21 +69,49 @@ class LoginView(generic.ListView):
         form = Loginform(request.POST)
         form2 = Loginform2(request.POST)
         
-
         if (form.is_valid() and form2.is_valid()):
 
-            users = Student.objects.all()
-            for user in users:
-                if user.student_username == form.cleaned_data['username'] :
-                    if user.student_password == form2.cleaned_data['password']:
-                        Exter.objects.all().delete()
-                        q = Exter(exter_name = form.cleaned_data['username'])
-                        q.save()
-                        return HttpResponseRedirect(reverse('uni:page',args = [user.id]))
-            lis1 = ['Admin','Student']
-            error_message = "The username or password not currect"
-            context = {'error_message':error_message,'form' : form , 'form2' : form2 , 'list1':lis1}
-            return render(request ,'uni/login.html',context)
+            
+            try:
+                select_choice = request.POST['tip']
+            except (KeyError):
+                error_message = 'You didnt select a choice.'
+                context = {'error_message':error_message,'form' : form , 'form2' : form2 }
+                return render(request,self.template_name,context)
+            else:
+                if select_choice == "radio2":
+                    users = Student.objects.all()
+                    for user in users:
+                        if user.student_username == form.cleaned_data['username'] :
+                            if user.student_password == form2.cleaned_data['password']:
+                                Exter.objects.all().delete()
+                                q = Exter(exter_name = form.cleaned_data['username'], number = '1') 
+                                q.save()
+                                return HttpResponseRedirect(reverse('uni:page',args = [user.id]))
+                            break
+                    lis1 = ['Admin','Student']
+                    error_message = "The username or password not currect"
+                    context = {'error_message':error_message,'form' : form , 'form2' : form2 , 'list1':lis1}
+                    return render(request ,'uni/login.html',context)
+                else:
+                    users2 = Admin.objects.all()
+                    for user in users2:
+                        if user.Admin_username == form.cleaned_data['username'] :
+                            if user.admin_password == form2.cleaned_data['password']:
+                                Exter.objects.all().delete()
+                                q = Exter(exter_name = form.cleaned_data['username'], number = '2')
+                                q.save()
+                                return HttpResponseRedirect(reverse('uni:page2',args = [user.id]))
+                            break
+                    lis1 = ['Admin','Student']
+                    error_message = "The username or password not currect"
+                    context = {'error_message':error_message,'form' : form , 'form2' : form2 , 'list1':lis1}
+                    return render(request ,'uni/login.html',context)
+
+            # lis1 = ['Admin','Student']
+            # error_message = "The username or password not currect"
+            # context = {'error_message':error_message,'form' : form , 'form2' : form2 , 'list1':lis1}
+            # return render(request ,'uni/login.html',context)
                                                     
                     
                     
