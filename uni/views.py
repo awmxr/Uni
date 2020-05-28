@@ -76,7 +76,7 @@ class LoginView(generic.ListView):
                 select_choice = request.POST['tip']
             except (KeyError):
                 error_message = 'You didnt select a choice.'
-                context = {'error_message':error_message,'form' : form , 'form2' : form2 }
+                context = {'form' : form , 'form2' : form2 ,'error_message':error_message }
                 return render(request,self.template_name,context)
             else:
                 if select_choice == "radio1":
@@ -91,7 +91,7 @@ class LoginView(generic.ListView):
                             break
                     # lis1 = ['Admin','Student']
                     error_message = "The username or password not currect"
-                    context = {'error_message':error_message,'form' : form , 'form2' : form2 }
+                    context = {'form' : form , 'form2' : form2 ,'error_message':error_message }
                     return render(request ,'uni/login.html',context)
                 else:
                     users2 = Admin.objects.all()
@@ -105,7 +105,7 @@ class LoginView(generic.ListView):
                             break
                     
                     error_message = "The username or password not currect"
-                    context = {'error_message':error_message,'form' : form , 'form2' : form2 }
+                    context = {'form' : form , 'form2' : form2 ,'error_message':error_message }
                     return render(request ,'uni/login.html',context)
 
             # lis1 = ['Admin','Student']

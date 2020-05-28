@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" type="text/css" href="{% static 'uni/style2.css' %}">
 </head>
-<body>
+<body style="text-align: right;">
 
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <ul>
@@ -31,12 +31,14 @@
       
       <h3>: رمز عبور</h3>
       {{ form2.as_p }}
-      <label >ادمین</label>
-      <input id="radio1" name="tip" type="radio" value="radio1">
-      <label  >دانشجو</label>
-      <input id="radio2" name="tip" type="radio" value="radio2">
+      <div>
+        <label >ادمین</label>
+        <input id="radio1" name="tip" type="radio" value="radio1">
+        <label  >دانشجو</label>
+        <input id="radio2" name="tip" type="radio" value="radio2">
+      </div>
     
-      {% if error_message %}<p style="color: red;"><strong>{{ error_message }}</strong></p>{% endif %}
+      {% if error_message %}<p style="color: red;">{{ error_message }}</p>{% endif %}
       
       
 
@@ -50,8 +52,10 @@
     </div>
 
     <div class="container" style="background-color:#f1f1f1">
-      <button type="button"  onclick="document.getElementById('dem').style.display='none'" class="cancelbtn">لغو</button>
-      <span class="psw"><a href="#"> رمز خود را فراموش کرده اید؟</a></span>
+      <div style="text-align: left;">
+        <button type="button" style="text-align: right;" onclick="document.getElementById('dem').style.display='none'" class="cancelbtn">لغو</button>
+        <span class="psw"><a href="#"> رمز خود را فراموش کرده اید؟</a></span>
+      </div>
     </div>
 
   </form>
