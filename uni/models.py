@@ -3,6 +3,7 @@ from django.db import models
 from django.utils import timezone
 import datetime
 
+
 class Student(models.Model):
     student_username = models.CharField(max_length=200)
     student_name = models.CharField(max_length=200)
