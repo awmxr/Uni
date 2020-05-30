@@ -1,0 +1,106 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    
+
+<head>
+    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="{% static 'uni/style2.css' %}">
+
+</head>
+<body style="text-align: right;">
+<div style="text-align: left;">
+    <ul>
+        <li><a href="{% url 'uni:page2' admin.id %}">خانه</a></li>
+        <li><a href="#contact">مخاطبان</a></li>
+        <li><a href="#about">درباره</a></li>
+        <a href="{% url 'uni:home' %}"><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
+        <input  style="text-align-last: right;" type="search" placeholder="جست و جو " aria-label="Search" name="search" >
+    </ul>
+</div>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'uni/style2.css' %}">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <div class="w3-container w3-dark-grey">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <h2 style="text-align: right;" >{{ admin.admin_name  }} {{  admin.admin_last_name  }}</h2> 
+    </div>
+    
+  <form id = "dem"class="modal-content animate" method="post">{% csrf_token %}
+    <div class="imgcontainer">
+        <a href="{% url 'uni:page2' admin.id %}"><span class="close" title="Close Modal">&times;</span></a>
+      <!-- <img src= "{% static 'D:/Amir/Project/mysite/uni/static/uni/images/12.jpg' %}" alt="Avatar" class="avatar"> -->
+    </div>
+    
+    <div style="text-align: right;" class="container">
+      <!-- <label for="uname"><b>Username</b></label> -->
+      <!-- <input id = "usernamee" type="text" placeholder="Enter Username" name="uname" value="awmxr"> -->
+      <br>
+      <div>
+       <h4>: شماره دانشجویی</h4>
+       {{ form1.as_p }}
+       <h4>:نام</h4>
+       {{ form2.as_p }}
+       <h4>:نام خانوادگی </h4>
+       {{ form3.as_p }}
+       <h4>:نام پدر </h4>
+       {{ form4.as_p }}
+       <h4>:تاریخ تولد </h4>
+       <input style="width: 575px; " type="date" id = "date">
+       <h4>:محل سکونت </h4>
+       {{ form5.as_p }}
+       <h4>:تلفن همراه دانشجو </h4>
+       {{ form6.as_p }}
+       <h4>:تلفن همراه والد </h4>
+       {{ form7.as_p }}
+       <h4>:کد ملی </h4>
+       {{ form8.as_p }}
+       <h4>:رشته تحصیلی </h4>
+       {{ form9.as_p }}
+       <h4>:دانشگاه </h4>
+       {{ form10.as_p }}
+       <h4>:داشکده </h4>
+       {{ form11.as_p }}
+      
+        <h4>: رمز عبور</h4>
+        {{ form13.as_p }}
+        <h4>:تکرار رمز عبور </h4>     
+        {{ form14.as_p }}
+      </div>
+      
+    
+      {% if error_message %}<p style="color: red;">{{ error_message }}</p>{% endif %}
+      
+      
+
+      <!-- <label for="psw"><b>Password</b></label> -->
+      <!-- <input type="password" placeholder="Enter Password" name="psw" required> -->
+        
+      <button style="background-color: #333333; font-size: large;" type="submit">ثبت</button>
+    </div>
+
+    <div class="container" style="background-color:#f1f1f1">
+      <div style="text-align: left;">
+        <a href="{% url 'uni:page2' admin.id %}"><button class="cancelbtn"  style=" height: 54px;" type="button">لغو</button></a>
+      </div>
+    </div>
+
+  </form>
+
+
+<script>
+// Get the modal
+username = document.getElementsById("usernamee").value
+var modal = document.getElementById('id01');
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+</script>
+
+</body>
+</html>

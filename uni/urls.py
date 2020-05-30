@@ -8,6 +8,8 @@ urlpatterns = [
     path('', views.HomeView.as_view(), name='home'),
     path('login/',views.LoginView.as_view(),name = 'login'),
     path('student/<int:student_id>/page/',views.PageView.as_view(),name = 'page'),
-    path('admin/<int:admin_id>/page/',views.Page2View.as_view(),name = 'page2'),
+    path('student/<int:student_id>/page/about',views.AboutSView.as_view(),name = 'aboutS'),
+    path('admin/<int:admin_id>/page2/',views.Page2View.as_view(),name = 'page2'),
+    path('admin/<int:admin_id>/page2/create',views.CreateView.as_view(),name = 'create'),
     
 ]

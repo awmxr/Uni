@@ -6,6 +6,9 @@ class Loginform(forms.Form):
 class Loginform2(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput,label = False)
 
+class sabtform(forms.Form):
+    sabt = forms.CharField(widget = forms.TextInput , label = False)
+
 
     
 
