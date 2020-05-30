@@ -16,10 +16,9 @@ class Student(models.Model):
     password = models.CharField(max_length=200)
     phone = models.CharField(max_length=11)
     field = models.CharField(max_length=200)
-    # birthdate = models.DateTimeField('birthday')
     student_live = models.CharField(max_length=200)
     parents_phone = models.CharField(max_length=200)
-    birthday = models.DateTimeField('birthday')
+    # birthday = models.DateTimeField('birthday')
 
 
     def __str__(self):

@@ -32,43 +32,15 @@
         <a href="{% url 'uni:page2' admin.id %}"><span class="close" title="Close Modal">&times;</span></a>
       <!-- <img src= "{% static 'D:/Amir/Project/mysite/uni/static/uni/images/12.jpg' %}" alt="Avatar" class="avatar"> -->
     </div>
-    
+    <form method = "POST">
     <div style="text-align: right;" class="container">
       <!-- <label for="uname"><b>Username</b></label> -->
       <!-- <input id = "usernamee" type="text" placeholder="Enter Username" name="uname" value="awmxr"> -->
       <br>
       <div>
-       <h4>: شماره دانشجویی</h4>
-       {{ form1.as_p }}
-       <h4>:نام</h4>
-       {{ form2.as_p }}
-       <h4>:نام خانوادگی </h4>
-       {{ form3.as_p }}
-       <h4>:نام پدر </h4>
-       {{ form4.as_p }}
-       <h4>:تاریخ تولد </h4>
-       <input style="width: 575px; " type="date" id = "date">
-       <h4>:محل سکونت </h4>
-       {{ form5.as_p }}
-       <h4>:تلفن همراه دانشجو </h4>
-       {{ form6.as_p }}
-       <h4>:تلفن همراه والد </h4>
-       {{ form7.as_p }}
-       <h4>:کد ملی </h4>
-       {{ form8.as_p }}
-       <h4>:رشته تحصیلی </h4>
-       {{ form9.as_p }}
-       <h4>:دانشگاه </h4>
-       {{ form10.as_p }}
-       <h4>:داشکده </h4>
-       {{ form11.as_p }}
-      
-        <h4>: رمز عبور</h4>
-        {{ form13.as_p }}
-        <h4>:تکرار رمز عبور </h4>     
-        {{ form14.as_p }}
+       {{ form.as_p }}
       </div>
-      
+    
     
       {% if error_message %}<p style="color: red;">{{ error_message }}</p>{% endif %}
       
@@ -85,8 +57,9 @@
         <a href="{% url 'uni:page2' admin.id %}"><button class="cancelbtn"  style=" height: 54px;" type="button">لغو</button></a>
       </div>
     </div>
-
   </form>
+
+  
 
 
 <script>
@@ -101,6 +74,7 @@ window.onclick = function(event) {
     }
 }
 </script>
+</form>
 
 </body>
 </html>
