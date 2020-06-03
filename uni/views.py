@@ -87,7 +87,6 @@ class CreateView(generic.ListView):
         context = {'form':form,'admin':s1}
         return HttpResponseRedirect(reverse('uni:page2',args = [s1.id]))
         
-        
 
 
 

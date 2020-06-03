@@ -9,7 +9,12 @@ class Loginform2(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput,label = False)
 
 class sabtform(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['College'].widget.attrs.update({'cols': 30, 'rows': 1})
+    
     class Meta:
+        
         model = Student
         fields = [
             'username',
@@ -24,11 +29,14 @@ class sabtform(forms.ModelForm):
             'phone',
             'field',
             'student_live',
+            'religion',
             'parents_phone',
         ]
         widgets = {
-            'password' : forms.PasswordInput
+            'password' : forms.PasswordInput ,
+            # 'College' : forms.TextInput(attrs={'cols': 10, 'rows': 20} )
         } 
+        
         labels = {
             "username": "شماره دانشجویی",
             'name':'نام',
@@ -45,6 +53,7 @@ class sabtform(forms.ModelForm):
             'parents_phone':'تلفن همراه والد',
             
         }
+        
 
 
     
