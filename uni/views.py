@@ -6,6 +6,7 @@ from django.views import generic
 from django.utils import timezone
 from .forms import Loginform,Loginform2,sabtform
 from django.contrib import messages
+from passlib.hash import oracle10
 
 
 class HomeView(generic.TemplateView):
@@ -51,8 +52,6 @@ class AboutSView(generic.ListView):
         published in the future).
         """
         s1 = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        # s2 = s1[0]
-        
         return s1
 
 class CreateView(generic.ListView):
@@ -79,11 +78,12 @@ class CreateView(generic.ListView):
             error_message = f'لطفا فرم را کامل پر کنید'
             context = {'form':form,'admin':s1,'error_message':error_message}
             return render(request ,self.template_name,context)
+        y = oracle10.hash(form.cleaned_data['password'],user = form.cleaned_data['username'])
+        z = form.cleaned_data['username']
         form.save()
+        x = Student.objects.filter(username = z).update(password = y)
         form = sabtform()
-        
         success = 'دانشجو با موفقیت ثبت شد'
-        
         context = {'form':form,'admin':s1}
         return HttpResponseRedirect(reverse('uni:page2',args = [s1.id]))
         
@@ -122,13 +122,12 @@ class LoginView(generic.ListView):
                     users = Student.objects.all()
                     for user in users:
                         if user.username == form.cleaned_data['username'] :
-                            if user.password == form2.cleaned_data['password']:
+                            if user.password == oracle10.hash(form2.cleaned_data['password'], user = user.username):
                                 Exter.objects.all().delete()
                                 q = Exter(exter_name = form.cleaned_data['username'], number = '1') 
                                 q.save()
                                 return HttpResponseRedirect(reverse('uni:page',args = [user.id]))
                             break
-                    # lis1 = ['Admin','Student']
                     error_message = "The username or password not currect"
                     context = {'form' : form , 'form2' : form2 ,'error_message':error_message }
                     return render(request ,'uni/login.html',context)
@@ -147,10 +146,6 @@ class LoginView(generic.ListView):
                     context = {'form' : form , 'form2' : form2 ,'error_message':error_message }
                     return render(request ,'uni/login.html',context)
 
-            # lis1 = ['Admin','Student']
-            # error_message = "The username or password not currect"
-            # context = {'error_message':error_message,'form' : form , 'form2' : form2 , 'list1':lis1}
-            # return render(request ,'uni/login.html',context)
                                                     
                     
                     

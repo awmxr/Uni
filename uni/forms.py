@@ -25,8 +25,10 @@ class sabtform(forms.ModelForm):
             'field',
             'student_live',
             'parents_phone',
-            
         ]
+        widgets = {
+            'password' : forms.PasswordInput
+        } 
         labels = {
             "username": "شماره دانشجویی",
             'name':'نام',
