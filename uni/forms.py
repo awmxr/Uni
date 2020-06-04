@@ -94,8 +94,4 @@ class ChangeForm(forms.ModelForm):
         ]
         
 
-        
-
-
     
-
