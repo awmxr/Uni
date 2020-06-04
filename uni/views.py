@@ -7,6 +7,9 @@ from django.utils import timezone
 from .forms import Loginform,Loginform2,sabtform
 from django.contrib import messages
 from passlib.hash import oracle10
+from . import choices
+from django import forms
+
 
 
 class HomeView(generic.TemplateView):
@@ -53,8 +56,9 @@ class AboutSView(generic.ListView):
         """
         s1 = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         return s1
-
+v = 0
 class CreateView(generic.ListView):
+    
     template_name = 'uni/create.html'
     context_object_name = 'admin'
     def get_queryset(self):
@@ -70,22 +74,60 @@ class CreateView(generic.ListView):
         form = sabtform()
         context = {'form':form,'admin':s1}
         return render(request ,self.template_name,context)
-
+    
     def post(self,request,admin_id):
+        global v
         s1 = Admin.objects.filter(Admin_username = Exter.objects.all()[0].exter_name).first()
         form = sabtform(request.POST)
+        if form.is_valid():
+            if form.cleaned_data['College'] == 'فنی مهندسی' and v == 0:
+                v = 1
+                form.fields['field'].widget = forms.Select(choices= choices.field1_choices)
+                context = {'form':form,'admin':s1,}
+                return render(request ,self.template_name,context)
+            elif form.cleaned_data['College'] == 'علوم پایه' and v == 0:
+                v = 1
+                form.fields['field'].widget = forms.Select(choices= choices.field2_choices)
+                context = {'form':form,'admin':s1,}
+                return render(request ,self.template_name,context)
+            elif form.cleaned_data['College'] == 'علوم اقتصادی و اداری' and v == 0:
+                v = 1
+                form.fields['field'].widget = forms.Select(choices= choices.fileld3_choices)
+                context = {'form':form,'admin':s1,}
+                return render(request ,self.template_name,context)
+            elif form.cleaned_data['College'] == 'علوم سیاسی' and v == 0:
+                v = 1
+                form.fields['field'].widget = forms.Select(choices= choices.fileld4_choices)
+                context = {'form':form,'admin':s1,}
+                return render(request ,self.template_name,context)
+            elif form.cleaned_data['College'] == 'علوم دریایی' and v == 0:
+                v = 1
+                form.fields['field'].widget = forms.Select(choices= choices.fileld5_choices)
+                context = {'form':form,'admin':s1,}
+                return render(request ,self.template_name,context)
+            y = oracle10.hash(form.cleaned_data['password'],user = form.cleaned_data['username'])
+            z = form.cleaned_data['username']
+            v = 1
+            for key in form.fields:
+                if form.cleaned_data[key] == '':
+                    # self.v = 0
+                    error_message = 'لطفا فرم را کامل پر کنید'
+                    context = {'form':form,'admin':s1,'error_message':error_message}
+                    return render(request ,self.template_name,context)
+            v = 1
+            form.save()
+            x = Student.objects.filter(username = z).update(password = y)
+            form = sabtform()
+            success = 'دانشجو با موفقیت ثبت شد'
+            context = {'form':form,'admin':s1}
+            return HttpResponseRedirect(reverse('uni:page2',args = [s1.id]))
         if form.is_valid() == False:
             error_message = f'لطفا فرم را کامل پر کنید'
             context = {'form':form,'admin':s1,'error_message':error_message}
             return render(request ,self.template_name,context)
-        y = oracle10.hash(form.cleaned_data['password'],user = form.cleaned_data['username'])
-        z = form.cleaned_data['username']
-        form.save()
-        x = Student.objects.filter(username = z).update(password = y)
-        form = sabtform()
-        success = 'دانشجو با موفقیت ثبت شد'
-        context = {'form':form,'admin':s1}
-        return HttpResponseRedirect(reverse('uni:page2',args = [s1.id]))
+
+        
+        
         
 
 
