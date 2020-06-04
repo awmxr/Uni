@@ -11,5 +11,6 @@ urlpatterns = [
     path('student/<int:student_id>/page/about',views.AboutSView.as_view(),name = 'aboutS'),
     path('admin/<int:admin_id>/page2/',views.Page2View.as_view(),name = 'page2'),
     path('admin/<int:admin_id>/page2/create',views.CreateView.as_view(),name = 'create'),
+    path('student/<int:student_id>/page/change',views.ChangeView.as_view(),name = 'change'),
     
 ]

@@ -35,26 +35,18 @@
       <!-- <label for="uname"><b>Username</b></label> -->
       <!-- <input id = "usernamee" type="text" placeholder="Enter Username" name="uname" value="awmxr"> -->
       
-      <h3 style="text-align: right; " >نام : {{ student.name  }} <br> 
-        نام خانوادگی : {{ student.last_name  }} <br> نام پدر  : {{ student.father_name }} <br>
-        شماره دانشجویی : {{ student.username }} <br> کد ملی : {{ student.melli_code }} <br>
-        تلفن همراه : {{ student.phone }} <br> دانشگاه : {{ student.uni }} <br> دانشکده : {{ student.College }} <br>
-        رشته تحصیلی : {{ student.field }} <br> ورودی : {{ student.enter_year }} <b>
-        
-        
-        
-   </h3> 
+      {{ form.as_p }}
       
 
       <!-- <label for="psw"><b>Password</b></label> -->
       <!-- <input type="password" placeholder="Enter Password" name="psw" required> -->
-        
-     <a href="{% url 'uni:change' student.id %}"> <button style="background-color: #b30e0e; font-size: large;" type="button">ویرایش</button></a>
+      {% if error_message %}<p style="color: red;">{{ error_message }}</p>{% endif %}
+     <a href="{% url 'uni:change' student.id %}"> <button style="background-color: #13b30e; font-size: large;" type="submit">تایید</button></a>
     </div>
 
     <div class="container" style="background-color:#f1f1f1">
       <div style="text-align: left;">
-       <a href="{% url 'uni:page' student.id %}"> <button type="button" style="text-align: right;" class="cancelbtn">لغو</button></a>
+       <a href="{% url 'uni:page' student.id %}"> <button type="button" style="text-align: right;" onclick="document.getElementById('dem').style.display='none'" class="cancelbtn">لغو</button></a>
       </div>
     </div>
 

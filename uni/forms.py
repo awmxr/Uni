@@ -1,5 +1,5 @@
 from django import forms
-from .models import Student
+from .models import Student,Exter
 from . import choices
 
 class Loginform(forms.Form):
@@ -65,6 +65,35 @@ class sabtform(forms.ModelForm):
             'parents_phone':'تلفن همراه والد',
             
         }
+
+
+class ChangeForm(forms.ModelForm):
+    student = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+    username = forms.CharField(initial=student.username)
+    name = forms.CharField(initial=student.name)
+    last_name = forms.CharField(initial=student.last_name)
+    father_name = forms.CharField(initial=student.father_name)
+    melli_code = forms.CharField(initial=student.melli_code)
+    phone = forms.CharField(initial=student.phone)
+    student_live = forms.CharField(initial=student.student_live)
+    religion = forms.CharField(initial=student.religion)
+    parents_phone = forms.CharField(initial=student.parents_phone)
+    class Meta:
+        model = Student
+
+        fields = [
+            'username',
+            'name',
+            'last_name',
+            'father_name',
+            'melli_code',
+            'phone',
+            'student_live',
+            'religion',
+            'parents_phone',
+        ]
+        
+
         
 
 

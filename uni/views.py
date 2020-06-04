@@ -4,7 +4,7 @@ from .models import Student,Admin,Exter
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
-from .forms import Loginform,Loginform2,sabtform
+from .forms import Loginform,Loginform2,sabtform,ChangeForm
 from django.contrib import messages
 from passlib.hash import oracle10
 from . import choices
@@ -56,6 +56,40 @@ class AboutSView(generic.ListView):
         """
         s1 = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         return s1
+class ChangeView(generic.ListView):
+    context_object_name = 'student'
+    template_name = 'uni/change.html'
+    def get_queryset(self):
+        """
+        Return the last five published questions (not including those set to be
+        published in the future).
+        """
+        s1 = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        return s1
+    def get(self,request,student_id):
+        s1 = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        form = ChangeForm(instance=s1)
+        form.student = s1
+        context = {'form':form,'student':s1}
+        return render(request,self.template_name,context)
+    def post(self,request,student_id):
+        s1 = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        form = ChangeForm(request.POST,instance=s1)
+        if form.is_valid():
+            form.save()
+            # form.student = s1
+            del form
+            # form = ChangeForm(request.POST,instance=s1)
+            return HttpResponseRedirect(reverse('uni:page',args = [s1.id]))
+            # form = ChangeForm(request.POST,instance=s1)
+        elif not form.is_valid():
+            error_message = f'لطفا فرم را کامل پر کنید'
+            context = {'form':form,'student':s1,'error_message':error_message}
+            return render(request,self.template_name,context)
+            
+
+
+
 v = 0
 class CreateView(generic.ListView):
     
@@ -77,45 +111,47 @@ class CreateView(generic.ListView):
     
     def post(self,request,admin_id):
         global v
+        # v = 0
         s1 = Admin.objects.filter(Admin_username = Exter.objects.all()[0].exter_name).first()
         form = sabtform(request.POST)
         if form.is_valid():
-            if form.cleaned_data['College'] == 'فنی مهندسی' and v == 0:
-                v = 1
+            if form.cleaned_data['College'] == 'فنی مهندسی'  and v != 2:
+                v = 2
                 form.fields['field'].widget = forms.Select(choices= choices.field1_choices)
                 context = {'form':form,'admin':s1,}
                 return render(request ,self.template_name,context)
-            elif form.cleaned_data['College'] == 'علوم پایه' and v == 0:
-                v = 1
+            elif form.cleaned_data['College'] == 'علوم پایه'  and v != 3:
+                v = 3
                 form.fields['field'].widget = forms.Select(choices= choices.field2_choices)
                 context = {'form':form,'admin':s1,}
                 return render(request ,self.template_name,context)
-            elif form.cleaned_data['College'] == 'علوم اقتصادی و اداری' and v == 0:
-                v = 1
+            elif form.cleaned_data['College'] == 'علوم اقتصادی و اداری' and v != 4:
+                v = 4
                 form.fields['field'].widget = forms.Select(choices= choices.fileld3_choices)
                 context = {'form':form,'admin':s1,}
                 return render(request ,self.template_name,context)
-            elif form.cleaned_data['College'] == 'علوم سیاسی' and v == 0:
-                v = 1
+            elif form.cleaned_data['College'] == 'علوم سیاسی'  and v != 5:
+                v = 5
                 form.fields['field'].widget = forms.Select(choices= choices.fileld4_choices)
                 context = {'form':form,'admin':s1,}
                 return render(request ,self.template_name,context)
-            elif form.cleaned_data['College'] == 'علوم دریایی' and v == 0:
-                v = 1
+            elif form.cleaned_data['College'] == 'علوم دریایی'  and v != 6:
+                v = 6
                 form.fields['field'].widget = forms.Select(choices= choices.fileld5_choices)
                 context = {'form':form,'admin':s1,}
                 return render(request ,self.template_name,context)
             y = oracle10.hash(form.cleaned_data['password'],user = form.cleaned_data['username'])
             z = form.cleaned_data['username']
-            v = 1
+            v = 0
             for key in form.fields:
                 if form.cleaned_data[key] == '':
-                    # self.v = 0
+                    # v = 0
                     error_message = 'لطفا فرم را کامل پر کنید'
                     context = {'form':form,'admin':s1,'error_message':error_message}
                     return render(request ,self.template_name,context)
             v = 1
             form.save()
+            # v = 0 
             x = Student.objects.filter(username = z).update(password = y)
             form = sabtform()
             success = 'دانشجو با موفقیت ثبت شد'
@@ -125,6 +161,7 @@ class CreateView(generic.ListView):
             error_message = f'لطفا فرم را کامل پر کنید'
             context = {'form':form,'admin':s1,'error_message':error_message}
             return render(request ,self.template_name,context)
+        
 
         
         
