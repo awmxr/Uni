@@ -22,6 +22,7 @@ class Student(models.Model):
     parents_phone = models.CharField(max_length=200)
     religion = models.CharField(max_length=200 )
     public_date = models.DateTimeField(null = True)
+    login_date = models.DateTimeField(null = True)
     birthday = models.DateField(blank = True , null = True)
     def __str__(self):
         return self.name +' ' +  self.last_name
@@ -32,7 +33,8 @@ class Admin(models.Model):
     admin_name = models.CharField(max_length=200)
     admin_last_name = models.CharField(max_length=200)
     admin_password = models.CharField(max_length=200)
-    pub_date = models.DateTimeField('date published')
+    pub_date = models.DateTimeField(null = True)
+    login_date = models.DateTimeField(null = True)
 
     def __str__(self):
         return self.admin_name +' ' +  self.admin_last_name

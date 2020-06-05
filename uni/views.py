@@ -10,13 +10,29 @@ from passlib.hash import oracle10
 from . import choices
 from django import forms
 import datetime as dt
+from .cookie import CheckCookie,MakeCookie
 
 
 
 class HomeView(generic.TemplateView):
     template_name = 'uni/home.html'
     context_object_name = 'last_obgect'
-
+    if Exter.objects.all() :
+        # if Exter.objects.all().first().number == '1':
+        def get(self, request):
+            Student.objects.filter(username = Exter.objects.all()[0].exter_name).update(login_date = None)
+            Admin.objects.filter(Admin_username = Exter.objects.all()[0].exter_name).update(login_date = None)
+            response = render(request,self.template_name,{})
+            response.set_cookie('access',None)
+            return response
+        def post(self,request):
+            Student.objects.filter(username = Exter.objects.all()[0].exter_name).update(login_date = None)
+            Admin.objects.filter(Admin_username = Exter.objects.all()[0].exter_name).update(login_date = None)
+            response = render(request,self.template_name,{})
+            response.set_cookie('access',None)
+            return response
+        
+        
 
 class PageView(generic.ListView):
     context_object_name = 'student'
@@ -28,6 +44,21 @@ class PageView(generic.ListView):
         """
         s1 = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         return s1
+    def get(self,request,student_id):
+        s1 = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        cookie  = str(request.COOKIES.get('access'))
+
+        if CheckCookie(s1,cookie):
+            return render(request,self.template_name,{'student':s1})
+        # else:
+            # return HttpResponseRedirect(reverse('uni:home'))
+    def post(self,request,student_id):
+        s1 = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        if CheckCookie(s1,request.COOKIES.get('access')):
+            return render(request,self.template_name,{'student':s1})
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
+
             
     def ren(self,request):
         return render(request ,'uni/page.html',{})
@@ -169,11 +200,7 @@ class CreateView(generic.ListView):
 
         
         
-        
-
-
-
-
+    
 class LoginView(generic.ListView):
     
     model = Student
@@ -208,7 +235,10 @@ class LoginView(generic.ListView):
                                 Exter.objects.all().delete()
                                 q = Exter(exter_name = form.cleaned_data['username'], number = '1') 
                                 q.save()
-                                return HttpResponseRedirect(reverse('uni:page',args = [user.id]))
+                                Student.objects.filter(username = form.cleaned_data['username']).update(login_date = dt.datetime.now())
+                                response = HttpResponseRedirect(reverse('uni:page',args = [user.id]))
+                                response.set_cookie('access',MakeCookie(user))
+                                return response
                             break
                     error_message = "The username or password not currect"
                     context = {'form' : form , 'form2' : form2 ,'error_message':error_message }
@@ -221,7 +251,10 @@ class LoginView(generic.ListView):
                                 Exter.objects.all().delete()
                                 q = Exter(exter_name = form.cleaned_data['username'], number = '2')
                                 q.save()
-                                return HttpResponseRedirect(reverse('uni:page2',args = [user.id]))
+                                Admin.objects.filter(admi_username = form.cleaned_data['username']).update(login_date = dt.datetime.now())
+                                response = HttpResponseRedirect(reverse('uni:page2',args = [user.id]))
+                                response.set_cookie('access',MakeCookie(user))
+                                return 
                             break
                     
                     error_message = "The username or password not currect"
