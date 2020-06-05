@@ -1,6 +1,7 @@
 from django.db import models
 from django.db import models
 from django.utils import timezone
+from datetime import datetime , date
 import datetime
 
 
@@ -20,11 +21,8 @@ class Student(models.Model):
     student_live = models.CharField(max_length=200)
     parents_phone = models.CharField(max_length=200)
     religion = models.CharField(max_length=200 )
-
-    
-    # birthday = models.DateTimeField('birthday')
-
-
+    public_date = models.DateTimeField(null = True)
+    birthday = models.DateField(blank = True , null = True)
     def __str__(self):
         return self.name +' ' +  self.last_name
     

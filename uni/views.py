@@ -9,6 +9,7 @@ from django.contrib import messages
 from passlib.hash import oracle10
 from . import choices
 from django import forms
+import datetime as dt
 
 
 
@@ -150,7 +151,10 @@ class CreateView(generic.ListView):
                     context = {'form':form,'admin':s1,'error_message':error_message}
                     return render(request ,self.template_name,context)
             v = 1
+            date1 = request.POST.get('date')
             form.save()
+            Student.objects.filter(username = z).update(birthday = date1)
+            Student.objects.filter(username = z).update(public_date = dt.datetime.now())
             # v = 0 
             x = Student.objects.filter(username = z).update(password = y)
             form = sabtform()

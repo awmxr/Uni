@@ -10,7 +10,6 @@ class Loginform2(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput,label = False)
 
 class sabtform(forms.ModelForm):
-    # field = forms.CharField(widget = forms.HiddenInput)
     def __init__(self, *args, **kwargs):
         super(forms.ModelForm, self).__init__(*args, **kwargs)
 
@@ -34,6 +33,7 @@ class sabtform(forms.ModelForm):
             'student_live',
             'religion',
             'parents_phone',
+            # 'birthday'
         ]
         widgets = {
             'password' : forms.PasswordInput,
@@ -42,8 +42,10 @@ class sabtform(forms.ModelForm):
             'College': forms.Select(choices= choices.college_choices,attrs={'onchange': 'submit();'}),
             'religion' : forms.Select(choices= choices.religion_choices),
             'enter_year': forms.Select(choices= choices.enter_year_choices),
-            # 'field': forms.HiddenInput(),
             'field': forms.Select(),
+            # 'username':forms.TextInput(attrs = {'placeholder':'شماره دانشجویی'}),
+            # 'name' : forms.TextInput(attrs = {'placeholder':'نام'}),
+            
             
         } 
         
@@ -63,21 +65,12 @@ class sabtform(forms.ModelForm):
             'field':'رشته تحصیلی',
             'student_live':'محل سکونت',
             'parents_phone':'تلفن همراه والد',
+            'birthday':'تاریخ تولد'
             
         }
 
 
 class ChangeForm(forms.ModelForm):
-    student = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-    username = forms.CharField(initial=student.username)
-    name = forms.CharField(initial=student.name)
-    last_name = forms.CharField(initial=student.last_name)
-    father_name = forms.CharField(initial=student.father_name)
-    melli_code = forms.CharField(initial=student.melli_code)
-    phone = forms.CharField(initial=student.phone)
-    student_live = forms.CharField(initial=student.student_live)
-    religion = forms.CharField(initial=student.religion)
-    parents_phone = forms.CharField(initial=student.parents_phone)
     class Meta:
         model = Student
 
@@ -92,6 +85,18 @@ class ChangeForm(forms.ModelForm):
             'religion',
             'parents_phone',
         ]
+        labels = {
+            'religion':'مذهب',
+            "username": "شماره دانشجویی",
+            'name':'نام',
+            'father_name':'نام پدر',
+            'melli_code': 'کد ملی',
+            'last_name':'نام خانوادگی',
+            'phone':'تلفن همراه دانشجو',
+            'student_live':'محل سکونت',
+            'parents_phone':'تلفن همراه والد',
+            
+        }
         
 
         
