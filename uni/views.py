@@ -21,13 +21,13 @@ class HomeView(generic.TemplateView):
         # if Exter.objects.all().first().number == '1':
         def get(self, request):
             Student.objects.filter(username = Exter.objects.all()[0].exter_name).update(login_date = None)
-            Admin.objects.filter(Admin_username = Exter.objects.all()[0].exter_name).update(login_date = None)
+            Admin.objects.filter(username = Exter.objects.all()[0].exter_name).update(login_date = None)
             response = render(request,self.template_name,{})
             response.set_cookie('access',None)
             return response
         def post(self,request):
             Student.objects.filter(username = Exter.objects.all()[0].exter_name).update(login_date = None)
-            Admin.objects.filter(Admin_username = Exter.objects.all()[0].exter_name).update(login_date = None)
+            Admin.objects.filter(username = Exter.objects.all()[0].exter_name).update(login_date = None)
             response = render(request,self.template_name,{})
             response.set_cookie('access',None)
             return response
@@ -71,11 +71,26 @@ class Page2View(generic.ListView):
         Return the last five published questions (not including those set to be
         published in the future).
         """
-        s1 = Admin.objects.filter(Admin_username = Exter.objects.all()[0].exter_name).first()
+        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         return s1
+    
+    def get(self,request,admin_id):
+        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        cookie  = str(request.COOKIES.get('access'))
+
+        if CheckCookie(s1,cookie):
+            return render(request,self.template_name,{'admin':s1})
+        # else:
+            # return HttpResponseRedirect(reverse('uni:home'))
+    def post(self,request,admin_id):
+        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        if CheckCookie(s1,request.COOKIES.get('access')):
+            return render(request,self.template_name,{'admin':s1})
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
             
-    def ren(self,request):
-        return render(request ,'uni/page2.html',{})
+    # def ren(self,request):
+    #     return render(request ,'uni/page2.html',{})
 
 
 class AboutSView(generic.ListView):
@@ -132,11 +147,11 @@ class CreateView(generic.ListView):
         Return the last five published questions (not including those set to be
         published in the future).
         """
-        s1 = Admin.objects.filter(Admin_username = Exter.objects.all()[0].exter_name).first()
+        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         return s1
     
     def get(self,request ,admin_id):
-        s1 = Admin.objects.filter(Admin_username = Exter.objects.all()[0].exter_name).first()
+        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         form = sabtform()
         context = {'form':form,'admin':s1}
         return render(request ,self.template_name,context)
@@ -144,7 +159,7 @@ class CreateView(generic.ListView):
     def post(self,request,admin_id):
         global v
         # v = 0
-        s1 = Admin.objects.filter(Admin_username = Exter.objects.all()[0].exter_name).first()
+        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         form = sabtform(request.POST)
         if form.is_valid():
             if form.cleaned_data['College'] == 'فنی مهندسی'  and v != 2:
@@ -246,15 +261,15 @@ class LoginView(generic.ListView):
                 else:
                     users2 = Admin.objects.all()
                     for user in users2:
-                        if user.Admin_username == form.cleaned_data['username'] :
-                            if user.admin_password == form2.cleaned_data['password']:
+                        if user.username == form.cleaned_data['username'] :
+                            if user.password == form2.cleaned_data['password']:
                                 Exter.objects.all().delete()
                                 q = Exter(exter_name = form.cleaned_data['username'], number = '2')
                                 q.save()
-                                Admin.objects.filter(admi_username = form.cleaned_data['username']).update(login_date = dt.datetime.now())
+                                Admin.objects.filter(username = form.cleaned_data['username']).update(login_date = dt.datetime.now())
                                 response = HttpResponseRedirect(reverse('uni:page2',args = [user.id]))
                                 response.set_cookie('access',MakeCookie(user))
-                                return 
+                                return response
                             break
                     
                     error_message = "The username or password not currect"

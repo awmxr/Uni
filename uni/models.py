@@ -29,19 +29,20 @@ class Student(models.Model):
     
 
 class Admin(models.Model):
-    Admin_username = models.CharField(max_length=200)
-    admin_name = models.CharField(max_length=200)
-    admin_last_name = models.CharField(max_length=200)
-    admin_password = models.CharField(max_length=200)
-    pub_date = models.DateTimeField(null = True)
+    username = models.CharField(max_length=200)
+    name = models.CharField(max_length=200)
+    last_name = models.CharField(max_length=200)
+    password = models.CharField(max_length=200)
+    public_date = models.DateTimeField(null = True)
     login_date = models.DateTimeField(null = True)
+    birthday = models.DateTimeField(null = True)
 
     def __str__(self):
-        return self.admin_name +' ' +  self.admin_last_name
+        return self.name +' ' +  self.last_name
     
-    def was_published_recently(self):
-        now = timezone.now()
-        return now - datetime.timedelta(days=1) <= self.pub_date <= now
+    # def was_published_recently(self):
+    #     now = timezone.now()
+    #     return now - datetime.timedelta(days=1) <= self.pub_date <= now
 
 class Exter(models.Model):
     exter_name = models.CharField(max_length=200)
