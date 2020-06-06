@@ -97,6 +97,10 @@ class ChangeForm(forms.ModelForm):
             'parents_phone':'تلفن همراه والد',
             
         }
+class ChangePass(forms.Form):
+    pass1 = forms.CharField(widget = forms.PasswordInput,label = 'پسوورد قدیمی')
+    pass2 = forms.CharField(widget = forms.PasswordInput,label = 'پسوورد جدید')
+    pass3 = forms.CharField(widget = forms.PasswordInput,label = ' تکرار پسوورد جدید')
         
 
         

@@ -17,4 +17,14 @@ def CheckCookie(s1,cooke):
         # errorr = 'اجازه دسترسی ندارید'
         return False
 
+
+
+# s1 = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+#         cookie  = str(request.COOKIES.get('access'))
+
+#         if CheckCookie(s1,cookie):
+#             
+#         else:
+#             return HttpResponseRedirect(reverse('uni:home'))
+
     
