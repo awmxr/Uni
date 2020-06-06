@@ -22,9 +22,9 @@ class Student(models.Model):
     parents_phone = models.CharField(max_length=200)
     religion = models.CharField(max_length=200 )
     public_date = models.DateTimeField(null = True)
-    login_date = models.DateTimeField(null = True)
-    birthday = models.DateField(blank = True , null = True)
-    login_times = models.CharField(max_length = 10000)
+    login_date = models.DateTimeField(null = True) 
+    birthday = models.DateField(blank = True , null = True) 
+    login_times = models.CharField(max_length = 10000) 
     def __str__(self):
         return self.name +' ' +  self.last_name
     
@@ -36,8 +36,8 @@ class Admin(models.Model):
     password = models.CharField(max_length=200)
     public_date = models.DateTimeField(null = True)
     login_date = models.DateTimeField(null = True)
-    birthday = models.DateTimeField(null = True)
-    login_times = models.CharField(max_length = 10000)
+    birthday = models.DateTimeField(null = True) 
+    login_times = models.CharField(max_length = 10000) 
 
     def __str__(self):
         return self.name +' ' +  self.last_name
