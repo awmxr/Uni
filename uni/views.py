@@ -11,7 +11,8 @@ from . import choices
 from django import forms
 import datetime as dt
 from .cookie import CheckCookie,MakeCookie
-
+from django.contrib import messages
+gb = 0
 
 
 class HomeView(generic.TemplateView):
@@ -20,6 +21,11 @@ class HomeView(generic.TemplateView):
     if Exter.objects.all() :
         # if Exter.objects.all().first().number == '1':
         def get(self, request):
+            global gb
+            if gb == 1:
+                messages.success(request, '.پسوورد با موفقیت تغییر کرد لطفا دوباره وارد شوید')
+                gb = 0
+
             Student.objects.filter(username = Exter.objects.all()[0].exter_name).update(login_date = None)
             Admin.objects.filter(username = Exter.objects.all()[0].exter_name).update(login_date = None)
             response = render(request,self.template_name,{})
@@ -75,6 +81,8 @@ class Page2View(generic.ListView):
         return s1
     
     def get(self,request,admin_id):
+        
+        # messages.success(request, 'Email sent successfully.')
         s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         cookie  = str(request.COOKIES.get('access'))
         d = CheckCookie(s1,cookie)
@@ -83,6 +91,7 @@ class Page2View(generic.ListView):
         else:
             return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,admin_id):
+        # messages.success(request, 'Email sent successfully.')
         s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         cookie  = str(request.COOKIES.get('access'))
         d = CheckCookie(s1,cookie)
@@ -342,6 +351,8 @@ class ChangePassView(generic.ListView):
                 if oracle10.hash(form.cleaned_data['pass1'],user = s1.username) == s1.password:
                     if form.cleaned_data['pass2'] == form.cleaned_data['pass3']:
                         Student.objects.filter(username = Exter.objects.all()[0].exter_name).update(password = oracle10.hash(form.cleaned_data['pass2'],user=s1.username))
+                        global gb
+                        gb = 1
                         return HttpResponseRedirect(reverse('uni:home'))
                     else:
                         error_message = 'تکرار پسوورد جدید همخوانی ندارد.'
