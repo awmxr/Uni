@@ -24,6 +24,7 @@ class Student(models.Model):
     public_date = models.DateTimeField(null = True)
     login_date = models.DateTimeField(null = True)
     birthday = models.DateField(blank = True , null = True)
+    login_times = models.CharField(max_length = 10000)
     def __str__(self):
         return self.name +' ' +  self.last_name
     
@@ -36,13 +37,12 @@ class Admin(models.Model):
     public_date = models.DateTimeField(null = True)
     login_date = models.DateTimeField(null = True)
     birthday = models.DateTimeField(null = True)
+    login_times = models.CharField(max_length = 10000)
 
     def __str__(self):
         return self.name +' ' +  self.last_name
     
-    # def was_published_recently(self):
-    #     now = timezone.now()
-    #     return now - datetime.timedelta(days=1) <= self.pub_date <= now
+    
 
 class Exter(models.Model):
     exter_name = models.CharField(max_length=200)

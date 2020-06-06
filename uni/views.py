@@ -50,8 +50,8 @@ class PageView(generic.ListView):
 
         if CheckCookie(s1,cookie):
             return render(request,self.template_name,{'student':s1})
-        # else:
-            # return HttpResponseRedirect(reverse('uni:home'))
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,student_id):
         s1 = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         if CheckCookie(s1,request.COOKIES.get('access')):
@@ -77,20 +77,19 @@ class Page2View(generic.ListView):
     def get(self,request,admin_id):
         s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         cookie  = str(request.COOKIES.get('access'))
-
-        if CheckCookie(s1,cookie):
-            return render(request,self.template_name,{'admin':s1})
-        # else:
-            # return HttpResponseRedirect(reverse('uni:home'))
-    def post(self,request,admin_id):
-        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        if CheckCookie(s1,request.COOKIES.get('access')):
+        d = CheckCookie(s1,cookie)
+        if d:
             return render(request,self.template_name,{'admin':s1})
         else:
             return HttpResponseRedirect(reverse('uni:home'))
-            
-    # def ren(self,request):
-    #     return render(request ,'uni/page2.html',{})
+    def post(self,request,admin_id):
+        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        cookie  = str(request.COOKIES.get('access'))
+        d = CheckCookie(s1,cookie)
+        if d:
+            return render(request,self.template_name,{'admin':s1})
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
 
 
 class AboutSView(generic.ListView):
@@ -103,6 +102,16 @@ class AboutSView(generic.ListView):
         """
         s1 = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         return s1
+    def get(self,request,student_id):
+        s1 = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        cookie  = str(request.COOKIES.get('access'))
+        if CheckCookie(s1,cookie):
+            context = {'student':s1}
+            return render(request,self.template_name,context)
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
+
+    
 class ChangeView(generic.ListView):
     context_object_name = 'student'
     template_name = 'uni/change.html'
@@ -115,13 +124,20 @@ class ChangeView(generic.ListView):
         return s1
     def get(self,request,student_id):
         s1 = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        form = ChangeForm(instance=s1)
-        form.student = s1
-        context = {'form':form,'student':s1}
-        return render(request,self.template_name,context)
+        cookie  = str(request.COOKIES.get('access'))
+        if CheckCookie(s1,cookie):
+            s1 = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+            form = ChangeForm(instance=s1)
+            form.student = s1
+            context = {'form':form,'student':s1}
+            return render(request,self.template_name,context)
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,student_id):
         s1 = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        form = ChangeForm(request.POST,instance=s1)
+        cookie  = str(request.COOKIES.get('access'))
+        if CheckCookie(s1,cookie):
+            form = ChangeForm(request.POST,instance=s1)
         if form.is_valid():
             form.save()
             # form.student = s1
@@ -133,6 +149,8 @@ class ChangeView(generic.ListView):
             error_message = f'لطفا فرم را کامل پر کنید'
             context = {'form':form,'student':s1,'error_message':error_message}
             return render(request,self.template_name,context)
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
             
 
 
@@ -152,65 +170,76 @@ class CreateView(generic.ListView):
     
     def get(self,request ,admin_id):
         s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        form = sabtform()
-        context = {'form':form,'admin':s1}
-        return render(request ,self.template_name,context)
+        cookie  = str(request.COOKIES.get('access'))
+        if CheckCookie(s1,cookie):
+            form = sabtform()
+            context = {'form':form,'admin':s1}
+            return render(request ,self.template_name,context)
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
+        
     
     def post(self,request,admin_id):
         global v
         # v = 0
         s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        cookie  = str(request.COOKIES.get('access'))
         form = sabtform(request.POST)
-        if form.is_valid():
-            if form.cleaned_data['College'] == 'فنی مهندسی'  and v != 2:
-                v = 2
-                form.fields['field'].widget = forms.Select(choices= choices.field1_choices)
-                context = {'form':form,'admin':s1,}
-                return render(request ,self.template_name,context)
-            elif form.cleaned_data['College'] == 'علوم پایه'  and v != 3:
-                v = 3
-                form.fields['field'].widget = forms.Select(choices= choices.field2_choices)
-                context = {'form':form,'admin':s1,}
-                return render(request ,self.template_name,context)
-            elif form.cleaned_data['College'] == 'علوم اقتصادی و اداری' and v != 4:
-                v = 4
-                form.fields['field'].widget = forms.Select(choices= choices.fileld3_choices)
-                context = {'form':form,'admin':s1,}
-                return render(request ,self.template_name,context)
-            elif form.cleaned_data['College'] == 'علوم سیاسی'  and v != 5:
-                v = 5
-                form.fields['field'].widget = forms.Select(choices= choices.fileld4_choices)
-                context = {'form':form,'admin':s1,}
-                return render(request ,self.template_name,context)
-            elif form.cleaned_data['College'] == 'علوم دریایی'  and v != 6:
-                v = 6
-                form.fields['field'].widget = forms.Select(choices= choices.fileld5_choices)
-                context = {'form':form,'admin':s1,}
-                return render(request ,self.template_name,context)
-            y = oracle10.hash(form.cleaned_data['password'],user = form.cleaned_data['username'])
-            z = form.cleaned_data['username']
-            v = 0
-            for key in form.fields:
-                if form.cleaned_data[key] == '':
-                    # v = 0
-                    error_message = 'لطفا فرم را کامل پر کنید'
-                    context = {'form':form,'admin':s1,'error_message':error_message}
+        if CheckCookie(s1,cookie):
+            if form.is_valid():
+                if form.cleaned_data['College'] == 'فنی مهندسی'  and v != 2:
+                    v = 2
+                    form.fields['field'].widget = forms.Select(choices= choices.field1_choices)
+                    context = {'form':form,'admin':s1,}
                     return render(request ,self.template_name,context)
-            v = 1
-            date1 = request.POST.get('date')
-            form.save()
-            Student.objects.filter(username = z).update(birthday = date1)
-            Student.objects.filter(username = z).update(public_date = dt.datetime.now())
-            # v = 0 
-            x = Student.objects.filter(username = z).update(password = y)
-            form = sabtform()
-            success = 'دانشجو با موفقیت ثبت شد'
-            context = {'form':form,'admin':s1}
-            return HttpResponseRedirect(reverse('uni:page2',args = [s1.id]))
-        if form.is_valid() == False:
-            error_message = f'لطفا فرم را کامل پر کنید'
-            context = {'form':form,'admin':s1,'error_message':error_message}
-            return render(request ,self.template_name,context)
+                elif form.cleaned_data['College'] == 'علوم پایه'  and v != 3:
+                    v = 3
+                    form.fields['field'].widget = forms.Select(choices= choices.field2_choices)
+                    context = {'form':form,'admin':s1,}
+                    return render(request ,self.template_name,context)
+                elif form.cleaned_data['College'] == 'علوم اقتصادی و اداری' and v != 4:
+                    v = 4
+                    form.fields['field'].widget = forms.Select(choices= choices.fileld3_choices)
+                    context = {'form':form,'admin':s1,}
+                    return render(request ,self.template_name,context)
+                elif form.cleaned_data['College'] == 'علوم سیاسی'  and v != 5:
+                    v = 5
+                    form.fields['field'].widget = forms.Select(choices= choices.fileld4_choices)
+                    context = {'form':form,'admin':s1,}
+                    return render(request ,self.template_name,context)
+                elif form.cleaned_data['College'] == 'علوم دریایی'  and v != 6:
+                    v = 6
+                    form.fields['field'].widget = forms.Select(choices= choices.fileld5_choices)
+                    context = {'form':form,'admin':s1,}
+                    return render(request ,self.template_name,context)
+                y = oracle10.hash(form.cleaned_data['password'],user = form.cleaned_data['username'])
+                z = form.cleaned_data['username']
+                v = 0
+                for key in form.fields:
+                    if form.cleaned_data[key] == '':
+                        # v = 0
+                        error_message = 'لطفا فرم را کامل پر کنید'
+                        context = {'form':form,'admin':s1,'error_message':error_message}
+                        return render(request ,self.template_name,context)
+                v = 1
+                date1 = request.POST.get('date')
+                form.save()
+                Student.objects.filter(username = z).update(birthday = date1)
+                Student.objects.filter(username = z).update(login_times = '0')
+                Student.objects.filter(username = z).update(public_date = dt.datetime.now())
+                # v = 0 
+                x = Student.objects.filter(username = z).update(password = y)
+                form = sabtform()
+                success = 'دانشجو با موفقیت ثبت شد'
+                context = {'form':form,'admin':s1}
+                return HttpResponseRedirect(reverse('uni:page2',args = [s1.id]))
+            if form.is_valid() == False:
+                error_message = f'لطفا فرم را کامل پر کنید'
+                context = {'form':form,'admin':s1,'error_message':error_message}
+                return render(request ,self.template_name,context)
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
+        
         
 
         
@@ -222,13 +251,18 @@ class LoginView(generic.ListView):
     template_name = 'uni/login.html'
 
     def get(self , request):
+        Student.objects.filter(username = Exter.objects.all()[0].exter_name).update(login_date = None)
+        Admin.objects.filter(username = Exter.objects.all()[0].exter_name).update(login_date = None)
         form = Loginform()
         form2 = Loginform2()
         context = {'form' : form , 'form2' : form2 }
-        return render(request ,'uni/login.html',context)
+        response = render(request,self.template_name,context)
+        response.set_cookie('access',None)
+        return response
         
     def post(self,request):
-
+        Student.objects.filter(username = Exter.objects.all()[0].exter_name).update(login_date = None)
+        Admin.objects.filter(username = Exter.objects.all()[0].exter_name).update(login_date = None)
         form = Loginform(request.POST)
         form2 = Loginform2(request.POST)
         
@@ -247,12 +281,14 @@ class LoginView(generic.ListView):
                     for user in users:
                         if user.username == form.cleaned_data['username'] :
                             if user.password == oracle10.hash(form2.cleaned_data['password'], user = user.username):
+                                Student.objects.filter(username = form.cleaned_data['username']).update(login_date = dt.datetime.now())
+                                Student.objects.filter(username = form.cleaned_data['username']).update(login_times = str(int(user.login_times)+ 1))
+                                h = Student.objects.filter(username = form.cleaned_data['username']).first()
                                 Exter.objects.all().delete()
                                 q = Exter(exter_name = form.cleaned_data['username'], number = '1') 
                                 q.save()
-                                Student.objects.filter(username = form.cleaned_data['username']).update(login_date = dt.datetime.now())
                                 response = HttpResponseRedirect(reverse('uni:page',args = [user.id]))
-                                response.set_cookie('access',MakeCookie(user))
+                                response.set_cookie('access',MakeCookie(h))
                                 return response
                             break
                     error_message = "The username or password not currect"
@@ -263,12 +299,13 @@ class LoginView(generic.ListView):
                     for user in users2:
                         if user.username == form.cleaned_data['username'] :
                             if user.password == form2.cleaned_data['password']:
+                                Admin.objects.filter(username = form.cleaned_data['username']).update(login_date = dt.datetime.now())
+                                h = Admin.objects.filter(username = form.cleaned_data['username']).first()
                                 Exter.objects.all().delete()
                                 q = Exter(exter_name = form.cleaned_data['username'], number = '2')
                                 q.save()
-                                Admin.objects.filter(username = form.cleaned_data['username']).update(login_date = dt.datetime.now())
                                 response = HttpResponseRedirect(reverse('uni:page2',args = [user.id]))
-                                response.set_cookie('access',MakeCookie(user))
+                                response.set_cookie('access',MakeCookie(h))
                                 return response
                             break
                     
