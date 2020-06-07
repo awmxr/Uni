@@ -13,5 +13,6 @@ urlpatterns = [
     path('admin/<int:admin_id>/page2/create',views.CreateView.as_view(),name = 'create'),
     path('student/<int:student_id>/page/change',views.ChangeView.as_view(),name = 'change'),
     path('student/<int:student_id>/page/changepass',views.ChangePassView.as_view(),name = 'changepass'),
+    path('admin/<int:admin_id>/page2/changepass2',views.ChangePassView2.as_view(),name = 'changepass2'),
     
 ]

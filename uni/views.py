@@ -11,7 +11,8 @@ from . import choices
 from django import forms
 import datetime as dt
 from .cookie import CheckCookie,MakeCookie
-
+from django.contrib import messages
+gb = 0
 
 
 class HomeView(generic.TemplateView):
@@ -20,6 +21,11 @@ class HomeView(generic.TemplateView):
     if Exter.objects.all() :
         # if Exter.objects.all().first().number == '1':
         def get(self, request):
+            global gb
+            if gb == 1:
+                messages.success(request, '.پسوورد با موفقیت تغییر کرد لطفا دوباره وارد شوید')
+                gb = 0
+
             Student.objects.filter(username = Exter.objects.all()[0].exter_name).update(login_date = None)
             Admin.objects.filter(username = Exter.objects.all()[0].exter_name).update(login_date = None)
             response = render(request,self.template_name,{})
@@ -75,6 +81,8 @@ class Page2View(generic.ListView):
         return s1
     
     def get(self,request,admin_id):
+        
+        # messages.success(request, 'Email sent successfully.')
         s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         cookie  = str(request.COOKIES.get('access'))
         d = CheckCookie(s1,cookie)
@@ -83,6 +91,7 @@ class Page2View(generic.ListView):
         else:
             return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,admin_id):
+        # messages.success(request, 'Email sent successfully.')
         s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         cookie  = str(request.COOKIES.get('access'))
         d = CheckCookie(s1,cookie)
@@ -267,51 +276,38 @@ class LoginView(generic.ListView):
         form2 = Loginform2(request.POST)
         
         if (form.is_valid() and form2.is_valid()):
-
-            
-            try:
-                select_choice = request.POST['tip']
-            except (KeyError):
-                error_message = 'You didnt select a choice.'
-                context = {'form' : form , 'form2' : form2 ,'error_message':error_message }
-                return render(request,self.template_name,context)
-            else:
-                if select_choice == "radio1":
-                    users = Student.objects.all()
-                    for user in users:
-                        if user.username == form.cleaned_data['username'] :
-                            if user.password == oracle10.hash(form2.cleaned_data['password'], user = user.username):
-                                Student.objects.filter(username = form.cleaned_data['username']).update(login_date = dt.datetime.now())
-                                Student.objects.filter(username = form.cleaned_data['username']).update(login_times = str(int(user.login_times)+ 1))
-                                h = Student.objects.filter(username = form.cleaned_data['username']).first()
-                                Exter.objects.all().delete()
-                                q = Exter(exter_name = form.cleaned_data['username'], number = '1') 
-                                q.save()
-                                response = HttpResponseRedirect(reverse('uni:page',args = [user.id]))
-                                response.set_cookie('access',MakeCookie(h))
-                                return response
-                            break
-                    error_message = "The username or password not currect"
-                    context = {'form' : form , 'form2' : form2 ,'error_message':error_message }
-                    return render(request ,'uni/login.html',context)
-                else:
-                    users2 = Admin.objects.all()
-                    for user in users2:
-                        if user.username == form.cleaned_data['username'] :
-                            if user.password == form2.cleaned_data['password']:
-                                Admin.objects.filter(username = form.cleaned_data['username']).update(login_date = dt.datetime.now())
-                                h = Admin.objects.filter(username = form.cleaned_data['username']).first()
-                                Exter.objects.all().delete()
-                                q = Exter(exter_name = form.cleaned_data['username'], number = '2')
-                                q.save()
-                                response = HttpResponseRedirect(reverse('uni:page2',args = [user.id]))
-                                response.set_cookie('access',MakeCookie(h))
-                                return response
-                            break
+            users = Student.objects.all()
+            for user in users:
+                if user.username == form.cleaned_data['username'] :
+                    if user.password == oracle10.hash(form2.cleaned_data['password'], user = user.username):
+                        Student.objects.filter(username = form.cleaned_data['username']).update(login_date = dt.datetime.now())
+                        Student.objects.filter(username = form.cleaned_data['username']).update(login_times = str(int(user.login_times)+ 1))
+                        h = Student.objects.filter(username = form.cleaned_data['username']).first()
+                        Exter.objects.all().delete()
+                        q = Exter(exter_name = form.cleaned_data['username'], number = '1') 
+                        q.save()
+                        response = HttpResponseRedirect(reverse('uni:page',args = [user.id]))
+                        response.set_cookie('access',MakeCookie(h))
+                        return response
+                    break
+        
+            users2 = Admin.objects.all()
+            for user in users2:
+                if user.username == form.cleaned_data['username'] :
+                    if user.password == oracle10.hash(form2.cleaned_data['password'], user = user.username):
+                        Admin.objects.filter(username = form.cleaned_data['username']).update(login_date = dt.datetime.now())
+                        h = Admin.objects.filter(username = form.cleaned_data['username']).first()
+                        Exter.objects.all().delete()
+                        q = Exter(exter_name = form.cleaned_data['username'], number = '2')
+                        q.save()
+                        response = HttpResponseRedirect(reverse('uni:page2',args = [user.id]))
+                        response.set_cookie('access',MakeCookie(h))
+                        return response
+                    break
                     
-                    error_message = "The username or password not currect"
-                    context = {'form' : form , 'form2' : form2 ,'error_message':error_message }
-                    return render(request ,'uni/login.html',context)
+            error_message = "The username or password not currect"
+            context = {'form' : form , 'form2' : form2 ,'error_message':error_message }
+            return render(request ,'uni/login.html',context)
 
 class ChangePassView(generic.ListView):
     template_name = 'uni/changepass.html'
@@ -342,6 +338,8 @@ class ChangePassView(generic.ListView):
                 if oracle10.hash(form.cleaned_data['pass1'],user = s1.username) == s1.password:
                     if form.cleaned_data['pass2'] == form.cleaned_data['pass3']:
                         Student.objects.filter(username = Exter.objects.all()[0].exter_name).update(password = oracle10.hash(form.cleaned_data['pass2'],user=s1.username))
+                        global gb
+                        gb = 1
                         return HttpResponseRedirect(reverse('uni:home'))
                     else:
                         error_message = 'تکرار پسوورد جدید همخوانی ندارد.'
@@ -354,6 +352,54 @@ class ChangePassView(generic.ListView):
             else:
                 error_message = 'لطفا فرم را کامل پر کنید.'
                 context = {'student':s1,'form':form,'student':s1,'error_message':error_message}
+                return render(request,self.template_name,context)   
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
+
+
+class ChangePassView2(generic.ListView):
+    template_name = 'uni/changepass2.html'
+    context_object_name = 'admin'
+    def get_queryset(self):
+        """
+        Return the last five published questions (not including those set to be
+        published in the future).
+        """
+        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        return s1
+    def get(self,request,admin_id):
+        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        cookie  = str(request.COOKIES.get('access'))
+        if CheckCookie(s1,cookie):
+            form = ChangePass()
+            context = {'admin':s1,'form':form,}
+            return render(request,self.template_name,context)
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
+    def post(self,request,admin_id):
+        
+        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        cookie  = str(request.COOKIES.get('access'))
+        if CheckCookie(s1,cookie):
+            form = ChangePass(request.POST)
+            if form.is_valid():
+                if oracle10.hash(form.cleaned_data['pass1'],user = s1.username) == s1.password:
+                    if form.cleaned_data['pass2'] == form.cleaned_data['pass3']:
+                        Admin.objects.filter(username = Exter.objects.all()[0].exter_name).update(password = oracle10.hash(form.cleaned_data['pass2'],user=s1.username))
+                        global gb
+                        gb = 1
+                        return HttpResponseRedirect(reverse('uni:home'))
+                    else:
+                        error_message = 'تکرار پسوورد جدید همخوانی ندارد.'
+                        context = {'form':form,'admin':s1,'error_message':error_message}
+                        return render(request,self.template_name,context)
+                else:
+                    error_message = f'پسوورد قدیمی نادرست است. '
+                    context = {'form':form,'admin':s1,'error_message':error_message}
+                    return render(request,self.template_name,context)
+            else:
+                error_message = 'لطفا فرم را کامل پر کنید.'
+                context = {'form':form,'admin':s1,'error_message':error_message}
                 return render(request,self.template_name,context)   
         else:
             return HttpResponseRedirect(reverse('uni:home'))

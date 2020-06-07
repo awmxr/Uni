@@ -7,7 +7,7 @@
             <li><a href="{% url 'uni:page2' admin.id %}">خانه</a></li>
             <li><a href="#contact">مخاطبان</a></li>
             <li><a href="{% url 'uni:create' admin.id %}">دانشجوی جدید</a></li>
-            <li><a href="#about">درباره</a></li>
+            <li><a href="{% url 'uni:changepass2' admin.id %}">تغیر رمز عبور</a></li>
             <a href="{% url 'uni:home' %}"><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
             <input  style="text-align-last: right;" type="search" placeholder="جست و جو " aria-label="Search" name="search" >
         </ul>
@@ -18,6 +18,15 @@
             <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
             <h2 style="text-align: right;" >{{ admin.name  }} {{  admin.last_name  }}</h2> 
         </div>
+        
+        <!-- {% if messages %}
+        <ul style="color: aliceblue ;background-color: rgb(8, 148, 78);" class="messages">
+            {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %} -->
     </body>
+
 </html>
 
