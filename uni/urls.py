@@ -14,6 +14,9 @@ urlpatterns = [
     path('student/<int:student_id>/page/change',views.ChangeView.as_view(),name = 'change'),
     path('student/<int:student_id>/page/changepass',views.ChangePassView.as_view(),name = 'changepass'),
     path('admin/<int:admin_id>/page2/changepass2',views.ChangePassView2.as_view(),name = 'changepass2'),
+    path('admin/<int:admin_id>/page2/students',views.StudentsView.as_view(),name = 'students'),
+    path('admin/<int:admin_id>/page2/students/<int:student_id>',views.Student1View.as_view(),name = 'student1'),
+    path('admin/<int:admin_id>/page2/students/<int:student_id>/about2',views.AboutS2View.as_view(),name = 'aboutS2'),
     
     
 ]
