@@ -84,19 +84,23 @@ class Page2View(generic.ListView):
         
         # messages.success(request, 'Email sent successfully.')
         s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        Admins = Admin.objects.all()
+        Students = Student.objects.all()
         cookie  = str(request.COOKIES.get('access'))
         d = CheckCookie(s1,cookie)
         if d:
-            return render(request,self.template_name,{'admin':s1})
+            return render(request,self.template_name,{'admin':s1,'Admins':Admins,'Students':Students})
         else:
             return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,admin_id):
         # messages.success(request, 'Email sent successfully.')
         s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        Admins = Admin.objects.all()
+        Students = Student.objects.all()
         cookie  = str(request.COOKIES.get('access'))
         d = CheckCookie(s1,cookie)
         if d:
-            return render(request,self.template_name,{'admin':s1})
+            return render(request,self.template_name,{'admin':s1,'Admins':Admins,'Students':Students})
         else:
             return HttpResponseRedirect(reverse('uni:home'))
 
@@ -403,6 +407,34 @@ class ChangePassView2(generic.ListView):
                 return render(request,self.template_name,context)   
         else:
             return HttpResponseRedirect(reverse('uni:home'))
+
+class StudentsView(generic.ListView):
+    template_name = 'uni/students.html'
+    context_object_name = 'admin'
+    def get_queryset(self):
+        """
+        Return the last five published questions (not including those set to be
+        published in the future).
+        """
+        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        return s1
+    def get(self,request,admin_id):
+        Students = Student.objects.all()
+        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        cookie  = str(request.COOKIES.get('access'))
+
+        if CheckCookie(s1,cookie):
+            context = {'admin':s1,'Students':Students}
+            return render(request,self.template_name,context)
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
+        
+        
+        
+
+
+
+
         
 
 
