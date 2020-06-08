@@ -4,7 +4,7 @@ from .models import Student,Admin,Exter
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
-from .forms import Loginform,Loginform2,sabtform,ChangeForm,ChangePass
+from .forms import Loginform,Loginform2,sabtform,ChangeForm,ChangePass,Change2Form
 from django.contrib import messages
 from passlib.hash import oracle10
 from . import choices
@@ -460,8 +460,21 @@ class StudentsView(generic.ListView):
         if CheckCookie(s1,cookie):
             c = request.POST.get('search')
             c2 = c.split(' ')
+            last = ''
+            for i in range(len(c2)-1):
+                if i == len(c2) - 2:
+                    last = last + c2[i+1]
+                else:
+                    last = last + c2[i+1] + ' '
+            
+                
+            # if len(c2) == 2:
+            s2 = Student.objects.filter(name = c2[0] , last_name = last).first()
+            # if len(c2) == 3:
+            #     s2 = Student.objects.filter(name = c2[0] , last_name = c2[1] +' '+ c2[2]).first()
 
-            s2 = Student.objects.filter(name = c2[0]).first()
+            if not s2:
+                s2 = Student.objects.filter(username = c2[0]).first()
             context = {'admin':s1,'Students':Students}
             response = HttpResponseRedirect(reverse('uni:student1',args = [s1.id,s2.id]))
             return response
@@ -488,6 +501,54 @@ class Student1View(generic.ListView):
             return render(request,self.template_name,context)
         else:
             return HttpResponseRedirect(reverse('uni:home'))
+
+class Change2View(generic.ListView):
+    template_name = 'uni/change2.html'
+    context_object_name = 'admin'
+    def get_queryset(self):
+        """
+        Return the last five published questions (not including those set to be
+        published in the future).
+        """
+        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        return s1
+    def get(self,request,admin_id,student_id):
+        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        cookie  = str(request.COOKIES.get('access'))
+        if CheckCookie(s1,cookie):
+            s1 = Student.objects.get(pk = student_id)
+            form = Change2Form(instance=s1)
+            form.student = s1
+            s2 = Admin.objects.get(pk = admin_id)
+            context = {'form':form,'student':s1,'admin':s2}
+            
+            return render(request,self.template_name,context)
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
+    def post(self,request,admin_id,student_id):
+        s2 = Admin.objects.get(pk = admin_id)
+        s1 = Student.objects.get(pk = student_id)
+        cookie  = str(request.COOKIES.get('access'))
+        if CheckCookie(s2,cookie):
+            form = Change2Form(request.POST,instance=s1)
+        if form.is_valid():
+            form.save()
+            # form.student = s1
+            del form
+            # form = ChangeForm(request.POST,instance=s1)
+            return HttpResponseRedirect(reverse('uni:student1',args = [s2.id,s1.id]))
+            # form = ChangeForm(request.POST,instance=s1)
+        elif not form.is_valid():
+            s1 = Student.objects.get(pk = student_id)
+            s2 = Admin.objects.get(pk = admin_id)
+            error_message = f'لطفا فرم را کامل پر کنید'
+            context = {'form':form,'student':s1,'error_message':error_message,'admin':s2}
+            return render(request,self.template_name,context)
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
+    
+
+
         
         
         
