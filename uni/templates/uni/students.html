@@ -55,7 +55,11 @@
 
             </form>
             {% for i in Students %}
+<<<<<<< HEAD
                     <a href="{% url 'uni:student1' admin.id i.id %}"> <h4>{{ i }}</h4></a> <br>
+=======
+                    <a href=""> <h4>{{ i }}</h4></a> <br>
+>>>>>>> 4fc9f152d6bd76087f3f657d131d9ae44b48d26d
                     {% endfor %}
               {% if error_message %}<p style="color: red;">{{ error_message }}</p>{% endif %}
               
