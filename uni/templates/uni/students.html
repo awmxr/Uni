@@ -45,23 +45,17 @@
             -->
             <br><br>
              <form method="POST">
-                <select style="width: 100%; height: 50px;" placeholder="جست و جو " class="chosen">
+                <select style="width: 100%; height: 50px;" id="search" class="chosen" name = "search" onchange='submit();'>
                     <option >جست و جو</option>
                     {% for i in Students %}
-                    <option style="color: aliceblue;">{{ i }}</option>
+                    <option  style="color: aliceblue;">{{ i }}</option>
                     {% endfor %}
                 </select>
-
-
             </form>
-            {% for i in Students %}
-<<<<<<< HEAD
+                {% for i in Students %}
                     <a href="{% url 'uni:student1' admin.id i.id %}"> <h4>{{ i }}</h4></a> <br>
-=======
-                    <a href=""> <h4>{{ i }}</h4></a> <br>
->>>>>>> 4fc9f152d6bd76087f3f657d131d9ae44b48d26d
                     {% endfor %}
-              {% if error_message %}<p style="color: red;">{{ error_message }}</p>{% endif %}
+                {% if error_message %}<p style="color: red;">{{ error_message }}</p>{% endif %}
               
               
         
@@ -87,6 +81,7 @@
     <script type="text/javascript">
     $(".chosen").chosen();
     </script>
+    
 
 </html>
 

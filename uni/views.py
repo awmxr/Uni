@@ -451,6 +451,22 @@ class StudentsView(generic.ListView):
             return render(request,self.template_name,context)
         else:
             return HttpResponseRedirect(reverse('uni:home'))
+        
+    def post(self,request,admin_id):
+        Students = Student.objects.all()
+        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        cookie  = str(request.COOKIES.get('access'))
+        
+        if CheckCookie(s1,cookie):
+            c = request.POST.get('search')
+            c2 = c.split(' ')
+
+            s2 = Student.objects.filter(name = c2[0]).first()
+            context = {'admin':s1,'Students':Students}
+            response = HttpResponseRedirect(reverse('uni:student1',args = [s1.id,s2.id]))
+            return response
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
 
 class Student1View(generic.ListView):
     template_name = 'uni/student1.html'
