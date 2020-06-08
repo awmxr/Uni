@@ -26,6 +26,8 @@ class sabtform(forms.ModelForm):
             'melli_code',
             'enter_year',
             'uni',
+            'grade',
+            'course',
             'College',
             'field',
             'password',
@@ -33,6 +35,7 @@ class sabtform(forms.ModelForm):
             'student_live',
             'religion',
             'parents_phone',
+            
             # 'birthday'
         ]
         widgets = {
@@ -42,6 +45,8 @@ class sabtform(forms.ModelForm):
             'College': forms.Select(choices= choices.college_choices,attrs={'onchange': 'submit();'}),
             'religion' : forms.Select(choices= choices.religion_choices),
             'enter_year': forms.Select(choices= choices.enter_year_choices),
+            'grade': forms.Select(choices= choices.grade_choices),
+            'course': forms.Select(choices= choices.course_choices),
             'field': forms.Select(),
             # 'username':forms.TextInput(attrs = {'placeholder':'شماره دانشجویی'}),
             # 'name' : forms.TextInput(attrs = {'placeholder':'نام'}),
@@ -65,7 +70,9 @@ class sabtform(forms.ModelForm):
             'field':'رشته تحصیلی',
             'student_live':'محل سکونت',
             'parents_phone':'تلفن همراه والد',
-            'birthday':'تاریخ تولد'
+            'birthday':'تاریخ تولد',
+            'grade':'مقطع تحصیلی',
+            'course':'دوره آموزشی',
             
         }
 
