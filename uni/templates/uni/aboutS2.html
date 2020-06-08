@@ -25,7 +25,7 @@
   </div>
   <form id = "dem"class="modal-content animate" method="post">{% csrf_token %}
     <div class="imgcontainer">
-      <a href="{% url 'uni:page' student.id %}"><span class="close" title="Close Modal">&times;</span></a>
+      <a href="{% url 'uni:student1' admin.id  student.id %}"><span class="close" title="Close Modal">&times;</span></a>
       <br>
     </div>
     
@@ -47,12 +47,12 @@
       <!-- <label for="psw"><b>Password</b></label> -->
       <!-- <input type="password" placeholder="Enter Password" name="psw" required> -->
         
-     <a href="{% url 'uni:change' student.id %}"> <button style="background-color: #b30e0e; font-size: large;" type="button">ویرایش</button></a>
+     <a href="{% url 'uni:change2' admin.id student.id %}"> <button style="background-color: #b30e0e; font-size: large;" type="button">ویرایش</button></a>
     </div>
 
     <div class="container" style="background-color:#f1f1f1">
       <div style="text-align: left;">
-       <a href="{% url 'uni:page' student.id %}"> <button type="button" style="text-align: right;" class="cancelbtn">لغو</button></a>
+       <a href="{% url 'uni:student1' admin.id  student.id %}"> <button type="button" style="text-align: right;" class="cancelbtn">لغو</button></a>
       </div>
     </div>
 
