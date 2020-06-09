@@ -12,12 +12,11 @@ from django import forms
 import datetime as dt
 from .cookie import CheckCookie,MakeCookie
 from django.contrib import messages
-gb = 0
+gb = 0 #use for message: if gb == 1: message is exist
 
 
 class HomeView(generic.TemplateView):
     template_name = 'uni/home.html'
-    context_object_name = 'last_obgect'
     if Exter.objects.all() :
         # if Exter.objects.all().first().number == '1':
         def get(self, request):
@@ -40,7 +39,7 @@ class HomeView(generic.TemplateView):
         
         
 
-class PageView(generic.ListView):
+class PageView(generic.ListView):#student page
     context_object_name = 'student'
     template_name = 'uni/page.html'
     def get_queryset(self):
@@ -71,7 +70,7 @@ class PageView(generic.ListView):
     def ren(self,request):
         return render(request ,'uni/page.html',{})
 
-class Page2View(generic.ListView):
+class Page2View(generic.ListView):#admin page
     context_object_name = 'admin'
     template_name = 'uni/page2.html'
     def get_queryset(self):
@@ -107,7 +106,7 @@ class Page2View(generic.ListView):
             return HttpResponseRedirect(reverse('uni:home'))
 
 
-class AboutSView(generic.ListView):
+class AboutSView(generic.ListView):#student info page
     context_object_name = 'student'
     template_name = 'uni/aboutS.html'
     def get_queryset(self):
@@ -126,7 +125,7 @@ class AboutSView(generic.ListView):
         else:
             return HttpResponseRedirect(reverse('uni:home'))
 
-class AboutS2View(generic.ListView):
+class AboutS2View(generic.ListView):#student info page in admin
     context_object_name = 'admin'
     template_name = 'uni/aboutS2.html'
     def get_queryset(self):
@@ -148,7 +147,7 @@ class AboutS2View(generic.ListView):
             return HttpResponseRedirect(reverse('uni:home'))
 
     
-class ChangeView(generic.ListView):
+class ChangeView(generic.ListView):#change info by student
     context_object_name = 'student'
     template_name = 'uni/change.html'
     def get_queryset(self):
@@ -192,7 +191,7 @@ class ChangeView(generic.ListView):
 
 
 v = 0
-class CreateView(generic.ListView):
+class CreateView(generic.ListView):#create student by admin
     
     template_name = 'uni/create.html'
     context_object_name = 'admin'
@@ -281,7 +280,7 @@ class CreateView(generic.ListView):
         
         
     
-class LoginView(generic.ListView):
+class LoginView(generic.ListView):#login page
     
     model = Student
     template_name = 'uni/login.html'
@@ -336,7 +335,7 @@ class LoginView(generic.ListView):
             context = {'form' : form , 'form2' : form2 ,'error_message':error_message }
             return render(request ,'uni/login.html',context)
 
-class ChangePassView(generic.ListView):
+class ChangePassView(generic.ListView):#change password by student
     template_name = 'uni/changepass.html'
     context_object_name = 'student'
     def get_queryset(self):
@@ -384,7 +383,7 @@ class ChangePassView(generic.ListView):
             return HttpResponseRedirect(reverse('uni:home'))
 
 
-class ChangePassView2(generic.ListView):
+class ChangePassView2(generic.ListView):#change password by admin
     template_name = 'uni/changepass2.html'
     context_object_name = 'admin'
     def get_queryset(self):
@@ -431,7 +430,7 @@ class ChangePassView2(generic.ListView):
         else:
             return HttpResponseRedirect(reverse('uni:home'))
 
-class StudentsView(generic.ListView):
+class StudentsView(generic.ListView):#student list in admin
     template_name = 'uni/students.html'
     context_object_name = 'admin'
     def get_queryset(self):
@@ -481,7 +480,7 @@ class StudentsView(generic.ListView):
         else:
             return HttpResponseRedirect(reverse('uni:home'))
 
-class Student1View(generic.ListView):
+class Student1View(generic.ListView):#student profile in admin
     template_name = 'uni/student1.html'
     context_object_name = 'admin'
     def get_queryset(self):
@@ -506,7 +505,7 @@ class Student1View(generic.ListView):
         else:
             return HttpResponseRedirect(reverse('uni:home'))
 
-class Change2View(generic.ListView):
+class Change2View(generic.ListView):#change student's info by admin
     template_name = 'uni/change2.html'
     context_object_name = 'admin'
     def get_queryset(self):
@@ -553,7 +552,7 @@ class Change2View(generic.ListView):
 
 
 
-class ChangePassView3(generic.ListView):
+class ChangePassView3(generic.ListView):#change student's password by admin
     template_name = 'uni/changepass3.html'
     context_object_name = 'admin'
     def get_queryset(self):
@@ -602,7 +601,7 @@ class ChangePassView3(generic.ListView):
     
 
 
-class StudentsView2(generic.ListView):
+class StudentsView2(generic.ListView):#student list in student
     template_name = 'uni/students2.html'
     context_object_name = 'student'
     def get_queryset(self):
@@ -650,7 +649,7 @@ class StudentsView2(generic.ListView):
 
 
 
-class Student2View(generic.ListView):
+class Student2View(generic.ListView):#studnet profile in student
     template_name = 'uni/student2.html'
     context_object_name = 'student'
     def get_queryset(self):
