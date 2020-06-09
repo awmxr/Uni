@@ -27,17 +27,7 @@
             <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
             <h2 style="text-align: right;" >{{ admin.name  }} {{  admin.last_name  }}</h2> 
         </div>
-        <form method="POST">
-        <select style="width: 25%; height: 50px;" placeholder="جست و جو " class="chosen">
-            <option >جست و جو</option>
-            {% for i in Admins %}
-            <option style="color: aliceblue;">{{ i }}</option>
-            {% endfor %}
-            {% for i in Students %}
-            <option style="color: aliceblue;">{{ i }}</option>
-            {% endfor %}
-        </select>
-    </form>
+        
         
         <!-- {% if messages %}
         <ul style="color: aliceblue ;background-color: rgb(8, 148, 78);" class="messages">
