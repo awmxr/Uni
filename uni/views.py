@@ -48,20 +48,20 @@ class PageView(generic.ListView):
         Return the last five published questions (not including those set to be
         published in the future).
         """
-        s1 = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return s1
+        s = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        return s
     def get(self,request,student_id):
-        s1 = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        s = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         cookie  = str(request.COOKIES.get('access'))
 
-        if CheckCookie(s1,cookie):
-            return render(request,self.template_name,{'student':s1})
+        if CheckCookie(s,cookie):
+            return render(request,self.template_name,{'student':s})
         else:
             return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,student_id):
-        s1 = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        if CheckCookie(s1,request.COOKIES.get('access')):
-            return render(request,self.template_name,{'student':s1})
+        s = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        if CheckCookie(s,request.COOKIES.get('access')):
+            return render(request,self.template_name,{'student':s})
         else:
             return HttpResponseRedirect(reverse('uni:home'))
 
@@ -79,30 +79,30 @@ class Page2View(generic.ListView):
         Return the last five published questions (not including those set to be
         published in the future).
         """
-        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return s1
+        s = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        return s
     
     def get(self,request,admin_id):
         
         # messages.success(request, 'Email sent successfully.')
-        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        s = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         Admins = Admin.objects.all()
         Students = Student.objects.all()
         cookie  = str(request.COOKIES.get('access'))
-        d = CheckCookie(s1,cookie)
+        d = CheckCookie(s,cookie)
         if d:
-            return render(request,self.template_name,{'admin':s1,'Admins':Admins,'Students':Students})
+            return render(request,self.template_name,{'admin':s,'Admins':Admins,'Students':Students})
         else:
             return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,admin_id):
         # messages.success(request, 'Email sent successfully.')
-        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        s = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         Admins = Admin.objects.all()
         Students = Student.objects.all()
         cookie  = str(request.COOKIES.get('access'))
-        d = CheckCookie(s1,cookie)
+        d = CheckCookie(s,cookie)
         if d:
-            return render(request,self.template_name,{'admin':s1,'Admins':Admins,'Students':Students})
+            return render(request,self.template_name,{'admin':s,'Admins':Admins,'Students':Students})
         else:
             return HttpResponseRedirect(reverse('uni:home'))
 
@@ -115,13 +115,13 @@ class AboutSView(generic.ListView):
         Return the last five published questions (not including those set to be
         published in the future).
         """
-        s1 = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return s1
+        s = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        return s
     def get(self,request,student_id):
-        s1 = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        s = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         cookie  = str(request.COOKIES.get('access'))
-        if CheckCookie(s1,cookie):
-            context = {'student':s1}
+        if CheckCookie(s,cookie):
+            context = {'student':s}
             return render(request,self.template_name,context)
         else:
             return HttpResponseRedirect(reverse('uni:home'))
@@ -134,15 +134,15 @@ class AboutS2View(generic.ListView):
         Return the last five published questions (not including those set to be
         published in the future).
         """
-        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return s1
+        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        return a
     def get(self,request,admin_id,student_id):
         
-        s1 = Admin.objects.get(pk = admin_id)
-        s2 = Student.objects.get(pk = student_id)
+        a = Admin.objects.get(pk = admin_id)
+        s = Student.objects.get(pk = student_id)
         cookie  = str(request.COOKIES.get('access'))
-        if CheckCookie(s1,cookie):
-            context = {'student':s2,'admin':s1}
+        if CheckCookie(a,cookie):
+            context = {'student':s,'admin':a}
             return render(request,self.template_name,context)
         else:
             return HttpResponseRedirect(reverse('uni:home'))
@@ -156,34 +156,34 @@ class ChangeView(generic.ListView):
         Return the last five published questions (not including those set to be
         published in the future).
         """
-        s1 = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return s1
+        s = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        return s
     def get(self,request,student_id):
-        s1 = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        s = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         cookie  = str(request.COOKIES.get('access'))
-        if CheckCookie(s1,cookie):
-            s1 = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-            form = ChangeForm(instance=s1)
-            form.student = s1
-            context = {'form':form,'student':s1}
+        if CheckCookie(s,cookie):
+            s = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+            form = ChangeForm(instance=s)
+            form.student = s
+            context = {'form':form,'student':s}
             return render(request,self.template_name,context)
         else:
             return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,student_id):
-        s1 = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        s = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         cookie  = str(request.COOKIES.get('access'))
-        if CheckCookie(s1,cookie):
-            form = ChangeForm(request.POST,instance=s1)
+        if CheckCookie(s,cookie):
+            form = ChangeForm(request.POST,instance=s)
         if form.is_valid():
             form.save()
-            # form.student = s1
+            
             del form
-            # form = ChangeForm(request.POST,instance=s1)
-            return HttpResponseRedirect(reverse('uni:page',args = [s1.id]))
-            # form = ChangeForm(request.POST,instance=s1)
+            
+            return HttpResponseRedirect(reverse('uni:page',args = [s.id]))
+            
         elif not form.is_valid():
             error_message = f'لطفا فرم را کامل پر کنید'
-            context = {'form':form,'student':s1,'error_message':error_message}
+            context = {'form':form,'student':s,'error_message':error_message}
             return render(request,self.template_name,context)
         else:
             return HttpResponseRedirect(reverse('uni:home'))
@@ -201,15 +201,15 @@ class CreateView(generic.ListView):
         Return the last five published questions (not including those set to be
         published in the future).
         """
-        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return s1
+        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        return a
     
     def get(self,request ,admin_id):
-        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         cookie  = str(request.COOKIES.get('access'))
-        if CheckCookie(s1,cookie):
+        if CheckCookie(a,cookie):
             form = sabtform()
-            context = {'form':form,'admin':s1}
+            context = {'form':form,'admin':a}
             return render(request ,self.template_name,context)
         else:
             return HttpResponseRedirect(reverse('uni:home'))
@@ -218,35 +218,35 @@ class CreateView(generic.ListView):
     def post(self,request,admin_id):
         global v
         # v = 0
-        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         cookie  = str(request.COOKIES.get('access'))
         form = sabtform(request.POST)
-        if CheckCookie(s1,cookie):
+        if CheckCookie(a,cookie):
             if form.is_valid():
                 if form.cleaned_data['College'] == 'فنی مهندسی'  and v != 2:
                     v = 2
                     form.fields['field'].widget = forms.Select(choices= choices.field1_choices)
-                    context = {'form':form,'admin':s1,}
+                    context = {'form':form,'admin':a,}
                     return render(request ,self.template_name,context)
                 elif form.cleaned_data['College'] == 'علوم پایه'  and v != 3:
                     v = 3
                     form.fields['field'].widget = forms.Select(choices= choices.field2_choices)
-                    context = {'form':form,'admin':s1,}
+                    context = {'form':form,'admin':a,}
                     return render(request ,self.template_name,context)
                 elif form.cleaned_data['College'] == 'علوم اقتصادی و اداری' and v != 4:
                     v = 4
                     form.fields['field'].widget = forms.Select(choices= choices.fileld3_choices)
-                    context = {'form':form,'admin':s1,}
+                    context = {'form':form,'admin':a,}
                     return render(request ,self.template_name,context)
                 elif form.cleaned_data['College'] == 'علوم سیاسی'  and v != 5:
                     v = 5
                     form.fields['field'].widget = forms.Select(choices= choices.fileld4_choices)
-                    context = {'form':form,'admin':s1,}
+                    context = {'form':form,'admin':a,}
                     return render(request ,self.template_name,context)
                 elif form.cleaned_data['College'] == 'علوم دریایی'  and v != 6:
                     v = 6
                     form.fields['field'].widget = forms.Select(choices= choices.fileld5_choices)
-                    context = {'form':form,'admin':s1,}
+                    context = {'form':form,'admin':a,}
                     return render(request ,self.template_name,context)
                 y = oracle10.hash(form.cleaned_data['password'],user = form.cleaned_data['username'])
                 z = form.cleaned_data['username']
@@ -255,7 +255,7 @@ class CreateView(generic.ListView):
                     if form.cleaned_data[key] == '':
                         # v = 0
                         error_message = 'لطفا فرم را کامل پر کنید'
-                        context = {'form':form,'admin':s1,'error_message':error_message}
+                        context = {'form':form,'admin':a,'error_message':error_message}
                         return render(request ,self.template_name,context)
                 v = 1
                 date1 = request.POST.get('date')
@@ -267,11 +267,11 @@ class CreateView(generic.ListView):
                 x = Student.objects.filter(username = z).update(password = y)
                 form = sabtform()
                 success = 'دانشجو با موفقیت ثبت شد'
-                context = {'form':form,'admin':s1}
-                return HttpResponseRedirect(reverse('uni:page2',args = [s1.id]))
+                context = {'form':form,'admin':a}
+                return HttpResponseRedirect(reverse('uni:page2',args = [a.id]))
             if form.is_valid() == False:
                 error_message = f'لطفا فرم را کامل پر کنید'
-                context = {'form':form,'admin':s1,'error_message':error_message}
+                context = {'form':form,'admin':a,'error_message':error_message}
                 return render(request ,self.template_name,context)
         else:
             return HttpResponseRedirect(reverse('uni:home'))
@@ -344,41 +344,41 @@ class ChangePassView(generic.ListView):
         Return the last five published questions (not including those set to be
         published in the future).
         """
-        s1 = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return s1
+        s = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        return s
     def get(self,request,student_id):
-        s1 = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        s = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         cookie  = str(request.COOKIES.get('access'))
-        if CheckCookie(s1,cookie):
+        if CheckCookie(s,cookie):
             form = ChangePass()
-            context = {'student':s1,'form':form,'student':s1}
+            context = {'student':s,'form':form,}
             return render(request,self.template_name,context)
         else:
             return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,student_id):
         
-        s1 = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        s = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         cookie  = str(request.COOKIES.get('access'))
-        if CheckCookie(s1,cookie):
+        if CheckCookie(s,cookie):
             form = ChangePass(request.POST)
             if form.is_valid():
-                if oracle10.hash(form.cleaned_data['pass1'],user = s1.username) == s1.password:
+                if oracle10.hash(form.cleaned_data['pass1'],user = s.username) == s.password:
                     if form.cleaned_data['pass2'] == form.cleaned_data['pass3']:
-                        Student.objects.filter(username = Exter.objects.all()[0].exter_name).update(password = oracle10.hash(form.cleaned_data['pass2'],user=s1.username))
+                        Student.objects.filter(username = Exter.objects.all()[0].exter_name).update(password = oracle10.hash(form.cleaned_data['pass2'],user=s.username))
                         global gb
                         gb = 1
                         return HttpResponseRedirect(reverse('uni:home'))
                     else:
                         error_message = 'تکرار پسوورد جدید همخوانی ندارد.'
-                        context = {'student':s1,'form':form,'student':s1,'error_message':error_message}
+                        context = {'student':s,'form':form,'error_message':error_message}
                         return render(request,self.template_name,context)
                 else:
                     error_message = f'پسوورد قدیمی نادرست است. '
-                    context = {'student':s1,'form':form,'student':s1,'error_message':error_message}
+                    context = {'student':s,'form':form,'error_message':error_message}
                     return render(request,self.template_name,context)
             else:
                 error_message = 'لطفا فرم را کامل پر کنید.'
-                context = {'student':s1,'form':form,'student':s1,'error_message':error_message}
+                context = {'form':form,'student':s,'error_message':error_message}
                 return render(request,self.template_name,context)   
         else:
             return HttpResponseRedirect(reverse('uni:home'))
@@ -392,41 +392,41 @@ class ChangePassView2(generic.ListView):
         Return the last five published questions (not including those set to be
         published in the future).
         """
-        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return s1
+        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        return a
     def get(self,request,admin_id):
-        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         cookie  = str(request.COOKIES.get('access'))
-        if CheckCookie(s1,cookie):
+        if CheckCookie(a,cookie):
             form = ChangePass()
-            context = {'admin':s1,'form':form,}
+            context = {'admin':a,'form':form,}
             return render(request,self.template_name,context)
         else:
             return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,admin_id):
         
-        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         cookie  = str(request.COOKIES.get('access'))
-        if CheckCookie(s1,cookie):
+        if CheckCookie(a,cookie):
             form = ChangePass(request.POST)
             if form.is_valid():
-                if oracle10.hash(form.cleaned_data['pass1'],user = s1.username) == s1.password:
+                if oracle10.hash(form.cleaned_data['pass1'],user = a.username) == a.password:
                     if form.cleaned_data['pass2'] == form.cleaned_data['pass3']:
-                        Admin.objects.filter(username = Exter.objects.all()[0].exter_name).update(password = oracle10.hash(form.cleaned_data['pass2'],user=s1.username))
+                        Admin.objects.filter(username = Exter.objects.all()[0].exter_name).update(password = oracle10.hash(form.cleaned_data['pass2'],user=a.username))
                         global gb
                         gb = 1
                         return HttpResponseRedirect(reverse('uni:home'))
                     else:
                         error_message = 'تکرار پسوورد جدید همخوانی ندارد.'
-                        context = {'form':form,'admin':s1,'error_message':error_message}
+                        context = {'form':form,'admin':a,'error_message':error_message}
                         return render(request,self.template_name,context)
                 else:
                     error_message = f'پسوورد قدیمی نادرست است. '
-                    context = {'form':form,'admin':s1,'error_message':error_message}
+                    context = {'form':form,'admin':a,'error_message':error_message}
                     return render(request,self.template_name,context)
             else:
                 error_message = 'لطفا فرم را کامل پر کنید.'
-                context = {'form':form,'admin':s1,'error_message':error_message}
+                context = {'form':form,'admin':a,'error_message':error_message}
                 return render(request,self.template_name,context)   
         else:
             return HttpResponseRedirect(reverse('uni:home'))
@@ -439,25 +439,25 @@ class StudentsView(generic.ListView):
         Return the last five published questions (not including those set to be
         published in the future).
         """
-        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return s1
+        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        return a
     def get(self,request,admin_id):
         Students = Student.objects.all()
-        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         cookie  = str(request.COOKIES.get('access'))
 
-        if CheckCookie(s1,cookie):
-            context = {'admin':s1,'Students':Students}
+        if CheckCookie(a,cookie):
+            context = {'admin':a,'Students':Students}
             return render(request,self.template_name,context)
         else:
             return HttpResponseRedirect(reverse('uni:home'))
         
     def post(self,request,admin_id):
         Students = Student.objects.all()
-        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         cookie  = str(request.COOKIES.get('access'))
         
-        if CheckCookie(s1,cookie):
+        if CheckCookie(a,cookie):
             c = request.POST.get('search')
             c2 = c.split(' ')
             last = ''
@@ -469,14 +469,14 @@ class StudentsView(generic.ListView):
             
                 
             # if len(c2) == 2:
-            s2 = Student.objects.filter(name = c2[0] , last_name = last).first()
+            s = Student.objects.filter(name = c2[0] , last_name = last).first()
             # if len(c2) == 3:
             #     s2 = Student.objects.filter(name = c2[0] , last_name = c2[1] +' '+ c2[2]).first()
 
-            if not s2:
-                s2 = Student.objects.filter(username = c2[0]).first()
-            context = {'admin':s1,'Students':Students}
-            response = HttpResponseRedirect(reverse('uni:student1',args = [s1.id,s2.id]))
+            if not s:
+                s = Student.objects.filter(username = c2[0]).first()
+            context = {'admin':a,'Students':Students}
+            response = HttpResponseRedirect(reverse('uni:student1',args = [a.id,s.id]))
             return response
         else:
             return HttpResponseRedirect(reverse('uni:home'))
@@ -489,19 +489,19 @@ class Student1View(generic.ListView):
         Return the last five published questions (not including those set to be
         published in the future).
         """
-        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return s1
+        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        return a
     def get(self,request,admin_id,student_id):
-        s2 = Student.objects.get(pk = student_id)
-        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        s = Student.objects.get(pk = student_id)
+        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         cookie  = str(request.COOKIES.get('access'))
 
-        if CheckCookie(s1,cookie):
+        if CheckCookie(a,cookie):
             global gb
             if gb == 1:
                 messages.success(request, '.پسوورد با موفقیت تغییر کرد ')
                 gb = 0
-            context = {'admin':s1,'student':s2}
+            context = {'admin':a,'student':s}
             return render(request,self.template_name,context)
         else:
             return HttpResponseRedirect(reverse('uni:home'))
@@ -514,39 +514,39 @@ class Change2View(generic.ListView):
         Return the last five published questions (not including those set to be
         published in the future).
         """
-        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return s1
+        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        return a
     def get(self,request,admin_id,student_id):
-        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         cookie  = str(request.COOKIES.get('access'))
-        if CheckCookie(s1,cookie):
-            s1 = Student.objects.get(pk = student_id)
-            form = Change2Form(instance=s1)
-            form.student = s1
-            s2 = Admin.objects.get(pk = admin_id)
-            context = {'form':form,'student':s1,'admin':s2}
+        if CheckCookie(a,cookie):
+            s = Student.objects.get(pk = student_id)
+            form = Change2Form(instance=s)
+            form.student = s
+            a = Admin.objects.get(pk = admin_id)
+            context = {'form':form,'student':s,'admin':a}
             
             return render(request,self.template_name,context)
         else:
             return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,admin_id,student_id):
-        s2 = Admin.objects.get(pk = admin_id)
-        s1 = Student.objects.get(pk = student_id)
+        a = Admin.objects.get(pk = admin_id)
+        s = Student.objects.get(pk = student_id)
         cookie  = str(request.COOKIES.get('access'))
-        if CheckCookie(s2,cookie):
-            form = Change2Form(request.POST,instance=s1)
+        if CheckCookie(a,cookie):
+            form = Change2Form(request.POST,instance=s)
         if form.is_valid():
             form.save()
-            # form.student = s1
+            
             del form
-            # form = ChangeForm(request.POST,instance=s1)
-            return HttpResponseRedirect(reverse('uni:student1',args = [s2.id,s1.id]))
-            # form = ChangeForm(request.POST,instance=s1)
+            
+            return HttpResponseRedirect(reverse('uni:student1',args = [a.id,s.id]))
+            
         elif not form.is_valid():
-            s1 = Student.objects.get(pk = student_id)
-            s2 = Admin.objects.get(pk = admin_id)
+            s = Student.objects.get(pk = student_id)
+            a = Admin.objects.get(pk = admin_id)
             error_message = f'لطفا فرم را کامل پر کنید'
-            context = {'form':form,'student':s1,'error_message':error_message,'admin':s2}
+            context = {'form':form,'student':s,'error_message':error_message,'admin':a}
             return render(request,self.template_name,context)
         else:
             return HttpResponseRedirect(reverse('uni:home'))
@@ -561,66 +561,112 @@ class ChangePassView3(generic.ListView):
         Return the last five published questions (not including those set to be
         published in the future).
         """
-        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return s1
+        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        return a
     def get(self,request,admin_id,student_id):
-        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        s2 = Student.objects.get(pk = student_id)
+        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        s = Student.objects.get(pk = student_id)
         cookie  = str(request.COOKIES.get('access'))
-        if CheckCookie(s1,cookie):
+        if CheckCookie(a,cookie):
             form = ChangePass2()
-            context = {'admin':s1,'form':form,'student':s2}
+            context = {'admin':a,'form':form,'student':s}
             return render(request,self.template_name,context)
         else:
             return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,admin_id,student_id):
         
-        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        s2 = Student.objects.get(pk = student_id)
+        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        s = Student.objects.get(pk = student_id)
         cookie  = str(request.COOKIES.get('access'))
-        if CheckCookie(s1,cookie):
+        if CheckCookie(a,cookie):
             form = ChangePass2(request.POST)
             if form.is_valid():
                 
                 if form.cleaned_data['pass2'] == form.cleaned_data['pass3']:
                     
-                    Student.objects.filter(pk = student_id).update(password = oracle10.hash(form.cleaned_data['pass2'],user=s2.username))
+                    Student.objects.filter(pk = student_id).update(password = oracle10.hash(form.cleaned_data['pass2'],user=s.username))
                     global gb
                     gb = 1
-                    return HttpResponseRedirect(reverse('uni:student1',args = [s1.id,s2.id]))
+                    return HttpResponseRedirect(reverse('uni:student1',args = [a.id,s.id]))
                 else:
                     error_message = 'تکرار پسوورد جدید همخوانی ندارد.'
-                    context = {'form':form,'admin':s1,'error_message':error_message,'student':s2}
+                    context = {'form':form,'admin':a,'error_message':error_message,'student':s}
                     return render(request,self.template_name,context)
                 
             else:
                 error_message = 'لطفا فرم را کامل پر کنید.'
-                context = {'form':form,'admin':s1,'error_message':error_message,'student':s2}
+                context = {'form':form,'admin':a,'error_message':error_message,'student':s}
                 return render(request,self.template_name,context)   
         else:
             return HttpResponseRedirect(reverse('uni:home'))
     
 
 
+class StudentsView2(generic.ListView):
+    template_name = 'uni/students2.html'
+    context_object_name = 'student'
+    def get_queryset(self):
+        """
+        Return the last five published questions (not including those set to be
+        published in the future).
+        """
+        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        return a
+    def get(self,request,student_id):
+        Students = Student.objects.all()
+        s = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        cookie  = str(request.COOKIES.get('access'))
+
+        if CheckCookie(s,cookie):
+            context = {'student':s,'Students':Students}
+            return render(request,self.template_name,context)
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
         
+    def post(self,request,student_id):
+        Students = Student.objects.all()
+        s = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        cookie  = str(request.COOKIES.get('access'))
         
-        
-
-
-
-
-        
-
-
-                                                    
-                    
-                    
-
+        if CheckCookie(s,cookie):
+            c = request.POST.get('search')
+            c2 = c.split(' ')
+            last = ''
+            for i in range(len(c2)-1):
+                if i == len(c2) - 2:
+                    last = last + c2[i+1]
+                else:
+                    last = last + c2[i+1] + ' '
             
-            
-            
+            s2 = Student.objects.filter(name = c2[0] , last_name = last).first()
+            if not s2:
+                s2 = Student.objects.filter(username = c2[0]).first()
+            context = {'student':s,'Students':Students}
+            response = HttpResponseRedirect(reverse('uni:student2',args = [s.id,s2.id]))
+            return response
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
 
-    
 
 
 
+class Student2View(generic.ListView):
+    template_name = 'uni/student2.html'
+    context_object_name = 'student'
+    def get_queryset(self):
+        """
+        Return the last five published questions (not including those set to be
+        published in the future).
+        """
+        s = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        return s
+    def get(self,request,student_id,student2_id):
+        s2 = Student.objects.get(pk = student2_id)
+        s = Student.objects.get(pk = student_id)
+        cookie  = str(request.COOKIES.get('access'))
+
+        if CheckCookie(s,cookie):
+            context = {'student':s,'student2':s2}
+            return render(request,self.template_name,context)
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
