@@ -131,7 +131,7 @@ class Change2Form(forms.ModelForm):
             'religion',
             'parents_phone',
             
-            # 'birthday'
+            'birthday'
         ]
         labels = {
             'religion':'مذهب',
@@ -157,12 +157,12 @@ class Change2Form(forms.ModelForm):
             'password' : forms.PasswordInput,
             'student_live': forms.Select(choices= choices.live_choices),
             'uni': forms.Select(choices= choices.uni_choices),
-            'College': forms.Select(choices= choices.college_choices,attrs={'onchange': 'submit();'}),
+            # 'College': forms.Select(choices= choices.college_choices,attrs={'onchange': 'submit();'}),
             'religion' : forms.Select(choices= choices.religion_choices),
             'enter_year': forms.Select(choices= choices.enter_year_choices),
             'grade': forms.Select(choices= choices.grade_choices),
             'course': forms.Select(choices= choices.course_choices),
-            'field': forms.Select(),
+            # 'field': forms.Select(),
             # 'username':forms.TextInput(attrs = {'placeholder':'شماره دانشجویی'}),
             # 'name' : forms.TextInput(attrs = {'placeholder':'نام'}),
             
