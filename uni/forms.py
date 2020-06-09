@@ -109,6 +109,9 @@ class ChangePass(forms.Form):
     pass2 = forms.CharField(widget = forms.PasswordInput,label = 'پسوورد جدید')
     pass3 = forms.CharField(widget = forms.PasswordInput,label = ' تکرار پسوورد جدید')
 
+class ChangePass2(forms.Form):
+    pass2 = forms.CharField(widget = forms.PasswordInput,label = 'پسوورد جدید')
+    pass3 = forms.CharField(widget = forms.PasswordInput,label = ' تکرار پسوورد جدید')
 
 class Change2Form(forms.ModelForm):
     class Meta:

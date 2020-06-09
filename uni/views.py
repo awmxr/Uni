@@ -4,7 +4,7 @@ from .models import Student,Admin,Exter
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
-from .forms import Loginform,Loginform2,sabtform,ChangeForm,ChangePass,Change2Form
+from .forms import Loginform,Loginform2,sabtform,ChangeForm,ChangePass,Change2Form,ChangePass2
 from django.contrib import messages
 from passlib.hash import oracle10
 from . import choices
@@ -497,6 +497,10 @@ class Student1View(generic.ListView):
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(s1,cookie):
+            global gb
+            if gb == 1:
+                messages.success(request, '.پسوورد با موفقیت تغییر کرد ')
+                gb = 0
             context = {'admin':s1,'student':s2}
             return render(request,self.template_name,context)
         else:
@@ -544,6 +548,55 @@ class Change2View(generic.ListView):
             error_message = f'لطفا فرم را کامل پر کنید'
             context = {'form':form,'student':s1,'error_message':error_message,'admin':s2}
             return render(request,self.template_name,context)
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
+
+
+
+class ChangePassView3(generic.ListView):
+    template_name = 'uni/changepass3.html'
+    context_object_name = 'admin'
+    def get_queryset(self):
+        """
+        Return the last five published questions (not including those set to be
+        published in the future).
+        """
+        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        return s1
+    def get(self,request,admin_id,student_id):
+        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        s2 = Student.objects.get(pk = student_id)
+        cookie  = str(request.COOKIES.get('access'))
+        if CheckCookie(s1,cookie):
+            form = ChangePass2()
+            context = {'admin':s1,'form':form,'student':s2}
+            return render(request,self.template_name,context)
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
+    def post(self,request,admin_id,student_id):
+        
+        s1 = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        s2 = Student.objects.get(pk = student_id)
+        cookie  = str(request.COOKIES.get('access'))
+        if CheckCookie(s1,cookie):
+            form = ChangePass2(request.POST)
+            if form.is_valid():
+                
+                if form.cleaned_data['pass2'] == form.cleaned_data['pass3']:
+                    
+                    Student.objects.filter(pk = student_id).update(password = oracle10.hash(form.cleaned_data['pass2'],user=s2.username))
+                    global gb
+                    gb = 1
+                    return HttpResponseRedirect(reverse('uni:student1',args = [s1.id,s2.id]))
+                else:
+                    error_message = 'تکرار پسوورد جدید همخوانی ندارد.'
+                    context = {'form':form,'admin':s1,'error_message':error_message,'student':s2}
+                    return render(request,self.template_name,context)
+                
+            else:
+                error_message = 'لطفا فرم را کامل پر کنید.'
+                context = {'form':form,'admin':s1,'error_message':error_message,'student':s2}
+                return render(request,self.template_name,context)   
         else:
             return HttpResponseRedirect(reverse('uni:home'))
     
