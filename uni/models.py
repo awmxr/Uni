@@ -27,8 +27,13 @@ class Student(models.Model):
     login_times = models.CharField(max_length = 10000) 
     grade = models.CharField(max_length=200)
     course = models.CharField(max_length=200)
+    activate = models.BooleanField(default = True)
+    online = models.BooleanField(default = False)
     def __str__(self):
         return self.name +' ' +  self.last_name
+    class History(models.Model):
+        username = models.CharField(max_length=200)
+
     
 
 class Admin(models.Model):
@@ -40,6 +45,7 @@ class Admin(models.Model):
     login_date = models.DateTimeField(null = True)
     birthday = models.DateTimeField(null = True) 
     login_times = models.CharField(max_length = 10000) 
+    online = models.BooleanField(default = False)
 
     def __str__(self):
         return self.name +' ' +  self.last_name
@@ -68,6 +74,8 @@ class Ostad(models.Model) :
     login_date = models.DateTimeField(null = True) 
     birthday = models.DateField(blank = True , null = True) 
     login_times = models.CharField(max_length = 10000) 
+    activate = models.BooleanField(default = True)
+    online = models.BooleanField(default = False)
 
     def __str__ (self):
         return self.name + " " + self.last_name

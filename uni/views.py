@@ -26,13 +26,21 @@ class HomeView(generic.TemplateView):
                 gb = 0
 
             Student.objects.filter(username = Exter.objects.all()[0].exter_name).update(login_date = None)
+            Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).update(login_date = None)
             Admin.objects.filter(username = Exter.objects.all()[0].exter_name).update(login_date = None)
+            Student.objects.filter(username = Exter.objects.all()[0].exter_name).update(online = False)
+            Admin.objects.filter(username = Exter.objects.all()[0].exter_name).update(online = False)
+            Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).update(online = False)
             response = render(request,self.template_name,{})
             response.set_cookie('access',None)
             return response
         def post(self,request):
+            Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).update(login_date = None)
             Student.objects.filter(username = Exter.objects.all()[0].exter_name).update(login_date = None)
             Admin.objects.filter(username = Exter.objects.all()[0].exter_name).update(login_date = None)
+            Student.objects.filter(username = Exter.objects.all()[0].exter_name).update(online = False)
+            Admin.objects.filter(username = Exter.objects.all()[0].exter_name).update(online = False)
+            Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).update(online = False)
             response = render(request,self.template_name,{})
             response.set_cookie('access',None)
             return response
@@ -359,6 +367,7 @@ class LoginView(generic.ListView):#login page
                     if user.password == oracle10.hash(form2.cleaned_data['password'], user = user.username):
                         Student.objects.filter(username = form.cleaned_data['username']).update(login_date = dt.datetime.now())
                         Student.objects.filter(username = form.cleaned_data['username']).update(login_times = str(int(user.login_times)+ 1))
+                        Student.objects.filter(username = form.cleaned_data['username']).update(online = True)
                         h = Student.objects.filter(username = form.cleaned_data['username']).first()
                         Exter.objects.all().delete()
                         q = Exter(exter_name = form.cleaned_data['username'], number = '1') 
@@ -373,6 +382,8 @@ class LoginView(generic.ListView):#login page
                 if user.username == form.cleaned_data['username'] :
                     if user.password == oracle10.hash(form2.cleaned_data['password'], user = user.username):
                         Admin.objects.filter(username = form.cleaned_data['username']).update(login_date = dt.datetime.now())
+                        Admin.objects.filter(username = form.cleaned_data['username']).update(login_times = str(int(user.login_times)+ 1))
+                        Admin.objects.filter(username = form.cleaned_data['username']).update(online = True)
                         h = Admin.objects.filter(username = form.cleaned_data['username']).first()
                         Exter.objects.all().delete()
                         q = Exter(exter_name = form.cleaned_data['username'], number = '2')
@@ -387,6 +398,8 @@ class LoginView(generic.ListView):#login page
                 if user.username == form.cleaned_data['username'] :
                     if user.password == oracle10.hash(form2.cleaned_data['password'], user = user.username):
                         Ostad.objects.filter(username = form.cleaned_data['username']).update(login_date = dt.datetime.now())
+                        Ostad.objects.filter(username = form.cleaned_data['username']).update(login_times = str(int(user.login_times)+ 1))
+                        Ostad.objects.filter(username = form.cleaned_data['username']).update(online = True)
                         h = Ostad.objects.filter(username = form.cleaned_data['username']).first()
                         Exter.objects.all().delete()
                         q = Exter(exter_name = form.cleaned_data['username'], number = '3')
