@@ -54,4 +54,20 @@ class Exter(models.Model):
         return self.exter_name
     
 
-# Create your models here.
+class Ostad(models.Model) :
+    username = models.CharField(max_length=200)
+    name = models.CharField(max_length=200)
+    melli_code = models.CharField(max_length=200)
+    uni = models.CharField(max_length=200)
+    College = models.CharField(max_length=200 )
+    last_name = models.CharField(max_length=200)
+    password = models.CharField(max_length=200)
+    phone = models.CharField(max_length=11)
+    religion = models.CharField(max_length=200 )
+    public_date = models.DateTimeField(null = True)
+    login_date = models.DateTimeField(null = True) 
+    birthday = models.DateField(blank = True , null = True) 
+    login_times = models.CharField(max_length = 10000) 
+
+    def __str__ (self):
+        return self.name + " " + self.last_name
