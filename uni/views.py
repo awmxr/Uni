@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, Http404 ,HttpResponseRedirect
-from .models import Student,Admin,Exter
+from .models import Student,Admin,Exter, Ostad
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
@@ -106,6 +106,33 @@ class Page2View(generic.ListView):#admin page
             return HttpResponseRedirect(reverse('uni:home'))
 
 
+class Page3View(generic.ListView):#ostad page
+    context_object_name = 'ostad'
+    template_name = 'uni/page3.html'
+    def get_queryset(self):
+        """
+        Return the last five published questions (not including those set to be
+        published in the future).
+        """
+        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        return os
+    def get(self,request,ostad_id):
+        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        cookie  = str(request.COOKIES.get('access'))
+
+        if CheckCookie(os,cookie):
+            return render(request,self.template_name,{'ostad':os})
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
+    def post(self,request,ostad_id):
+        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        if CheckCookie(os,request.COOKIES.get('access')):
+            return render(request,self.template_name,{'ostad':os})
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
+
+
+
 class AboutSView(generic.ListView):#student info page
     context_object_name = 'student'
     template_name = 'uni/aboutS.html'
@@ -125,6 +152,28 @@ class AboutSView(generic.ListView):#student info page
         else:
             return HttpResponseRedirect(reverse('uni:home'))
 
+class AboutS3View(generic.ListView):#student info page in ostad
+    context_object_name = 'ostad'
+    template_name = 'uni/aboutS3.html'
+    def get_queryset(self):
+        """
+        Return the last five published questions (not including those set to be
+        published in the future).
+        """
+        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        return os
+    def get(self,request,ostad_id,student_id):
+        
+        os = Ostad.objects.get(pk = admin_id)
+        s = Student.objects.get(pk = student_id)
+        cookie  = str(request.COOKIES.get('access'))
+        if CheckCookie(os,cookie):
+            context = {'student':s,'ostad':os}
+            return render(request,self.template_name,context)
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
+
+    
 class AboutS2View(generic.ListView):#student info page in admin
     context_object_name = 'admin'
     template_name = 'uni/aboutS2.html'
@@ -288,6 +337,7 @@ class LoginView(generic.ListView):#login page
     def get(self , request):
         Student.objects.filter(username = Exter.objects.all()[0].exter_name).update(login_date = None)
         Admin.objects.filter(username = Exter.objects.all()[0].exter_name).update(login_date = None)
+        Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).update(login_date = None)
         form = Loginform()
         form2 = Loginform2()
         context = {'form' : form , 'form2' : form2 }
@@ -298,6 +348,7 @@ class LoginView(generic.ListView):#login page
     def post(self,request):
         Student.objects.filter(username = Exter.objects.all()[0].exter_name).update(login_date = None)
         Admin.objects.filter(username = Exter.objects.all()[0].exter_name).update(login_date = None)
+        Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).update(login_date = None)
         form = Loginform(request.POST)
         form2 = Loginform2(request.POST)
         
@@ -327,6 +378,20 @@ class LoginView(generic.ListView):#login page
                         q = Exter(exter_name = form.cleaned_data['username'], number = '2')
                         q.save()
                         response = HttpResponseRedirect(reverse('uni:page2',args = [user.id]))
+                        response.set_cookie('access',MakeCookie(h))
+                        return response
+                    break
+
+            users3 = Ostad.objects.all()
+            for user in users3:
+                if user.username == form.cleaned_data['username'] :
+                    if user.password == oracle10.hash(form2.cleaned_data['password'], user = user.username):
+                        Ostad.objects.filter(username = form.cleaned_data['username']).update(login_date = dt.datetime.now())
+                        h = Ostad.objects.filter(username = form.cleaned_data['username']).first()
+                        Exter.objects.all().delete()
+                        q = Exter(exter_name = form.cleaned_data['username'], number = '3')
+                        q.save()
+                        response = HttpResponseRedirect(reverse('uni:page3',args = [user.id]))
                         response.set_cookie('access',MakeCookie(h))
                         return response
                     break
@@ -430,6 +495,55 @@ class ChangePassView2(generic.ListView):#change password by admin
         else:
             return HttpResponseRedirect(reverse('uni:home'))
 
+
+class ChangePassView4(generic.ListView):#change password by ostad
+    template_name = 'uni/changepass4.html'
+    context_object_name = 'ostad'
+    def get_queryset(self):
+        """
+        Return the last five published questions (not including those set to be
+        published in the future).
+        """
+        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        return os
+    def get(self,request,ostad_id):
+        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        cookie  = str(request.COOKIES.get('access'))
+        if CheckCookie(os,cookie):
+            form = ChangePass()
+            context = {'ostad':os,'form':form,}
+            return render(request,self.template_name,context)
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
+    def post(self,request,ostad_id):
+        
+        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        cookie  = str(request.COOKIES.get('access'))
+        if CheckCookie(os,cookie):
+            form = ChangePass(request.POST)
+            if form.is_valid():
+                if oracle10.hash(form.cleaned_data['pass1'],user = os.username) == os.password:
+                    if form.cleaned_data['pass2'] == form.cleaned_data['pass3']:
+                        Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).update(password = oracle10.hash(form.cleaned_data['pass2'],user=os.username))
+                        global gb
+                        gb = 1
+                        return HttpResponseRedirect(reverse('uni:home'))
+                    else:
+                        error_message = 'تکرار پسوورد جدید همخوانی ندارد.'
+                        context = {'ostad':os,'form':form,'error_message':error_message}
+                        return render(request,self.template_name,context)
+                else:
+                    error_message = f'پسوورد قدیمی نادرست است. '
+                    context = {'ostad':os,'form':form,'error_message':error_message}
+                    return render(request,self.template_name,context)
+            else:
+                error_message = 'لطفا فرم را کامل پر کنید.'
+                context = {'form':form,'ostad':os,'error_message':error_message}
+                return render(request,self.template_name,context)   
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
+
+
 class StudentsView(generic.ListView):#student list in admin
     template_name = 'uni/students.html'
     context_object_name = 'admin'
@@ -495,13 +609,87 @@ class Student1View(generic.ListView):#student profile in admin
         a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         cookie  = str(request.COOKIES.get('access'))
 
-        if CheckCookie(a,cookie):
+        if CheckCookie(os,cookie):
             global gb
             if gb == 1:
                 messages.success(request, '.پسوورد با موفقیت تغییر کرد ')
                 gb = 0
             context = {'admin':a,'student':s}
             return render(request,self.template_name,context)
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
+
+
+class Student3View(generic.ListView):#student profile in ostad
+    template_name = 'uni/student3.html'
+    context_object_name = 'ostad'
+    def get_queryset(self):
+        """
+        Return the last five published questions (not including those set to be
+        published in the future).
+        """
+        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        return os
+    def get(self,request,ostad_id,student_id):
+        s = Student.objects.get(pk = student_id)
+        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        cookie  = str(request.COOKIES.get('access'))
+
+        if CheckCookie(os,cookie):
+            context = {'ostad':os,'student':s}
+            return render(request,self.template_name,context)
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
+
+
+    
+class Students3View(generic.ListView):#student list in ostad
+    template_name = 'uni/students3.html'
+    context_object_name = 'ostad'
+    def get_queryset(self):
+        """
+        Return the last five published questions (not including those set to be
+        published in the future).
+        """
+        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        return os
+    def get(self,request,ostad_id):
+        Students = Student.objects.all()
+        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        cookie  = str(request.COOKIES.get('access'))
+
+        if CheckCookie(os,cookie):
+            context = {'ostad':os,'Students':Students}
+            return render(request,self.template_name,context)
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
+        
+    def post(self,request,ostad_id):
+        Students = Student.objects.all()
+        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        cookie  = str(request.COOKIES.get('access'))
+        
+        if CheckCookie(os,cookie):
+            c = request.POST.get('search')
+            c2 = c.split(' ')
+            last = ''
+            for i in range(len(c2)-1):
+                if i == len(c2) - 2:
+                    last = last + c2[i+1]
+                else:
+                    last = last + c2[i+1] + ' '
+            
+                
+            # if len(c2) == 2:
+            s = Student.objects.filter(name = c2[0] , last_name = last).first()
+            # if len(c2) == 3:
+            #     s2 = Student.objects.filter(name = c2[0] , last_name = c2[1] +' '+ c2[2]).first()
+
+            if not s:
+                s = Student.objects.filter(username = c2[0]).first()
+            context = {'ostad':os,'Students':Students}
+            response = HttpResponseRedirect(reverse('uni:student1',args = [os.id,s.id]))
+            return response
         else:
             return HttpResponseRedirect(reverse('uni:home'))
 

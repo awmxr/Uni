@@ -1,0 +1,27 @@
+{% load static %}
+<html>
+    <body>
+        <ul>
+            <li><a href="{% url 'uni:page3' ostad.id %}">خانه</a></li>
+            
+            <li><a href="">اطلاعات دانشجو</a></li>
+            <li><a href="{% url 'uni:students3' ostad.id %}">دانشجویان</a></li>
+            <li><a href="{% url 'uni:changepass4' ostad.id %}">تغیر رمز عبور</a></li>
+            <a href="{% url 'uni:home' %}"><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
+            <input  style="text-align-last: right;" type="search" placeholder="جست و جو " aria-label="Search" name="search" >
+          </ul>
+    
+        <link rel="stylesheet" type="text/css" href="{% static 'uni/style2.css' %}">
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <div class="w3-container w3-dark-grey">
+            
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+            <h2 style="text-align: right; " >{{ ostad.name  }} {{  ostad.last_name  }}</h2> 
+            
+
+            
+        </div>
+    </body>
+
+</html>
+
