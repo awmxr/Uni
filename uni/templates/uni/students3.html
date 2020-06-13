@@ -55,7 +55,7 @@
                 </select>
             </form>
                 {% for i in Students %}
-                    <a href="{% url 'uni:student1' ostad.id i.id %}"> <h5>{{ i }}</h5></a> 
+                    <a href="{% url 'uni:student3' ostad.id i.id %}"> <h5>{{ i }}</h5></a> 
                     {% endfor %}
                     <br>
                 {% if error_message %}<p style="color: red;">{{ error_message }}</p>{% endif %}

@@ -688,7 +688,7 @@ class Students3View(generic.ListView):#student list in ostad
             if not s:
                 s = Student.objects.filter(username = c2[0]).first()
             context = {'ostad':os,'Students':Students}
-            response = HttpResponseRedirect(reverse('uni:student1',args = [os.id,s.id]))
+            response = HttpResponseRedirect(reverse('uni:student3',args = [os.id,s.id]))
             return response
         else:
             return HttpResponseRedirect(reverse('uni:home'))

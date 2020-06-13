@@ -23,7 +23,7 @@ urlpatterns = [
     path('student/<int:student_id>/page/students2/<int:student2_id>',views.Student2View.as_view(),name = 'student2'),#student profile in student
     path('ostad/<int:ostad_id>/page3/',views.Page3View.as_view(),name = 'page3'),#ostad page
     path('ostad/<int:ostad_id>/page3/changepass4',views.ChangePassView4.as_view(),name = 'changepass4'),# change password in ostad
-    path('ostad/<int:ostad_id>/page3/students3',views.Students3View.as_view(),name = 'students'),#students list in ostad page
+    path('ostad/<int:ostad_id>/page3/students3',views.Students3View.as_view(),name = 'students3'),#students list in ostad page
     path('ostad/<int:ostad_id>/page3/students3/<int:student_id>',views.Student3View.as_view(),name = 'student3'),#student profile in ostad
     path('ostad/<int:ostad_id>/page3/students3/<int:student_id>/about3',views.AboutS3View.as_view(),name = 'aboutS3'),#student info in ostad
 
