@@ -229,17 +229,46 @@ class sabtform2(forms.ModelForm):
         
         labels = {
             'religion':'مذهب',
-            "username": "شماره دانشجویی",
+            "username": "شماره استادی",
             'name':'نام',
-            
             'melli_code':'کد ملی',
             'uni':'دانشگاه',
             'last_name':'نام خانوادگی',
             'password':'پسوورد',
-            'phone':'تلفن همراه دانشجو',
+            'phone':'تلفن همراه استاد',
             'field':'رشته تحصیلی',
             'grade':'مقطع تحصیلی',
         }
+
+
+class darsform(forms.ModelForm):
+    # dars1 = forms.CharField(widget = forms.Select(choices= choices.dars_choices), label = '1')
+    # dars2 = forms.CharField(widget = forms.Select(choices= choices.dars_choices), label = '2')
+    # dars3 = forms.CharField(widget = forms.Select(choices= choices.dars_choices), label = '3')
+    # dars4 = forms.CharField(widget = forms.Select(choices= choices.dars_choices), label = '4')
+    class Meta:
+        model  = Ostad
+        fields =[
+            'dars1',
+            'dars2',
+            'dars3',
+            'dars4',
+        ]
+        widgets = {
+            'dars1' : forms.Select(choices= choices.dars_choices),
+            'dars2' : forms.Select(choices= choices.dars_choices),
+            'dars3' : forms.Select(choices= choices.dars_choices),
+            'dars4' : forms.Select(choices= choices.dars_choices),
+        } 
+        labels = {
+            'dars1': '1',
+            'dars2': '2',
+            'dars3': '3',
+            'dars4': '4',
+
+
+        }
+
 
 
         

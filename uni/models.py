@@ -78,6 +78,10 @@ class Ostad(models.Model) :
     online = models.BooleanField(default = False)
     grade = models.CharField(max_length=200)
     field = models.CharField(max_length=200)
+    dars1 = models.CharField(max_length=200)
+    dars2 = models.CharField(max_length=200)
+    dars3 = models.CharField(max_length=200)
+    dars4 = models.CharField(max_length=200)
 
     def __str__ (self):
         return self.name + " " + self.last_name

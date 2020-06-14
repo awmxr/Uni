@@ -4,7 +4,7 @@ from .models import Student,Admin,Exter, Ostad
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
-from .forms import Loginform,Loginform2,sabtform,ChangeForm,ChangePass,Change2Form,ChangePass2,sabtform2
+from .forms import Loginform,Loginform2,sabtform,ChangeForm,ChangePass,Change2Form,ChangePass2,sabtform2,darsform
 from django.contrib import messages
 from passlib.hash import oracle10
 from . import choices
@@ -950,3 +950,54 @@ class CreateView2(generic.ListView):#create student by admin
                 return render(request ,self.template_name,context)
         else:
             return HttpResponseRedirect(reverse('uni:home'))
+
+class DarsView(generic.ListView):
+    template_name = 'uni/dars.html'
+    context_object_name = 'ostad'
+    def get_queryset(self):
+        """
+        Return the last five published questions (not including those set to be
+        published in the future).
+        """
+        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        return os
+    
+    def get(self,request,ostad_id):
+        
+        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        cookie  = str(request.COOKIES.get('access'))
+        if CheckCookie(os,cookie):
+            form = darsform(instance = os)
+            context = {'ostad':os,'form':form}
+            return render(request , self.template_name,context)
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
+    def post(self,request,ostad_id):
+        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        cookie  = str(request.COOKIES.get('access'))
+        if CheckCookie(os,cookie):
+            form = darsform(request.POST)
+            if form.is_valid():
+                d1 = form.cleaned_data['dars1']
+                d2 = form.cleaned_data['dars2']
+                d3 = form.cleaned_data['dars3']
+                d4 = form.cleaned_data['dars4']
+                if d1 == '------------------------------------------------------------------------------':
+                    d1 = ''
+                if d2 == '------------------------------------------------------------------------------':
+                    d2 = ''
+                if d3 == '------------------------------------------------------------------------------':
+                    d3 = ''
+                if d4 == '------------------------------------------------------------------------------':
+                    d4 = ''
+                Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).update(dars1 = d1)
+                Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).update(dars2 = d2)
+                Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).update(dars3 = d3)
+                Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).update(dars4 = d4)
+                
+                return HttpResponseRedirect(reverse('uni:page3',args = [os.id]))
+
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
+        
+
