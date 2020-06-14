@@ -4,7 +4,7 @@ from .models import Student,Admin,Exter, Ostad
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
-from .forms import Loginform,Loginform2,sabtform,ChangeForm,ChangePass,Change2Form,ChangePass2
+from .forms import Loginform,Loginform2,sabtform,ChangeForm,ChangePass,Change2Form,ChangePass2,sabtform2
 from django.contrib import messages
 from passlib.hash import oracle10
 from . import choices
@@ -868,5 +868,85 @@ class Student2View(generic.ListView):#studnet profile in student
         if CheckCookie(s,cookie):
             context = {'student':s,'student2':s2}
             return render(request,self.template_name,context)
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
+
+class ElamView(generic.ListView):
+    template_name = 'uni/elam.html'
+    context_object_name = 'ostad'
+    def get_queryset(self):
+        """
+        Return the last five published questions (not including those set to be
+        published in the future).
+        """
+        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        return os
+    def get(self,request,ostad_id):
+        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        cookie  = str(request.COOKIES.get('access'))
+
+        if CheckCookie(os,cookie):
+            context = {'ostad':os}
+            return render(request,self.template_name,context)
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
+
+
+
+class CreateView2(generic.ListView):#create student by admin
+    
+    template_name = 'uni/create2.html'
+    context_object_name = 'admin'
+    def get_queryset(self):
+        """
+        Return the last five published questions (not including those set to be
+        published in the future).
+        """
+        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        return a
+    
+    def get(self,request ,admin_id):
+        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        cookie  = str(request.COOKIES.get('access'))
+        if CheckCookie(a,cookie):
+            form = sabtform2()
+            context = {'form':form,'admin':a}
+            return render(request ,self.template_name,context)
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
+        
+    
+    def post(self,request,admin_id):
+        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        cookie  = str(request.COOKIES.get('access'))
+        form = sabtform2(request.POST)
+        if CheckCookie(a,cookie):
+            if form.is_valid():
+                
+                y = oracle10.hash(form.cleaned_data['password'],user = form.cleaned_data['username'])
+                z = form.cleaned_data['username']
+                
+                for key in form.fields:
+                    if form.cleaned_data[key] == '':
+                
+                        error_message = 'لطفا فرم را کامل پر کنید'
+                        context = {'form':form,'admin':a,'error_message':error_message}
+                        return render(request ,self.template_name,context)
+                
+                date1 = request.POST.get('date')
+                form.save()
+                Ostad.objects.filter(username = z).update(birthday = date1)
+                Ostad.objects.filter(username = z).update(login_times = '0')
+                Ostad.objects.filter(username = z).update(public_date = dt.datetime.now())
+                
+                x = Ostad.objects.filter(username = z).update(password = y)
+                form = sabtform()
+                success = 'استاد با موفقیت ثبت شد'
+                context = {'form':form,'admin':a}
+                return HttpResponseRedirect(reverse('uni:page2',args = [a.id]))
+            if form.is_valid() == False:
+                error_message = f'لطفا فرم را کامل پر کنید'
+                context = {'form':form,'admin':a,'error_message':error_message}
+                return render(request ,self.template_name,context)
         else:
             return HttpResponseRedirect(reverse('uni:home'))

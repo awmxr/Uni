@@ -1,5 +1,5 @@
 from django import forms
-from .models import Student,Exter
+from .models import Student,Exter,Ostad
 from . import choices
 
 class Loginform(forms.Form):
@@ -171,6 +171,77 @@ class Change2Form(forms.ModelForm):
             
             
         } 
+
+class ElamForm(forms.ModelForm):
+    class Meta:
+        fields = [
+            'term',
+            'college',
+            'fields',
+            'dars',
+            'numbers',
+            'capacity',
+            'time',
+        ]
+
+
+
+
+
+class sabtform2(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(forms.ModelForm, self).__init__(*args, **kwargs)
+
+        for key in self.fields:
+            self.fields[key].required = False 
+    class Meta:
+        
+        model = Ostad
+        fields = [
+            'username',
+            'name',
+            'last_name',
+            
+            'melli_code',
+            'uni',
+            'grade',
+            'field',
+            'password',
+            'phone',
+            'religion',
+            
+        ]
+        widgets = {
+            'password' : forms.PasswordInput,
+            
+            'uni': forms.Select(choices= choices.uni_choices),
+            
+            'religion' : forms.Select(choices= choices.religion_choices),
+            
+            'grade': forms.Select(choices= choices.grade_choices),
+            
+            'field': forms.Select(choices= choices.field1_choices + choices.field2_choices + choices.fileld3_choices + choices.fileld4_choices + choices.fileld5_choices),
+            
+            
+            
+        } 
+        
+        
+        labels = {
+            'religion':'مذهب',
+            "username": "شماره دانشجویی",
+            'name':'نام',
+            
+            'melli_code':'کد ملی',
+            'uni':'دانشگاه',
+            'last_name':'نام خانوادگی',
+            'password':'پسوورد',
+            'phone':'تلفن همراه دانشجو',
+            'field':'رشته تحصیلی',
+            'grade':'مقطع تحصیلی',
+        }
+
+
         
 
 

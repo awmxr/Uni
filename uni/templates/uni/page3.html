@@ -4,11 +4,11 @@
         <ul>
             <li><a href="{% url 'uni:page3' ostad.id %}">خانه</a></li>
             
-            <li><a href="">اطلاعات دانشجو</a></li>
+            <li><a href="{% url 'uni:elam' ostad.id %}">اعلام برنامه ترم</a></li>
             <li><a href="{% url 'uni:students3' ostad.id %}">دانشجویان</a></li>
             <li><a href="{% url 'uni:changepass4' ostad.id %}">تغیر رمز عبور</a></li>
             <a href="{% url 'uni:home' %}"><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
-            <input  style="text-align-last: right;" type="search" placeholder="جست و جو " aria-label="Search" name="search" >
+            
           </ul>
     
         <link rel="stylesheet" type="text/css" href="{% static 'uni/style2.css' %}">

@@ -1,8 +1,8 @@
 from django.db import models
-from django.db import models
 from django.utils import timezone
 from datetime import datetime , date
 import datetime
+from . import choices
 
 
 class Student(models.Model):
@@ -31,8 +31,6 @@ class Student(models.Model):
     online = models.BooleanField(default = False)
     def __str__(self):
         return self.name +' ' +  self.last_name
-    class History(models.Model):
-        username = models.CharField(max_length=200)
 
     
 
@@ -46,6 +44,8 @@ class Admin(models.Model):
     birthday = models.DateTimeField(null = True) 
     login_times = models.CharField(max_length = 10000) 
     online = models.BooleanField(default = False)
+    College = models.CharField(max_length=2000, choices= choices.college_choices)
+    field = models.CharField(max_length=200)
 
     def __str__(self):
         return self.name +' ' +  self.last_name
@@ -76,6 +76,20 @@ class Ostad(models.Model) :
     login_times = models.CharField(max_length = 10000) 
     activate = models.BooleanField(default = True)
     online = models.BooleanField(default = False)
+    grade = models.CharField(max_length=200)
+    field = models.CharField(max_length=200)
 
     def __str__ (self):
         return self.name + " " + self.last_name
+class Elam(models.Model):
+    term = models.CharField(max_length=200)
+    ostad = models.CharField(max_length=200)
+    college = models.CharField(max_length=200)
+    fields = models.CharField(max_length=200)
+    dars = models.CharField(max_length=200)
+    numbers = models.CharField(max_length=200 )
+    capacity = models.CharField(max_length=200)
+    time = models.CharField(max_length=1000)
+    public_date = models.DateTimeField(null = True)
+    def __str__ (self):
+        return self.ostad+ "--" + self.dars
