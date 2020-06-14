@@ -26,7 +26,8 @@ urlpatterns = [
     path('ostad/<int:ostad_id>/page3/students3',views.Students3View.as_view(),name = 'students3'),#students list in ostad page
     path('ostad/<int:ostad_id>/page3/students3/<int:student_id>',views.Student3View.as_view(),name = 'student3'),#student profile in ostad
     path('ostad/<int:ostad_id>/page3/students3/<int:student_id>/about3',views.AboutS3View.as_view(),name = 'aboutS3'),#student info in ostad
-    path('ostad/<int:ostad_id>/page3/elam',views.ElamView.as_view(),name = 'elam'),
+    path('ostad/<int:ostad_id>/page3/elam1',views.ElamView1.as_view(),name = 'elam1'),
+    path('ostad/<int:ostad_id>/page3/elam1/elam2',views.ElamView2.as_view(),name = 'elam2'),
     path('admin/<int:admin_id>/page2/create2',views.CreateView2.as_view(),name = 'create2'),#creat ostad page
     path('ostad/<int:ostad_id>/page3/dars',views.DarsView.as_view() ,name = 'dars'),
 

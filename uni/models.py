@@ -58,7 +58,17 @@ class Exter(models.Model):
 
     def __str__(self):
         return self.exter_name
-    
+
+
+class Exter2(models.Model):
+    username = models.CharField(max_length=200)
+    ostad = models.CharField(max_length=200)
+    dars = models.CharField(max_length=200)
+    college = models.CharField(max_length=200)
+
+
+    def __str__(self):
+        return self.ostad + '--' + self.dars    
 
 class Ostad(models.Model) :
     username = models.CharField(max_length=200)
@@ -86,10 +96,9 @@ class Ostad(models.Model) :
     def __str__ (self):
         return self.name + " " + self.last_name
 class Elam(models.Model):
-    term = models.CharField(max_length=200)
+    username = models.CharField(max_length=200)
     ostad = models.CharField(max_length=200)
     college = models.CharField(max_length=200)
-    fields = models.CharField(max_length=200)
     dars = models.CharField(max_length=200)
     numbers = models.CharField(max_length=200 )
     capacity = models.CharField(max_length=200)

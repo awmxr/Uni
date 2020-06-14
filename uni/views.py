@@ -1,10 +1,10 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, Http404 ,HttpResponseRedirect
-from .models import Student,Admin,Exter, Ostad
+from .models import Student,Admin,Exter, Ostad,Exter2,Elam
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
-from .forms import Loginform,Loginform2,sabtform,ChangeForm,ChangePass,Change2Form,ChangePass2,sabtform2,darsform
+from .forms import Loginform,Loginform2,sabtform,ChangeForm,ChangePass,Change2Form,ChangePass2,sabtform2,darsform,ElamForm
 from django.contrib import messages
 from passlib.hash import oracle10
 from . import choices
@@ -871,8 +871,8 @@ class Student2View(generic.ListView):#studnet profile in student
         else:
             return HttpResponseRedirect(reverse('uni:home'))
 
-class ElamView(generic.ListView):
-    template_name = 'uni/elam.html'
+class ElamView2(generic.ListView):
+    template_name = 'uni/elam2.html'
     context_object_name = 'ostad'
     def get_queryset(self):
         """
@@ -890,6 +890,28 @@ class ElamView(generic.ListView):
             return render(request,self.template_name,context)
         else:
             return HttpResponseRedirect(reverse('uni:home'))
+    def post(self,request,ostad_id):
+        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        cookie  = str(request.COOKIES.get('access'))
+
+        if CheckCookie(os,cookie):
+            if request.method == 'POST':
+                timess = request.POST.getlist('timeclass')
+                te = ''
+                for i in timess:
+                    te = te + i + ' '
+                q = Exter2.objects.all()[0]
+                w = Elam.objects.filter(username = q.username , ostad = q.ostad,college = q.college,dars = q.dars).first()
+                w.time = te
+                w.public_date = dt.datetime.now()
+                w.save()
+                response = HttpResponseRedirect(reverse('uni:page3',args = [os.id]))
+                return response
+
+
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
+
 
 
 
@@ -990,14 +1012,65 @@ class DarsView(generic.ListView):
                     d3 = ''
                 if d4 == '------------------------------------------------------------------------------':
                     d4 = ''
-                Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).update(dars1 = d1)
-                Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).update(dars2 = d2)
-                Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).update(dars3 = d3)
-                Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).update(dars4 = d4)
+                # Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).update(dars1 = d1)
+                # Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).update(dars2 = d2)
+                # Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).update(dars3 = d3)
+                # Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).update(dars4 = d4)
+                os.dars1 = d1
+                os.dars2 = d2
+                os.dars3 = d3
+                os.dars4 = d4
+                os.save()
+                h = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+                
+                
+                
                 
                 return HttpResponseRedirect(reverse('uni:page3',args = [os.id]))
 
         else:
             return HttpResponseRedirect(reverse('uni:home'))
         
+class ElamView1(generic.ListView):
+    template_name = 'uni/elam1.html'
+    context_object_name = 'ostad'
+    def get_queryset(self):
+        """
+        Return the last five published questions (not including those set to be
+        published in the future).
+        """
+        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        return os
+    def get(self,request,ostad_id):
+        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        cookie  = str(request.COOKIES.get('access'))
+        if CheckCookie(os,cookie):
+            
+            form = ElamForm(initial = {"username": os.username,'ostad':os})
+            context = {'ostad':os,'form':form}
+            return render(request,self.template_name,context)
+            
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
+        
+
+    def post(self,request,ostad_id):
+        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        cookie  = str(request.COOKIES.get('access'))
+        if CheckCookie(os,cookie):
+            
+            form = ElamForm(request.POST,initial = {"username": os.username,'ostad':os})
+            if form.is_valid():
+                form.save()
+                if Exter2.objects.all(): 
+                    Exter2.objects.all().delete()
+                q = Exter2(username = os.username , ostad = os,dars = form.cleaned_data['dars'],college = form.cleaned_data['college'])
+                q.save()
+                return HttpResponseRedirect(reverse('uni:elam2',args = [os.id]))
+
+            
+            
+            
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
 

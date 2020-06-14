@@ -1,5 +1,5 @@
 from django import forms
-from .models import Student,Exter,Ostad
+from .models import Student,Exter,Ostad,Elam
 from . import choices
 
 class Loginform(forms.Form):
@@ -173,16 +173,41 @@ class Change2Form(forms.ModelForm):
         } 
 
 class ElamForm(forms.ModelForm):
+
     class Meta:
+        model = Elam
         fields = [
-            'term',
+            'username',
+            'ostad',
             'college',
-            'fields',
             'dars',
             'numbers',
             'capacity',
-            'time',
         ]
+        labels = {
+            'college' : 'دانشکده',
+            'dars' : 'درس',
+            'numbers' : 'تعداد دوره',
+            'capacity' : 'ظرفیت',
+        }
+        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        list1 = [os.dars1,os.dars2,os.dars3,os.dars4]
+        t = ()
+        for i in list1:
+            if i != None:
+                t = t + ((i,i),)
+
+        widgets = {
+            'college' : forms.Select(choices= choices.college_choices),
+            'dars' : forms.Select(choices= choices.dars_choices),  
+            'username' : forms.HiddenInput(),
+            'ostad':forms.HiddenInput()
+            
+        } 
+        # initials = {
+        #     'username':os.username,
+        #     'ostad': os,
+        # }
 
 
 
