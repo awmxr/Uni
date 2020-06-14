@@ -1091,3 +1091,67 @@ class ElamView1(generic.ListView):
         else:
             return HttpResponseRedirect(reverse('uni:home'))
 
+class BarnameView1(generic.ListView):
+    template_name = 'uni/barname1.html'
+    context_object_name = 'admin'
+    def get_queryset(self):
+        """
+        Return the last five published questions (not including those set to be
+        published in the future).
+        """
+        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        return a
+    def get(self,request,admin_id):
+        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        cookie  = str(request.COOKIES.get('access'))
+
+        if CheckCookie(a,cookie):
+            
+            context = {'admin':a,'Elam':Elam.objects.all()}
+            return render(request,self.template_name,context)
+            
+            
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
+
+
+
+class BarnameView2(generic.ListView):
+    template_name = 'uni/barname2.html'
+    context_object_name = 'admin'
+    def get_queryset(self):
+        """
+        Return the last five published questions (not including those set to be
+        published in the future).
+        """
+        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        return a
+    def get(self,request,admin_id,elam_id):
+        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        cookie  = str(request.COOKIES.get('access'))
+
+        if CheckCookie(a,cookie):
+            el = Elam.objects.get(pk = elam_id)
+            tii = el.time.split(' ')
+            tii.sort()
+            dictime = {'01':'شنبه 8-10','02':'شنبه 10-12','03':'شنبه 13-15','04':'شنبه 15-17','05':'شنبه 17-19',
+            '11':'یکشنبه 8-10','12':'یکشنبه 10-12','13':'یکشنبه 13-15','14':'یکشنبه 15-17','15':'یکشنبه 17-19',
+            '21':'دوشنبه 8-10','22':' دوشنبه 10-12 ','23':'دوشنبه 13-15','24':'دوشنبه 15-17','25':'دوشنبه 17-19',
+            '31':'سه شنبه 8-10','32':'سه شنبه 10-12','33':'سه شنبه 13-15','34':'سه شنبه 15-17','35':'سه شنبه 17-19',
+            '41':'چهارشنبه 8-10','42':'چهارشنبه 10-12','43':'چهارشنبه 13-15','44':'چهارشنبه 15-17','45':'چهارشنبه  17-19',}
+            list1 =[]
+            for i in tii:
+                for j in dictime:
+                    if i == j:
+                        list1.append(dictime[j])
+                        
+
+
+
+            context = {'admin':a,'i':el,'lis1':list1}
+
+            return render(request,self.template_name,context)
+            
+            
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))

@@ -30,5 +30,7 @@ urlpatterns = [
     path('ostad/<int:ostad_id>/page3/elam1/elam2',views.ElamView2.as_view(),name = 'elam2'),
     path('admin/<int:admin_id>/page2/create2',views.CreateView2.as_view(),name = 'create2'),#creat ostad page
     path('ostad/<int:ostad_id>/page3/dars',views.DarsView.as_view() ,name = 'dars'),
+    path('admin/<int:admin_id>/page2/barname1',views.BarnameView1.as_view(),name = 'barname1'),
+    path('admin/<int:admin_id>/page2/barname1/barname2/<int:elam_id>',views.BarnameView2.as_view(),name = 'barname2'),
 
 ]

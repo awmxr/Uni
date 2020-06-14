@@ -92,7 +92,7 @@ class Ostad(models.Model) :
     dars2 = models.CharField(max_length=200)
     dars3 = models.CharField(max_length=200)
     dars4 = models.CharField(max_length=200)
-
+    
     def __str__ (self):
         return self.name + " " + self.last_name
 class Elam(models.Model):

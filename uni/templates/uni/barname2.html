@@ -55,30 +55,26 @@ tr:nth-child(even) {
       <!-- <input id = "usernamee" type="text" placeholder="Enter Username" name="uname" value="awmxr"> -->
       <table>
         <tr>
-          <th>مشاهده جزییات</th>
           <th>تعداد دوره</th>
           <th>ظرفیت</th>
           <th>درس</th>
           <th>استاد</th>
         </tr>
-        {% for i in Elam %}
-
         <tr>
-          <th> <a href=" {% url 'uni:barname2' admin.id i.id %} ">جزییات</a></th>
-            <th>{{i.numbers}}</th>
-            <th>{{i.capacity}}</th>
-            <th>{{i.dars}}</th>
-            <th>{{i.ostad}}</th>
-            
-          </tr>
-
-
-
-
-        {% endfor %}
-        
-
+          <th>{{ i.numbers }}</th>
+          <th>{{ i.capacity }}</th>
+          <th>{{ i.dars }}</th>
+          <th>{{ i.ostad }}</th>
+        </tr>
       </table>
+      <h1>برنامه حضور استاد برای این درس</h1>
+      <table >
+      {% for i in lis1 %}
+      <tr>
+        <th><h3 style="text-align: right;">{{ i }}</h3></th>
+      </tr>
+      {% endfor %}
+    </table>
       
       
       {% if error_message %}<p style="color: red;">{{ error_message }}</p>{% endif %}
