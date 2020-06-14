@@ -125,6 +125,10 @@ class Page3View(generic.ListView):#ostad page
         os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         return os
     def get(self,request,ostad_id):
+        q = Exter2.objects.all()[0]
+        w = Elam.objects.filter(username = q.username , ostad = q.ostad,college = q.college,dars = q.dars).first()
+        if w and w.time == '':
+            w.delete()
         os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         cookie  = str(request.COOKIES.get('access'))
 
@@ -897,16 +901,25 @@ class ElamView2(generic.ListView):
         if CheckCookie(os,cookie):
             if request.method == 'POST':
                 timess = request.POST.getlist('timeclass')
+                
+
                 te = ''
                 for i in timess:
                     te = te + i + ' '
+                if te == '':
+                    error_message = 'لطفا یک زمان را انتخاب کنید'
+                    context = {'ostad':os,'error_message':error_message}
+                    return render(request,self.template_name,context)
                 q = Exter2.objects.all()[0]
                 w = Elam.objects.filter(username = q.username , ostad = q.ostad,college = q.college,dars = q.dars).first()
                 w.time = te
                 w.public_date = dt.datetime.now()
                 w.save()
                 response = HttpResponseRedirect(reverse('uni:page3',args = [os.id]))
+                if w.time == '':
+                    w.delete()
                 return response
+            
 
 
         else:
@@ -1061,6 +1074,10 @@ class ElamView1(generic.ListView):
             
             form = ElamForm(request.POST,initial = {"username": os.username,'ostad':os})
             if form.is_valid():
+                if form.cleaned_data['college'] == '------------------------------------------------------------------------------' or form.cleaned_data['dars'] == '------------------------------------------------------------------------------':
+                    error_message = 'لطفا فرم را کامل پر کنید'
+                    context = {'ostad':os,'form':form,'error_message':error_message}
+                    return render(request,self.template_name,context)
                 form.save()
                 if Exter2.objects.all(): 
                     Exter2.objects.all().delete()

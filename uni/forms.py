@@ -191,11 +191,12 @@ class ElamForm(forms.ModelForm):
             'capacity' : 'ظرفیت',
         }
         os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        list1 = [os.dars1,os.dars2,os.dars3,os.dars4]
-        t = ()
-        for i in list1:
-            if i != None:
-                t = t + ((i,i),)
+        if os:
+            list1 = [os.dars1,os.dars2,os.dars3,os.dars4]
+            t = ()
+            for i in list1:
+                if i != None:
+                    t = t + ((i,i),)
 
         widgets = {
             'college' : forms.Select(choices= choices.college_choices),
