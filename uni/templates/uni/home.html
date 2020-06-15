@@ -1,0 +1,28 @@
+{% load static %}
+
+
+
+<link rel="stylesheet" type="text/css" href="{% static 'uni/style.css' %}">
+<body>
+
+
+<!-- charset=utf-8 -->
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<ul>
+  <li><a href="{% url 'uni:home' %}">خانه</a></li>
+  <li><a href="{% url 'uni:login' %}">ورود</a></li>
+  <li><a href="#contact">مخاطبان</a></li>
+  <li><a href="#about">درباره</a></li>
+</ul>
+{% if messages %}
+        <ul style="color: aliceblue ;background-color: rgb(8, 148, 78);" class="messages">
+            {% for message in messages %}
+            <h2>  <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>  {{ message }}</li></h2>
+            {% endfor %}
+        </ul>
+{% endif %}
+
+
+
+</body>
+
