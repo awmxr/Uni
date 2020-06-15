@@ -1,10 +1,18 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, Http404 ,HttpResponseRedirect
+<<<<<<< HEAD:Uni/uni/views.py
 from .models import Student,Admin,Exter, Ostad,Exter2,Elam,Klass
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
 from .forms import Loginform,Loginform2,sabtform,ChangeForm,ChangePass,Change2Form,ChangePass2,sabtform2,darsform,ElamForm,KlassForm
+=======
+from .models import Student,Admin,Exter, Ostad,Exter2,Elam
+from django.urls import reverse
+from django.views import generic
+from django.utils import timezone
+from .forms import Loginform,Loginform2,sabtform,ChangeForm,ChangePass,Change2Form,ChangePass2,sabtform2,darsform,ElamForm
+>>>>>>> 34e10441c83d8283fb2b094950ad7dd215b31503:uni/views.py
 from django.contrib import messages
 from passlib.hash import oracle10
 from . import choices
@@ -911,7 +919,11 @@ class ElamView2(generic.ListView):
                     context = {'ostad':os,'error_message':error_message}
                     return render(request,self.template_name,context)
                 q = Exter2.objects.all()[0]
+<<<<<<< HEAD:Uni/uni/views.py
                 w = Elam.objects.filter(username = q.username , ostad = q.ostad,college = q.college,dars = q.dars,goruh = q.goruh).first()
+=======
+                w = Elam.objects.filter(username = q.username , ostad = q.ostad,college = q.college,dars = q.dars).first()
+>>>>>>> 34e10441c83d8283fb2b094950ad7dd215b31503:uni/views.py
                 w.time = te
                 w.public_date = dt.datetime.now()
                 w.save()
@@ -1079,15 +1091,21 @@ class ElamView1(generic.ListView):
                     context = {'ostad':os,'form':form,'error_message':error_message}
                     return render(request,self.template_name,context)
                 form.save()
+<<<<<<< HEAD:Uni/uni/views.py
 
+=======
+>>>>>>> 34e10441c83d8283fb2b094950ad7dd215b31503:uni/views.py
                 if Exter2.objects.all(): 
                     Exter2.objects.all().delete()
                 q = Exter2(username = os.username , ostad = os,dars = form.cleaned_data['dars'],college = form.cleaned_data['college'])
                 q.save()
+<<<<<<< HEAD:Uni/uni/views.py
                 ww = list(Elam.objects.filter(dars = q.dars).all())
                 Elam.objects.filter(username = q.username , ostad = q.ostad,college = q.college,dars = q.dars,goruh = '').update(goruh = len(ww))
                 # z = Elam.objects.filter(username = q.username , ostad = q.ostad,college = q.college,dars = q.dars , goruh = len(ww)).first()
                 Exter2.objects.filter(username = os.username).update(goruh = len(ww))
+=======
+>>>>>>> 34e10441c83d8283fb2b094950ad7dd215b31503:uni/views.py
                 return HttpResponseRedirect(reverse('uni:elam2',args = [os.id]))
 
             
@@ -1159,6 +1177,7 @@ class BarnameView2(generic.ListView):
             
             
         else:
+<<<<<<< HEAD:Uni/uni/views.py
             return HttpResponseRedirect(reverse('uni:home'))
 
 
@@ -1198,3 +1217,6 @@ class CreateklassView(generic.ListView):
         else:
             return HttpResponseRedirect(reverse('uni:home'))
 
+=======
+            return HttpResponseRedirect(reverse('uni:home'))
+>>>>>>> 34e10441c83d8283fb2b094950ad7dd215b31503:uni/views.py
