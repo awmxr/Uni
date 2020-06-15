@@ -21,6 +21,17 @@ urlpatterns = [
     path('admin/<int:admin_id>/page2/students/<int:student_id>/about2/changepass3',views.ChangePassView3.as_view(),name = 'changepass3'),#change student passwprd by admin
     path('student/<int:student_id>/page/students2',views.StudentsView2.as_view(),name = 'students2'),#student list in student
     path('student/<int:student_id>/page/students2/<int:student2_id>',views.Student2View.as_view(),name = 'student2'),#student profile in student
-    
-    
+    path('ostad/<int:ostad_id>/page3/',views.Page3View.as_view(),name = 'page3'),#ostad page
+    path('ostad/<int:ostad_id>/page3/changepass4',views.ChangePassView4.as_view(),name = 'changepass4'),# change password in ostad
+    path('ostad/<int:ostad_id>/page3/students3',views.Students3View.as_view(),name = 'students3'),#students list in ostad page
+    path('ostad/<int:ostad_id>/page3/students3/<int:student_id>',views.Student3View.as_view(),name = 'student3'),#student profile in ostad
+    path('ostad/<int:ostad_id>/page3/students3/<int:student_id>/about3',views.AboutS3View.as_view(),name = 'aboutS3'),#student info in ostad
+    path('ostad/<int:ostad_id>/page3/elam1',views.ElamView1.as_view(),name = 'elam1'),
+    path('ostad/<int:ostad_id>/page3/elam1/elam2',views.ElamView2.as_view(),name = 'elam2'),
+    path('admin/<int:admin_id>/page2/create2',views.CreateView2.as_view(),name = 'create2'),#creat ostad page
+    path('ostad/<int:ostad_id>/page3/dars',views.DarsView.as_view() ,name = 'dars'),
+    path('admin/<int:admin_id>/page2/barname1',views.BarnameView1.as_view(),name = 'barname1'),
+    path('admin/<int:admin_id>/page2/barname1/barname2/<int:elam_id>',views.BarnameView2.as_view(),name = 'barname2'),
+    path('admin/<int:admin_id>/page2/createklass',views.CreateklassView.as_view(),name = 'createklass'),
+
 ]

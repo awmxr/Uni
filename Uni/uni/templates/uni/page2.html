@@ -2,12 +2,6 @@
 <html>
     <head>
         <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css">
-        
     </head>
     <body>
         
@@ -16,6 +10,9 @@
             <li><a href="{% url 'uni:page2' admin.id %}">خانه</a></li>
             <li><a href="{% url 'uni:students' admin.id %}">دانشجویان</a></li>
             <li><a href="{% url 'uni:create' admin.id %}">دانشجوی جدید</a></li>
+            <li><a href="{% url 'uni:create2' admin.id %}">استاد جدید</a></li>
+            <li><a href="{% url 'uni:barname1' admin.id %}">برنامه استادان</a></li>
+            <li><a href="{% url 'uni:createklass' admin.id %}">ثبت کلاس</a></li>
             <li><a href="{% url 'uni:changepass2' admin.id %}">تغیر رمز عبور</a></li>
             <a href="{% url 'uni:home' %}"><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
             <!-- <input  style="text-align-last: right;" type="search" placeholder="جست و جو " aria-label="Search" name="search"  > -->
@@ -26,6 +23,7 @@
         <div class="w3-container w3-dark-grey">
             <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
             <h2 style="text-align: right;" >{{ admin.name  }} {{  admin.last_name  }}</h2> 
+            <h2>ادمین دانشکده {{ admin.College }}</h2>
         </div>
         
         

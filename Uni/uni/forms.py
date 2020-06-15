@@ -1,5 +1,5 @@
 from django import forms
-from .models import Student,Exter
+from .models import Student,Exter,Ostad,Elam,Klass
 from . import choices
 
 class Loginform(forms.Form):
@@ -171,14 +171,148 @@ class Change2Form(forms.ModelForm):
             
             
         } 
+
+class ElamForm(forms.ModelForm):
+
+    class Meta:
+        model = Elam
+        fields = [
+            'username',
+            'ostad',
+            'college',
+            'dars',
+            'capacity',
+            'phone',
+            
+        ]
+        labels = {
+            'college' : 'دانشکده',
+            'dars' : 'درس',
+            'capacity' : 'ظرفیت',
+        }
+        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        if os:
+            list1 = [os.dars1,os.dars2,os.dars3,os.dars4]
+            t = ()
+            for i in list1:
+                if i != None:
+                    t = t + ((i,i),)
+
+        widgets = {
+            'college' : forms.Select(choices= choices.college_choices),
+            'dars' : forms.Select(choices= choices.dars_choices),  
+            'username' : forms.HiddenInput(),
+            'ostad':forms.HiddenInput(),
+            'phone' : forms.HiddenInput(),
+            
+            
+        } 
+        # initials = {
+        #     'username':os.username,
+        #     'ostad': os,
+        # }
+
+
+
+
+
+class sabtform2(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(forms.ModelForm, self).__init__(*args, **kwargs)
+
+        for key in self.fields:
+            self.fields[key].required = False 
+    class Meta:
         
-
-
-
-
-
+        model = Ostad
+        fields = [
+            'username',
+            'name',
+            'last_name',
+            
+            'melli_code',
+            'uni',
+            'grade',
+            'field',
+            'password',
+            'phone',
+            'religion',
+            
+        ]
+        widgets = {
+            'password' : forms.PasswordInput,
+            
+            'uni': forms.Select(choices= choices.uni_choices),
+            
+            'religion' : forms.Select(choices= choices.religion_choices),
+            
+            'grade': forms.Select(choices= choices.grade_choices),
+            
+            'field': forms.Select(choices= choices.field1_choices + choices.field2_choices + choices.fileld3_choices + choices.fileld4_choices + choices.fileld5_choices),
+            
+            
+            
+        } 
         
+        
+        labels = {
+            'religion':'مذهب',
+            "username": "شماره استادی",
+            'name':'نام',
+            'melli_code':'کد ملی',
+            'uni':'دانشگاه',
+            'last_name':'نام خانوادگی',
+            'password':'پسوورد',
+            'phone':'تلفن همراه استاد',
+            'field':'رشته تحصیلی',
+            'grade':'مقطع تحصیلی',
+        }
 
 
-    
+class darsform(forms.ModelForm):
+    # dars1 = forms.CharField(widget = forms.Select(choices= choices.dars_choices), label = '1')
+    # dars2 = forms.CharField(widget = forms.Select(choices= choices.dars_choices), label = '2')
+    # dars3 = forms.CharField(widget = forms.Select(choices= choices.dars_choices), label = '3')
+    # dars4 = forms.CharField(widget = forms.Select(choices= choices.dars_choices), label = '4')
+    class Meta:
+        model  = Ostad
+        fields =[
+            'dars1',
+            'dars2',
+            'dars3',
+            'dars4',
+        ]
+        widgets = {
+            'dars1' : forms.Select(choices= choices.dars_choices),
+            'dars2' : forms.Select(choices= choices.dars_choices),
+            'dars3' : forms.Select(choices= choices.dars_choices),
+            'dars4' : forms.Select(choices= choices.dars_choices),
+        } 
+        labels = {
+            'dars1': '1',
+            'dars2': '2',
+            'dars3': '3',
+            'dars4': '4',
 
+
+        }
+
+
+class KlassForm(forms.ModelForm):
+    class Meta:
+        model = Klass
+        fields = [
+            'number',
+            'college',
+            'floor',
+            'public_date',
+        ]
+        widgets = {
+            'college' : forms.HiddenInput(),
+            'address' : forms.Textarea() ,  
+            'public_date' : forms.HiddenInput(),
+        }
+        labels = {
+            'number':'شماره کلاس',
+            'floor':'طبقه'
+        }
