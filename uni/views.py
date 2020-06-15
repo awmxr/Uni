@@ -1,10 +1,10 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, Http404 ,HttpResponseRedirect
-from .models import Student,Admin,Exter, Ostad,Exter2,Elam
+from .models import Student,Admin,Exter, Ostad,Exter2,Elam,Klass
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
-from .forms import Loginform,Loginform2,sabtform,ChangeForm,ChangePass,Change2Form,ChangePass2,sabtform2,darsform,ElamForm
+from .forms import Loginform,Loginform2,sabtform,ChangeForm,ChangePass,Change2Form,ChangePass2,sabtform2,darsform,ElamForm,KlassForm
 from django.contrib import messages
 from passlib.hash import oracle10
 from . import choices
@@ -911,7 +911,7 @@ class ElamView2(generic.ListView):
                     context = {'ostad':os,'error_message':error_message}
                     return render(request,self.template_name,context)
                 q = Exter2.objects.all()[0]
-                w = Elam.objects.filter(username = q.username , ostad = q.ostad,college = q.college,dars = q.dars).first()
+                w = Elam.objects.filter(username = q.username , ostad = q.ostad,college = q.college,dars = q.dars,goruh = q.goruh).first()
                 w.time = te
                 w.public_date = dt.datetime.now()
                 w.save()
@@ -1079,10 +1079,15 @@ class ElamView1(generic.ListView):
                     context = {'ostad':os,'form':form,'error_message':error_message}
                     return render(request,self.template_name,context)
                 form.save()
+
                 if Exter2.objects.all(): 
                     Exter2.objects.all().delete()
                 q = Exter2(username = os.username , ostad = os,dars = form.cleaned_data['dars'],college = form.cleaned_data['college'])
                 q.save()
+                ww = list(Elam.objects.filter(dars = q.dars).all())
+                Elam.objects.filter(username = q.username , ostad = q.ostad,college = q.college,dars = q.dars,goruh = '').update(goruh = len(ww))
+                # z = Elam.objects.filter(username = q.username , ostad = q.ostad,college = q.college,dars = q.dars , goruh = len(ww)).first()
+                Exter2.objects.filter(username = os.username).update(goruh = len(ww))
                 return HttpResponseRedirect(reverse('uni:elam2',args = [os.id]))
 
             
@@ -1155,3 +1160,41 @@ class BarnameView2(generic.ListView):
             
         else:
             return HttpResponseRedirect(reverse('uni:home'))
+
+
+
+class CreateklassView(generic.ListView):
+    template_name = 'uni/createklass.html'
+    context_object_name = 'admin'
+    def get_queryset(self):
+        """
+        Return the last five published questions (not including those set to be
+        published in the future).
+        """
+        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        return a
+    def get(self,request,admin_id):
+        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        cookie  = str(request.COOKIES.get('access'))
+        form = KlassForm(initial = {"college": a.College,'public_date':dt.datetime.now()})
+        if CheckCookie(a,cookie):
+            
+            context = {'admin':a,'form':form}
+            return render(request,self.template_name,context)
+               
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
+    def post(self,request,admin_id):
+        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        cookie  = str(request.COOKIES.get('access'))
+        form = KlassForm(request.POST ,initial = {"college": a.College,'public_date':dt.datetime.now()})
+        if CheckCookie(a,cookie):
+            if form.is_valid():
+                form.save()
+                return HttpResponseRedirect(reverse('uni:page2' ,args= [a.id]))
+
+            
+               
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
+

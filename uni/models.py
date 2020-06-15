@@ -65,6 +65,7 @@ class Exter2(models.Model):
     ostad = models.CharField(max_length=200)
     dars = models.CharField(max_length=200)
     college = models.CharField(max_length=200)
+    goruh = models.CharField(max_length=200)
 
 
     def __str__(self):
@@ -100,10 +101,47 @@ class Elam(models.Model):
     ostad = models.CharField(max_length=200)
     college = models.CharField(max_length=200)
     dars = models.CharField(max_length=200)
-    numbers = models.CharField(max_length=200 )
     capacity = models.CharField(max_length=200)
     time = models.CharField(max_length=1000)
     public_date = models.DateTimeField(null = True)
     phone = models.CharField(max_length=200)
+    goruh = models.CharField(max_length=1000)
+    dascode = models.CharField(max_length=1000)
+    
     def __str__ (self):
         return self.ostad+ "--" + self.dars
+
+
+class Klass(models.Model):
+    number = models.CharField(max_length=200)
+    college = models.CharField(max_length=200)
+    floor = models.CharField(max_length=200,blank = True)
+    public_date = models.DateTimeField(null = True)
+    t01 = models.CharField(max_length=200,blank = True)
+    t02 = models.CharField(max_length=200,blank = True)
+    t03 = models.CharField(max_length=200,blank = True)
+    t04 = models.CharField(max_length=200,blank = True)
+    t05 = models.CharField(max_length=200,blank = True)
+    t11 = models.CharField(max_length=200,blank = True)
+    t12 = models.CharField(max_length=200,blank = True)
+    t13 = models.CharField(max_length=200,blank = True)
+    t14 = models.CharField(max_length=200,blank = True)
+    t15 = models.CharField(max_length=200,blank = True)
+    t21 = models.CharField(max_length=200,blank = True)
+    t22 = models.CharField(max_length=200,blank = True)
+    t23 = models.CharField(max_length=200,blank = True)
+    t24 = models.CharField(max_length=200,blank = True)
+    t25 = models.CharField(max_length=200,blank = True)
+    t31 = models.CharField(max_length=200,blank = True)
+    t32 = models.CharField(max_length=200,blank = True)
+    t33 = models.CharField(max_length=200,blank = True)
+    t34 = models.CharField(max_length=200,blank = True)
+    t35 = models.CharField(max_length=200,blank = True)
+    t41 = models.CharField(max_length=200,blank = True)
+    t42 = models.CharField(max_length=200,blank = True)
+    t43 = models.CharField(max_length=200,blank = True)
+    t44 = models.CharField(max_length=200,blank = True)
+    t45 = models.CharField(max_length=200,blank = True)
+    def __str__ (self):
+        return self.floor + "--" + self.number
+

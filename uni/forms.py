@@ -1,5 +1,5 @@
 from django import forms
-from .models import Student,Exter,Ostad,Elam
+from .models import Student,Exter,Ostad,Elam,Klass
 from . import choices
 
 class Loginform(forms.Form):
@@ -181,14 +181,13 @@ class ElamForm(forms.ModelForm):
             'ostad',
             'college',
             'dars',
-            'numbers',
             'capacity',
             'phone',
+            
         ]
         labels = {
             'college' : 'دانشکده',
             'dars' : 'درس',
-            'numbers' : 'تعداد دوره',
             'capacity' : 'ظرفیت',
         }
         os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
@@ -204,7 +203,8 @@ class ElamForm(forms.ModelForm):
             'dars' : forms.Select(choices= choices.dars_choices),  
             'username' : forms.HiddenInput(),
             'ostad':forms.HiddenInput(),
-            'phone' : forms.HiddenInput()
+            'phone' : forms.HiddenInput(),
+            
             
         } 
         # initials = {
@@ -298,15 +298,21 @@ class darsform(forms.ModelForm):
         }
 
 
-
-        
-
-
-
-
-
-        
-
-
-    
-
+class KlassForm(forms.ModelForm):
+    class Meta:
+        model = Klass
+        fields = [
+            'number',
+            'college',
+            'floor',
+            'public_date',
+        ]
+        widgets = {
+            'college' : forms.HiddenInput(),
+            'address' : forms.Textarea() ,  
+            'public_date' : forms.HiddenInput(),
+        }
+        labels = {
+            'number':'شماره کلاس',
+            'floor':'طبقه'
+        }
