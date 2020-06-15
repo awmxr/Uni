@@ -1059,7 +1059,7 @@ class ElamView1(generic.ListView):
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(os,cookie):
             
-            form = ElamForm(initial = {"username": os.username,'ostad':os})
+            form = ElamForm(initial = {"username": os.username,'ostad':os,'phone':os.phone})
             context = {'ostad':os,'form':form}
             return render(request,self.template_name,context)
             

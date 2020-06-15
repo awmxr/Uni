@@ -104,5 +104,6 @@ class Elam(models.Model):
     capacity = models.CharField(max_length=200)
     time = models.CharField(max_length=1000)
     public_date = models.DateTimeField(null = True)
+    phone = models.CharField(max_length=200)
     def __str__ (self):
         return self.ostad+ "--" + self.dars

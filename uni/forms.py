@@ -183,6 +183,7 @@ class ElamForm(forms.ModelForm):
             'dars',
             'numbers',
             'capacity',
+            'phone',
         ]
         labels = {
             'college' : 'دانشکده',
@@ -202,7 +203,8 @@ class ElamForm(forms.ModelForm):
             'college' : forms.Select(choices= choices.college_choices),
             'dars' : forms.Select(choices= choices.dars_choices),  
             'username' : forms.HiddenInput(),
-            'ostad':forms.HiddenInput()
+            'ostad':forms.HiddenInput(),
+            'phone' : forms.HiddenInput()
             
         } 
         # initials = {
