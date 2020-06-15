@@ -56,7 +56,8 @@ tr:nth-child(even) {
       <table>
         <tr>
           <th>شماره تلفن همراه</th>
-          <th>تعداد دوره</th>
+          <th>کد گروه</th>
+          
           <th>ظرفیت</th>
           <th>درس</th>
           <th>استاد</th>
@@ -64,7 +65,8 @@ tr:nth-child(even) {
         </tr>
         <tr>
           <th>{{ i.phone }}</th>
-          <th>{{ i.numbers }}</th>
+          <th>{{ i.goruh }}</th>
+          
           <th>{{ i.capacity }}</th>
           <th>{{ i.dars }}</th>
           <th>{{ i.ostad }}</th>
@@ -90,9 +92,10 @@ tr:nth-child(even) {
         
       
     </div>
-
+    
     <div class="container" style="background-color:#f1f1f1">
       <div style="text-align: left;">
+        <a href=" {% url 'uni:erae' admin.id i.id %} "><button style="background-color: #333333; font-size: large;">ارایه این درس</button></a>
         <a href="{% url 'uni:page2' admin.id %}"><button type="button" style="text-align: right;"  class="cancelbtn">لغو</button></a>
         
       </div>

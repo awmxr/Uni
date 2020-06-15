@@ -46,7 +46,8 @@ class Admin(models.Model):
     online = models.BooleanField(default = False)
     College = models.CharField(max_length=2000, choices= choices.college_choices)
     field = models.CharField(max_length=200)
-
+    uni = models.CharField(max_length=2000, choices= choices.uni_choices)
+    
     def __str__(self):
         return self.name +' ' +  self.last_name
     
@@ -76,7 +77,7 @@ class Ostad(models.Model) :
     name = models.CharField(max_length=200)
     melli_code = models.CharField(max_length=200)
     uni = models.CharField(max_length=200)
-    College = models.CharField(max_length=200 )
+    # College = models.CharField(max_length=200 )
     last_name = models.CharField(max_length=200)
     password = models.CharField(max_length=200)
     phone = models.CharField(max_length=11)
@@ -107,6 +108,7 @@ class Elam(models.Model):
     phone = models.CharField(max_length=200)
     goruh = models.CharField(max_length=1000)
     dascode = models.CharField(max_length=1000)
+    uni = models.CharField(max_length=2000)
     
     def __str__ (self):
         return self.ostad+ "--" + self.dars
@@ -115,8 +117,10 @@ class Elam(models.Model):
 class Klass(models.Model):
     number = models.CharField(max_length=200)
     college = models.CharField(max_length=200)
+    uni = models.CharField(max_length=2000)
     floor = models.CharField(max_length=200,blank = True)
     public_date = models.DateTimeField(null = True)
+    por = models.CharField(max_length=200,blank = True)
     t01 = models.CharField(max_length=200,blank = True)
     t02 = models.CharField(max_length=200,blank = True)
     t03 = models.CharField(max_length=200,blank = True)

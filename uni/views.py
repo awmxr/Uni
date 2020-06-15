@@ -580,8 +580,9 @@ class StudentsView(generic.ListView):#student list in admin
         a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         return a
     def get(self,request,admin_id):
-        Students = Student.objects.all()
         a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        Students = Student.objects.filter(College = a.College)
+        
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(a,cookie):
@@ -634,7 +635,7 @@ class Student1View(generic.ListView):#student profile in admin
         a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         cookie  = str(request.COOKIES.get('access'))
 
-        if CheckCookie(os,cookie):
+        if CheckCookie(a,cookie):
             global gb
             if gb == 1:
                 messages.success(request, '.پسوورد با موفقیت تغییر کرد ')
@@ -922,7 +923,7 @@ class ElamView2(generic.ListView):
 
                 w = Elam.objects.filter(username = q.username , ostad = q.ostad,college = q.college,dars = q.dars,goruh = q.goruh).first()
 
-                w = Elam.objects.filter(username = q.username , ostad = q.ostad,college = q.college,dars = q.dars).first()
+                # w = Elam.objects.filter(username = q.username , ostad = q.ostad,college = q.college,dars = q.dars).first()
 
                 w.time = te
                 w.public_date = dt.datetime.now()
@@ -1071,7 +1072,7 @@ class ElamView1(generic.ListView):
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(os,cookie):
             
-            form = ElamForm(initial = {"username": os.username,'ostad':os,'phone':os.phone})
+            form = ElamForm(initial = {"username": os.username,'ostad':os,'phone':os.phone,'uni':os.uni})
             context = {'ostad':os,'form':form}
             return render(request,self.template_name,context)
             
@@ -1129,8 +1130,8 @@ class BarnameView1(generic.ListView):
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(a,cookie):
-            
-            context = {'admin':a,'Elam':Elam.objects.all()}
+            e = Elam.objects.filter(uni = a.uni,college = a.College)
+            context = {'admin':a,'Elam':e}
             return render(request,self.template_name,context)
             
             
@@ -1195,7 +1196,7 @@ class CreateklassView(generic.ListView):
     def get(self,request,admin_id):
         a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         cookie  = str(request.COOKIES.get('access'))
-        form = KlassForm(initial = {"college": a.College,'public_date':dt.datetime.now()})
+        form = KlassForm(initial = {"college": a.College,'public_date':dt.datetime.now(),'uni':a.uni})
         if CheckCookie(a,cookie):
             
             context = {'admin':a,'form':form}
@@ -1219,4 +1220,44 @@ class CreateklassView(generic.ListView):
 
 
             return HttpResponseRedirect(reverse('uni:home'))
+
+
+
+# class EraeView(generic.ListView):
+#     template_name = 'uni/erae.html'
+#     context_object_name = 'admin'
+#     def get_queryset(self):
+#         """
+#         Return the last five published questions (not including those set to be
+#         published in the future).
+#         """
+#         a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+#         return a
+#     def get(self,request,amir_id,elam_id):
+#         a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+#         cookie  = str(request.COOKIES.get('access'))
+#         list1 = []
+#         dic = {}
+#         if CheckCookie(a,cookie):
+#             elam = Elam.objects.get(pk = elam_id)
+#             klas = Klass.objects.filter(college = a.College)
+#             for i in klas:
+#                 q = i.por.split(' ')
+#                 r = elam.time.split(' ')
+#                 if not q:
+#                     pass
+#                 else:
+#                     for p in q:
+#                         for j in r:
+#                             if p == j:
+#                                 dic.update({i:p})
+
+
+
+
+
+#             context ={'elam':elam,'admin':a}
+#         else:
+#             return HttpResponseRedirect(reverse('uni:home'))
+
 

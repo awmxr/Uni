@@ -178,45 +178,6 @@ class Change2Form(forms.ModelForm):
 
 
 
-class ElamForm(forms.ModelForm):
-
-    class Meta:
-        model = Elam
-        fields = [
-            'username',
-            'ostad',
-            'college',
-            'dars',
-            
-            'capacity',
-            'phone',
-        ]
-        labels = {
-            'college' : 'دانشکده',
-            'dars' : 'درس',
-            'numbers' : 'تعداد دوره',
-            'capacity' : 'ظرفیت',
-        }
-        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        if os:
-            list1 = [os.dars1,os.dars2,os.dars3,os.dars4]
-            t = ()
-            for i in list1:
-                if i != None:
-                    t = t + ((i,i),)
-
-        widgets = {
-            'college' : forms.Select(choices= choices.college_choices),
-            'dars' : forms.Select(choices= choices.dars_choices),  
-            'username' : forms.HiddenInput(),
-            'ostad':forms.HiddenInput(),
-            'phone' : forms.HiddenInput()
-            
-        } 
-        # initials = {
-        #     'username':os.username,
-        #     'ostad': os,
-        # }
 
 
 
@@ -319,13 +280,16 @@ class ElamForm(forms.ModelForm):
             'dars',
             'capacity',
             'phone',
+            'uni',
             
         ]
         labels = {
             'college' : 'دانشکده',
             'dars' : 'درس',
             'capacity' : 'ظرفیت',
+
         }
+        
         os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
         if os:
             list1 = [os.dars1,os.dars2,os.dars3,os.dars4]
@@ -340,6 +304,7 @@ class ElamForm(forms.ModelForm):
             'username' : forms.HiddenInput(),
             'ostad':forms.HiddenInput(),
             'phone' : forms.HiddenInput(),
+            'uni':forms.HiddenInput(),
             
             
         } 
@@ -442,11 +407,13 @@ class KlassForm(forms.ModelForm):
             'college',
             'floor',
             'public_date',
+            'uni',
         ]
         widgets = {
             'college' : forms.HiddenInput(),
             'address' : forms.Textarea() ,  
             'public_date' : forms.HiddenInput(),
+            'uni':forms.HiddenInput(),
         }
         labels = {
             'number':'شماره کلاس',
