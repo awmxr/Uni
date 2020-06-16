@@ -55,18 +55,12 @@ class HomeView(generic.TemplateView):
         
         
 
-class PageView(generic.ListView):#student page
-    context_object_name = 'student'
+class PageView(generic.TemplateView):#student page
+    
     template_name = 'uni/page.html'
-    def get_queryset(self):
-        """
-        Return the last five published questions (not including those set to be
-        published in the future).
-        """
-        s = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return s
+    
     def get(self,request,student_id):
-        s = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        s = Student.objects.get(pk = student_id)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(s,cookie):
@@ -74,7 +68,7 @@ class PageView(generic.ListView):#student page
         else:
             return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,student_id):
-        s = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        s = Student.objects.get(pk = student_id)
         if CheckCookie(s,request.COOKIES.get('access')):
             return render(request,self.template_name,{'student':s})
         else:
@@ -86,58 +80,46 @@ class PageView(generic.ListView):#student page
     def ren(self,request):
         return render(request ,'uni/page.html',{})
 
-class Page2View(generic.ListView):#admin page
-    context_object_name = 'admin'
+class Page2View(generic.TemplateView):#admin page
+    
     template_name = 'uni/page2.html'
-    def get_queryset(self):
-        """
-        Return the last five published questions (not including those set to be
-        published in the future).
-        """
-        s = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return s
+    
     
     def get(self,request,admin_id):
         
         # messages.success(request, 'Email sent successfully.')
-        s = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        a = Admin.objects.get(pk = admin_id)
         Admins = Admin.objects.all()
         Students = Student.objects.all()
         cookie  = str(request.COOKIES.get('access'))
-        d = CheckCookie(s,cookie)
+        d = CheckCookie(a,cookie)
         if d:
-            return render(request,self.template_name,{'admin':s,'Admins':Admins,'Students':Students})
+            return render(request,self.template_name,{'admin':a,'Admins':Admins,'Students':Students})
         else:
             return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,admin_id):
         # messages.success(request, 'Email sent successfully.')
-        s = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        a = Admin.objects.get(pk = admin_id)
         Admins = Admin.objects.all()
         Students = Student.objects.all()
         cookie  = str(request.COOKIES.get('access'))
-        d = CheckCookie(s,cookie)
+        d = CheckCookie(a,cookie)
         if d:
-            return render(request,self.template_name,{'admin':s,'Admins':Admins,'Students':Students})
+            return render(request,self.template_name,{'admin':a,'Admins':Admins,'Students':Students})
         else:
             return HttpResponseRedirect(reverse('uni:home'))
 
 
-class Page3View(generic.ListView):#ostad page
-    context_object_name = 'ostad'
+class Page3View(generic.TemplateView):#ostad page
+    
     template_name = 'uni/page3.html'
-    def get_queryset(self):
-        """
-        Return the last five published questions (not including those set to be
-        published in the future).
-        """
-        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return os
+    
     def get(self,request,ostad_id):
         q = Exter2.objects.all()[0]
         w = Elam.objects.filter(username = q.username , ostad = q.ostad,college = q.college,dars = q.dars).first()
         if w and w.time == '':
             w.delete()
-        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        os = Ostad.objects.get(pk = ostad_id)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(os,cookie):
@@ -145,7 +127,7 @@ class Page3View(generic.ListView):#ostad page
         else:
             return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,ostad_id):
-        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        os = Ostad.objects.get(pk = ostad_id)
         if CheckCookie(os,request.COOKIES.get('access')):
             return render(request,self.template_name,{'ostad':os})
         else:
@@ -153,18 +135,12 @@ class Page3View(generic.ListView):#ostad page
 
 
 
-class AboutSView(generic.ListView):#student info page
-    context_object_name = 'student'
+class AboutSView(generic.TemplateView):#student info page
+    
     template_name = 'uni/aboutS.html'
-    def get_queryset(self):
-        """
-        Return the last five published questions (not including those set to be
-        published in the future).
-        """
-        s = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return s
+    
     def get(self,request,student_id):
-        s = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        s = Student.objects.get(pk = student_id)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(s,cookie):
             context = {'student':s}
@@ -172,19 +148,13 @@ class AboutSView(generic.ListView):#student info page
         else:
             return HttpResponseRedirect(reverse('uni:home'))
 
-class AboutS3View(generic.ListView):#student info page in ostad
-    context_object_name = 'ostad'
+class AboutS3View(generic.TemplateView):#student info page in ostad
+    
     template_name = 'uni/aboutS3.html'
-    def get_queryset(self):
-        """
-        Return the last five published questions (not including those set to be
-        published in the future).
-        """
-        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return os
+    
     def get(self,request,ostad_id,student_id):
         
-        os = Ostad.objects.get(pk = admin_id)
+        os = Ostad.objects.get(pk = ostad_id)
         s = Student.objects.get(pk = student_id)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(os,cookie):
@@ -194,16 +164,10 @@ class AboutS3View(generic.ListView):#student info page in ostad
             return HttpResponseRedirect(reverse('uni:home'))
 
     
-class AboutS2View(generic.ListView):#student info page in admin
-    context_object_name = 'admin'
+class AboutS2View(generic.TemplateView):#student info page in admin
+    
     template_name = 'uni/aboutS2.html'
-    def get_queryset(self):
-        """
-        Return the last five published questions (not including those set to be
-        published in the future).
-        """
-        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return a
+    
     def get(self,request,admin_id,student_id):
         
         a = Admin.objects.get(pk = admin_id)
@@ -216,21 +180,15 @@ class AboutS2View(generic.ListView):#student info page in admin
             return HttpResponseRedirect(reverse('uni:home'))
 
     
-class ChangeView(generic.ListView):#change info by student
-    context_object_name = 'student'
+class ChangeView(generic.TemplateView):#change info by student
+    
     template_name = 'uni/change.html'
-    def get_queryset(self):
-        """
-        Return the last five published questions (not including those set to be
-        published in the future).
-        """
-        s = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return s
+    
     def get(self,request,student_id):
-        s = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        s = Student.objects.get(pk = student_id)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(s,cookie):
-            s = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+            
             form = ChangeForm(instance=s)
             form.student = s
             context = {'form':form,'student':s}
@@ -238,7 +196,7 @@ class ChangeView(generic.ListView):#change info by student
         else:
             return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,student_id):
-        s = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        s = Student.objects.get(pk = student_id)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(s,cookie):
             form = ChangeForm(request.POST,instance=s)
@@ -260,20 +218,13 @@ class ChangeView(generic.ListView):#change info by student
 
 
 v = 0
-class CreateView(generic.ListView):#create student by admin
+class CreateView(generic.TemplateView):#create student by admin
     
     template_name = 'uni/create.html'
-    context_object_name = 'admin'
-    def get_queryset(self):
-        """
-        Return the last five published questions (not including those set to be
-        published in the future).
-        """
-        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return a
+    
     
     def get(self,request ,admin_id):
-        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        a = Admin.objects.get(pk = admin_id)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(a,cookie):
             form = sabtform()
@@ -286,7 +237,7 @@ class CreateView(generic.ListView):#create student by admin
     def post(self,request,admin_id):
         global v
         # v = 0
-        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        a = Admin.objects.get(pk = admin_id)
         cookie  = str(request.COOKIES.get('access'))
         form = sabtform(request.POST)
         if CheckCookie(a,cookie):
@@ -349,9 +300,9 @@ class CreateView(generic.ListView):#create student by admin
         
         
     
-class LoginView(generic.ListView):#login page
+class LoginView(generic.TemplateView):#login page
     
-    model = Student
+    # model = Student
     template_name = 'uni/login.html'
 
     def get(self , request):
@@ -425,18 +376,11 @@ class LoginView(generic.ListView):#login page
             context = {'form' : form , 'form2' : form2 ,'error_message':error_message }
             return render(request ,'uni/login.html',context)
 
-class ChangePassView(generic.ListView):#change password by student
+class ChangePassView(generic.TemplateView):#change password by student
     template_name = 'uni/changepass.html'
-    context_object_name = 'student'
-    def get_queryset(self):
-        """
-        Return the last five published questions (not including those set to be
-        published in the future).
-        """
-        s = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return s
+    
     def get(self,request,student_id):
-        s = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        s = Student.objects.get(pk = student_id)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(s,cookie):
             form = ChangePass()
@@ -446,14 +390,14 @@ class ChangePassView(generic.ListView):#change password by student
             return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,student_id):
         
-        s = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        s = Student.objects.get(pk = student_id)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(s,cookie):
             form = ChangePass(request.POST)
             if form.is_valid():
                 if oracle10.hash(form.cleaned_data['pass1'],user = s.username) == s.password:
                     if form.cleaned_data['pass2'] == form.cleaned_data['pass3']:
-                        Student.objects.filter(username = Exter.objects.all()[0].exter_name).update(password = oracle10.hash(form.cleaned_data['pass2'],user=s.username))
+                        Student.objects.filter(pk = student_id).update(password = oracle10.hash(form.cleaned_data['pass2'],user=s.username))
                         global gb
                         gb = 1
                         return HttpResponseRedirect(reverse('uni:home'))
@@ -473,18 +417,12 @@ class ChangePassView(generic.ListView):#change password by student
             return HttpResponseRedirect(reverse('uni:home'))
 
 
-class ChangePassView2(generic.ListView):#change password by admin
+class ChangePassView2(generic.TemplateView):#change password by admin
     template_name = 'uni/changepass2.html'
-    context_object_name = 'admin'
-    def get_queryset(self):
-        """
-        Return the last five published questions (not including those set to be
-        published in the future).
-        """
-        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return a
+    
+    
     def get(self,request,admin_id):
-        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        a = Admin.objects.get(pk = admin_id)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(a,cookie):
             form = ChangePass()
@@ -494,14 +432,14 @@ class ChangePassView2(generic.ListView):#change password by admin
             return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,admin_id):
         
-        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        a = Admin.objects.get(pk = admin_id)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(a,cookie):
             form = ChangePass(request.POST)
             if form.is_valid():
                 if oracle10.hash(form.cleaned_data['pass1'],user = a.username) == a.password:
                     if form.cleaned_data['pass2'] == form.cleaned_data['pass3']:
-                        Admin.objects.filter(username = Exter.objects.all()[0].exter_name).update(password = oracle10.hash(form.cleaned_data['pass2'],user=a.username))
+                        Admin.objects.filter(pk = admin_id).update(password = oracle10.hash(form.cleaned_data['pass2'],user=a.username))
                         global gb
                         gb = 1
                         return HttpResponseRedirect(reverse('uni:home'))
@@ -521,18 +459,11 @@ class ChangePassView2(generic.ListView):#change password by admin
             return HttpResponseRedirect(reverse('uni:home'))
 
 
-class ChangePassView4(generic.ListView):#change password by ostad
+class ChangePassView4(generic.TemplateView):#change password by ostad
     template_name = 'uni/changepass4.html'
-    context_object_name = 'ostad'
-    def get_queryset(self):
-        """
-        Return the last five published questions (not including those set to be
-        published in the future).
-        """
-        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return os
+    
     def get(self,request,ostad_id):
-        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        os = Ostad.objects.get(pk = ostad_id)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(os,cookie):
             form = ChangePass()
@@ -542,14 +473,14 @@ class ChangePassView4(generic.ListView):#change password by ostad
             return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,ostad_id):
         
-        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        os = Ostad.objects.get(pk = ostad_id)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(os,cookie):
             form = ChangePass(request.POST)
             if form.is_valid():
                 if oracle10.hash(form.cleaned_data['pass1'],user = os.username) == os.password:
                     if form.cleaned_data['pass2'] == form.cleaned_data['pass3']:
-                        Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).update(password = oracle10.hash(form.cleaned_data['pass2'],user=os.username))
+                        Ostad.objects.filter(pk = ostad_id).update(password = oracle10.hash(form.cleaned_data['pass2'],user=os.username))
                         global gb
                         gb = 1
                         return HttpResponseRedirect(reverse('uni:home'))
@@ -569,18 +500,12 @@ class ChangePassView4(generic.ListView):#change password by ostad
             return HttpResponseRedirect(reverse('uni:home'))
 
 
-class StudentsView(generic.ListView):#student list in admin
+class StudentsView(generic.TemplateView):#student list in admin
     template_name = 'uni/students.html'
-    context_object_name = 'admin'
-    def get_queryset(self):
-        """
-        Return the last five published questions (not including those set to be
-        published in the future).
-        """
-        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return a
+    
+   
     def get(self,request,admin_id):
-        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        a = Admin.objects.get(pk = admin_id)
         Students = Student.objects.filter(College = a.College)
         
         cookie  = str(request.COOKIES.get('access'))
@@ -593,7 +518,7 @@ class StudentsView(generic.ListView):#student list in admin
         
     def post(self,request,admin_id):
         Students = Student.objects.all()
-        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        a = Admin.objects.get(pk = admin_id)
         cookie  = str(request.COOKIES.get('access'))
         
         if CheckCookie(a,cookie):
@@ -620,19 +545,13 @@ class StudentsView(generic.ListView):#student list in admin
         else:
             return HttpResponseRedirect(reverse('uni:home'))
 
-class Student1View(generic.ListView):#student profile in admin
+class Student1View(generic.TemplateView):#student profile in admin
     template_name = 'uni/student1.html'
-    context_object_name = 'admin'
-    def get_queryset(self):
-        """
-        Return the last five published questions (not including those set to be
-        published in the future).
-        """
-        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return a
+    
+    
     def get(self,request,admin_id,student_id):
         s = Student.objects.get(pk = student_id)
-        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        a = Admin.objects.get(pk = admin_id)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(a,cookie):
@@ -646,19 +565,12 @@ class Student1View(generic.ListView):#student profile in admin
             return HttpResponseRedirect(reverse('uni:home'))
 
 
-class Student3View(generic.ListView):#student profile in ostad
+class Student3View(generic.TemplateView):#student profile in ostad
     template_name = 'uni/student3.html'
-    context_object_name = 'ostad'
-    def get_queryset(self):
-        """
-        Return the last five published questions (not including those set to be
-        published in the future).
-        """
-        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return os
+    
     def get(self,request,ostad_id,student_id):
         s = Student.objects.get(pk = student_id)
-        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        os = Ostad.objects.get(pk = ostad_id)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(os,cookie):
@@ -669,19 +581,12 @@ class Student3View(generic.ListView):#student profile in ostad
 
 
     
-class Students3View(generic.ListView):#student list in ostad
+class Students3View(generic.TemplateView):#student list in ostad
     template_name = 'uni/students3.html'
-    context_object_name = 'ostad'
-    def get_queryset(self):
-        """
-        Return the last five published questions (not including those set to be
-        published in the future).
-        """
-        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return os
+    
     def get(self,request,ostad_id):
         Students = Student.objects.all()
-        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        os = Ostad.objects.get(pk = ostad_id)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(os,cookie):
@@ -692,7 +597,7 @@ class Students3View(generic.ListView):#student list in ostad
         
     def post(self,request,ostad_id):
         Students = Student.objects.all()
-        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        os = Ostad.objects.get(pk = ostad_id)
         cookie  = str(request.COOKIES.get('access'))
         
         if CheckCookie(os,cookie):
@@ -719,24 +624,19 @@ class Students3View(generic.ListView):#student list in ostad
         else:
             return HttpResponseRedirect(reverse('uni:home'))
 
-class Change2View(generic.ListView):#change student's info by admin
+class Change2View(generic.TemplateView):#change student's info by admin
     template_name = 'uni/change2.html'
-    context_object_name = 'admin'
-    def get_queryset(self):
-        """
-        Return the last five published questions (not including those set to be
-        published in the future).
-        """
-        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return a
+   
+   
     def get(self,request,admin_id,student_id):
-        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        a = Admin.objects.get(pk = admin_id)
+        s = Student.objects.get(pk = student_id)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(a,cookie):
-            s = Student.objects.get(pk = student_id)
+            
             form = Change2Form(instance=s)
             form.student = s
-            a = Admin.objects.get(pk = admin_id)
+            # a = Admin.objects.get(pk = admin_id)
             context = {'form':form,'student':s,'admin':a}
             
             return render(request,self.template_name,context)
@@ -766,18 +666,11 @@ class Change2View(generic.ListView):#change student's info by admin
 
 
 
-class ChangePassView3(generic.ListView):#change student's password by admin
+class ChangePassView3(generic.TemplateView):#change student's password by admin
     template_name = 'uni/changepass3.html'
-    context_object_name = 'admin'
-    def get_queryset(self):
-        """
-        Return the last five published questions (not including those set to be
-        published in the future).
-        """
-        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return a
+    
     def get(self,request,admin_id,student_id):
-        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        a = Admin.objects.get(pk = admin_id)
         s = Student.objects.get(pk = student_id)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(a,cookie):
@@ -788,7 +681,7 @@ class ChangePassView3(generic.ListView):#change student's password by admin
             return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,admin_id,student_id):
         
-        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        a = Admin.objects.get(pk = admin_id)
         s = Student.objects.get(pk = student_id)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(a,cookie):
@@ -815,19 +708,12 @@ class ChangePassView3(generic.ListView):#change student's password by admin
     
 
 
-class StudentsView2(generic.ListView):#student list in student
+class StudentsView2(generic.TemplateView):#student list in student
     template_name = 'uni/students2.html'
-    context_object_name = 'student'
-    def get_queryset(self):
-        """
-        Return the last five published questions (not including those set to be
-        published in the future).
-        """
-        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return a
+    
     def get(self,request,student_id):
         Students = Student.objects.all()
-        s = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        s = Student.objects.get(pk = student_id)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(s,cookie):
@@ -838,7 +724,7 @@ class StudentsView2(generic.ListView):#student list in student
         
     def post(self,request,student_id):
         Students = Student.objects.all()
-        s = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        s = Student.objects.get(pk = student_id)
         cookie  = str(request.COOKIES.get('access'))
         
         if CheckCookie(s,cookie):
@@ -863,16 +749,9 @@ class StudentsView2(generic.ListView):#student list in student
 
 
 
-class Student2View(generic.ListView):#studnet profile in student
+class Student2View(generic.TemplateView):#studnet profile in student
     template_name = 'uni/student2.html'
-    context_object_name = 'student'
-    def get_queryset(self):
-        """
-        Return the last five published questions (not including those set to be
-        published in the future).
-        """
-        s = Student.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return s
+    
     def get(self,request,student_id,student2_id):
         s2 = Student.objects.get(pk = student2_id)
         s = Student.objects.get(pk = student_id)
@@ -884,18 +763,11 @@ class Student2View(generic.ListView):#studnet profile in student
         else:
             return HttpResponseRedirect(reverse('uni:home'))
 
-class ElamView2(generic.ListView):
+class ElamView2(generic.TemplateView):
     template_name = 'uni/elam2.html'
-    context_object_name = 'ostad'
-    def get_queryset(self):
-        """
-        Return the last five published questions (not including those set to be
-        published in the future).
-        """
-        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return os
+    
     def get(self,request,ostad_id):
-        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        os = Ostad.objects.get(pk = ostad_id)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(os,cookie):
@@ -904,7 +776,7 @@ class ElamView2(generic.ListView):
         else:
             return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,ostad_id):
-        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        os = Ostad.objects.get(pk = ostad_id)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(os,cookie):
@@ -941,20 +813,13 @@ class ElamView2(generic.ListView):
 
 
 
-class CreateView2(generic.ListView):#create student by admin
+class CreateView2(generic.TemplateView):#create student by admin
     
     template_name = 'uni/create2.html'
-    context_object_name = 'admin'
-    def get_queryset(self):
-        """
-        Return the last five published questions (not including those set to be
-        published in the future).
-        """
-        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return a
+    
     
     def get(self,request ,admin_id):
-        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        a = Admin.objects.get(pk = admin_id)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(a,cookie):
             form = sabtform2()
@@ -965,7 +830,7 @@ class CreateView2(generic.ListView):#create student by admin
         
     
     def post(self,request,admin_id):
-        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        a = Admin.objects.get(pk = admin_id)
         cookie  = str(request.COOKIES.get('access'))
         form = sabtform2(request.POST)
         if CheckCookie(a,cookie):
@@ -999,20 +864,13 @@ class CreateView2(generic.ListView):#create student by admin
         else:
             return HttpResponseRedirect(reverse('uni:home'))
 
-class DarsView(generic.ListView):
+class DarsView(generic.TemplateView):
     template_name = 'uni/dars.html'
-    context_object_name = 'ostad'
-    def get_queryset(self):
-        """
-        Return the last five published questions (not including those set to be
-        published in the future).
-        """
-        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return os
+    
     
     def get(self,request,ostad_id):
         
-        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        os = Ostad.objects.get(pk = ostad_id)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(os,cookie):
             form = darsform(instance = os)
@@ -1021,7 +879,7 @@ class DarsView(generic.ListView):
         else:
             return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,ostad_id):
-        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        os = Ostad.objects.get(pk = ostad_id)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(os,cookie):
             form = darsform(request.POST)
@@ -1047,7 +905,7 @@ class DarsView(generic.ListView):
                 os.dars3 = d3
                 os.dars4 = d4
                 os.save()
-                h = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+                # h = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
                 
                 
                 
@@ -1057,18 +915,12 @@ class DarsView(generic.ListView):
         else:
             return HttpResponseRedirect(reverse('uni:home'))
         
-class ElamView1(generic.ListView):
+class ElamView1(generic.TemplateView):
     template_name = 'uni/elam1.html'
-    context_object_name = 'ostad'
-    def get_queryset(self):
-        """
-        Return the last five published questions (not including those set to be
-        published in the future).
-        """
-        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return os
+    
+    
     def get(self,request,ostad_id):
-        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        os = Ostad.objects.get(pk = ostad_id)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(os,cookie):
             
@@ -1081,7 +933,7 @@ class ElamView1(generic.ListView):
         
 
     def post(self,request,ostad_id):
-        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        os = Ostad.objects.get(pk = ostad_id)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(os,cookie):
             
@@ -1115,18 +967,11 @@ class ElamView1(generic.ListView):
         else:
             return HttpResponseRedirect(reverse('uni:home'))
 
-class BarnameView1(generic.ListView):
+class BarnameView1(generic.TemplateView):
     template_name = 'uni/barname1.html'
-    context_object_name = 'admin'
-    def get_queryset(self):
-        """
-        Return the last five published questions (not including those set to be
-        published in the future).
-        """
-        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return a
+    
     def get(self,request,admin_id):
-        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        a = Admin.objects.get(pk = admin_id)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(a,cookie):
@@ -1140,18 +985,11 @@ class BarnameView1(generic.ListView):
 
 
 
-class BarnameView2(generic.ListView):
+class BarnameView2(generic.TemplateView):
     template_name = 'uni/barname2.html'
-    context_object_name = 'admin'
-    def get_queryset(self):
-        """
-        Return the last five published questions (not including those set to be
-        published in the future).
-        """
-        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return a
+    
     def get(self,request,admin_id,elam_id):
-        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        a = Admin.objects.get(pk = admin_id)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(a,cookie):
@@ -1183,18 +1021,11 @@ class BarnameView2(generic.ListView):
 
 
 
-class CreateklassView(generic.ListView):
+class CreateklassView(generic.TemplateView):
     template_name = 'uni/createklass.html'
-    context_object_name = 'admin'
-    def get_queryset(self):
-        """
-        Return the last five published questions (not including those set to be
-        published in the future).
-        """
-        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        return a
+    
     def get(self,request,admin_id):
-        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        a = Admin.objects.get(pk = admin_id)
         cookie  = str(request.COOKIES.get('access'))
         form = KlassForm(initial = {"college": a.College,'public_date':dt.datetime.now(),'uni':a.uni})
         if CheckCookie(a,cookie):
@@ -1205,7 +1036,7 @@ class CreateklassView(generic.ListView):
         else:
             return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,admin_id):
-        a = Admin.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        a = Admin.objects.get(pk = admin_id)
         cookie  = str(request.COOKIES.get('access'))
         form = KlassForm(request.POST ,initial = {"college": a.College,'public_date':dt.datetime.now()})
         if CheckCookie(a,cookie):
