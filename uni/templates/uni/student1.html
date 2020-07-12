@@ -5,7 +5,7 @@
             <li><a href="{% url 'uni:page2' admin.id %}">خانه</a></li>
             <li><a href="{% url 'uni:aboutS2' admin.id  student.id %}">اطلاعات دانشجو</a></li>
             <li><a href="{% url 'uni:changepass3' admin.id  student.id %}">تغییر رمز عبور دانشجو</a></li>
-            <a href="{% url 'uni:home' %}"><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
+            <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
           </ul>
     
         <link rel="stylesheet" type="text/css" href="{% static 'uni/style2.css' %}">
@@ -29,7 +29,10 @@
 
 
 
-
+    <form id="logoutform" method="POST" action="{% url 'uni:logout' %}">
+        {% csrf_token %}
+        <input type="hidden">
+        </form>
 
 
 

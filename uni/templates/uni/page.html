@@ -7,7 +7,8 @@
             <li><a href="{% url 'uni:aboutS' student.id %}">اطلاعات دانشجو</a></li>
             <li><a href="{% url 'uni:students2' student.id %}">دانشجویان</a></li>
             <li><a href="{% url 'uni:changepass' student.id %}">تغیر رمز عبور</a></li>
-            <a href="{% url 'uni:home' %}"><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
+            <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
+            
             <input  style="text-align-last: right;" type="search" placeholder="جست و جو " aria-label="Search" name="search" >
           </ul>
     
@@ -22,6 +23,12 @@
             
         </div>
     </body>
+
+
+    <form id="logoutform" method="POST" action="{% url 'uni:logout' %}">
+        {% csrf_token %}
+        <input type="hidden">
+        </form>
 
 
 
