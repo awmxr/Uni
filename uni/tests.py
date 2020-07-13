@@ -1,3 +1,5 @@
-from django.test import TestCase
+import re
 
-# Create your tests here.
+a = 'a re'
+a = re.sub('^\s*','',a)
+print(a)

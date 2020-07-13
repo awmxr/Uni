@@ -1,0 +1,119 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    
+
+<head>
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<style>
+  table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="{% static 'uni/style2.css' %}">
+</head>
+<body style="text-align: left;">
+
+    
+    <ul>
+      <li><a href="{% url 'uni:page2' admin.id%}">خانه</a></li>  
+      <li><a href="{% url 'uni:students' admin.id %}">دانشجویان</a></li>
+      <li><a href="{% url 'uni:changepass2' admin.id %}">تغیر رمز عبور</a></li>
+      <a href="{% url 'uni:home' %}"><button class="cancelbtn"  style=" height: 54px;text-align: left;" type="button">خروج</button></a>
+    </ul>
+
+
+
+
+    <div class="w3-container w3-dark-grey">        
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <h2 style="text-align: right; " >{{ admin.name  }} {{  admin.last_name  }}</h2> 
+  </div>
+    
+  <form  id = "dem"class="modal-content animate" method="post" style="width: 1300px;">{% csrf_token %}
+    <div class="imgcontainer">
+      <a href=" {% url 'uni:page2' admin.id %} "><span  class="close" title="Close Modal">&times;</span></a>
+      <br>
+      <br>
+    </div>
+    
+    <div style="text-align: right;" class="container">
+      <!-- <label for="uname"><b>Username</b></label> -->
+      <!-- <input id = "usernamee" type="text" placeholder="Enter Username" name="uname" value="awmxr"> -->
+      <table>
+        <tr>
+          <th>مشاهده جزییات</th>
+          <th>تعداد دوره</th>
+          <th>ظرفیت</th>
+          <th>درس</th>
+          <th>استاد</th>
+        </tr>
+        {% for i in Elam %}
+
+        <tr>
+          <th> <a href=" {% url 'uni:barname2' admin.id i.id %} ">جزییات</a></th>
+            <th>{{i.numbers}}</th>
+            <th>{{i.capacity}}</th>
+            <th>{{i.dars}}</th>
+            <th>{{i.ostad}}</th>
+            
+          </tr>
+
+
+
+
+        {% endfor %}
+        
+
+      </table>
+      
+      
+      {% if error_message %}<p style="color: red;">{{ error_message }}</p>{% endif %}
+      
+      
+
+      <!-- <label for="psw"><b>Password</b></label> -->
+      <!-- <input type="password" placeholder="Enter Password" name="psw" required> -->
+        
+      
+    </div>
+
+    <div class="container" style="background-color:#f1f1f1">
+      <div style="text-align: left;">
+        <a href="{% url 'uni:page2' admin.id %}"><button type="button" style="text-align: right;"  class="cancelbtn">لغو</button></a>
+        
+      </div>
+    </div>
+
+  </form>
+
+
+<script>
+// Get the modal
+username = document.getElementsById("usernamee").value
+var modal = document.getElementById('id01');
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+</script>
+
+
+</body>
+</html>

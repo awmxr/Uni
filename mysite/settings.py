@@ -25,12 +25,14 @@ SECRET_KEY = '*mf@*-m78fj2(*lz9cg#vk_z^3-bvua7rcq0@bm(9zynyy5p7@'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['172.20.10.13', 'localhost', '127.0.0.1']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    # 'uni',
+    'django.contrib.sites',
     'uni.apps.UniConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -40,7 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 STATIC_URL = '/static/'
-
+SITE_ID = 2
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -68,6 +70,8 @@ TEMPLATES = [
         },
     },
 ]
+
+AUTH_USER_MODEL = 'uni.Account'
 
 WSGI_APPLICATION = 'mysite.wsgi.application'
 
