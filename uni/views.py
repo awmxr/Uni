@@ -569,8 +569,8 @@ class Students3View(generic.TemplateView):#student list in ostad
     template_name = 'uni/students3.html'
     
     def get(self,request,ostad_id):
+        Students = Student.objects.all()
         os = Ostad.objects.get(pk = ostad_id)
-        Students = Student.objects.filter(uni = os.uni)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(os,cookie) and request.user.is_authenticated:
@@ -701,9 +701,8 @@ class StudentsView2(generic.TemplateView):#student list in student
     template_name = 'uni/students2.html'
     
     def get(self,request,student_id):
+        Students = Student.objects.all()
         s = Student.objects.get(pk = student_id)
-        Students = Student.objects.filter(uni = s.uni)
-        
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(s,cookie) and request.user.is_authenticated:
@@ -914,7 +913,7 @@ class ElamView1(generic.TemplateView):
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(os,cookie) and request.user.is_authenticated:
             
-            form = ElamForm(initial = {"username": os.username,'ostad':os,'phone':os.phone,'uni':os.uni,'ostad_id':os.id})
+            form = ElamForm(initial = {"username": os.username,'ostad':os,'phone':os.phone,'uni':os.uni})
             context = {'ostad':os,'form':form}
             return render(request,self.template_name,context)
             
@@ -1024,7 +1023,7 @@ class BarnameView2(generic.TemplateView):
                     return HttpResponseRedirect(reverse('uni:erae',args = [a.id,elam.id]))
                 elif value1 == 'no':
                     elam.reject = True
-                    elam.vaziat = 'ارائه نمیشود'
+                    elam.vaziat = 'اراعه نمیشود'
                     elam.save()
                     return HttpResponseRedirect(reverse('uni:barname1',args=[a.id]))
 
@@ -1395,26 +1394,18 @@ class Erae2View(generic.TemplateView):
                         vahed1.time = kj2
                         kj = os.time
                         kj2 = kj.replace(f'{i}','')
-                        kj2 = re.sub('^\s*','',kj2)
                         os.time = kj2
-
                         os.save()
                         
                         vahed1.save()
                         dic1.pop(i)
                         klas = Klass.objects.get(pk = klas_id)
                         kj = klas.time
-
                         kj3 = str(i)
                         kj2 = kj.replace(kj3,'')
-                        kj2 = re.sub('^\s*','',kj2)
                         klas.time = kj2
                         kj4 = klas.khali
-                        list15 = klas.time.split(' ')
-                        if '' in list15:
-                            list15.remove('')
-                        
-                        kj5 = 25 - len(list15)
+                        kj5 = str(int(kj4) + 1)
                         klas.khali = kj5
                         klas.save()
 
@@ -1440,28 +1431,13 @@ class Erae2View(generic.TemplateView):
                             
                             
                     klas.time += kj
-
-                    list15 = klas.time.split(' ')
-                    if '' in list15:
-                        list15.remove('')
-                        
-                    kj5 = 25 - len(list15)
-                    klas.khali = kj5
+                    klas.khali = str(int(klas.khali) - 1)
                     klas.save() 
                     os.time += kj
                     os.save()      
-                    
-                    
+                        
                     if not elam.active:
-                        e = None
-                        e = Vahed.objects.filter(elam_id = elam.id).first()
-                        # for i in vaheds:
-                        #     if i.elam_id == elam.id and i.laghv == True:
-                        #         e = i
-                        #         e.laghv = False
-                        #         break
-                        if not e:
-                            e = Vahed(time = timee , uni = elam.uni,ostad = elam.ostad,goruh = elam.goruh , college = elam.college , dars = elam.dars,elam_id = elam_id , capacity = elam.capacity,ostad_id = elam.ostad_id)
+                        e = Vahed(time = timee , ostad = elam.ostad,goruh = elam.goruh , college = elam.college , dars = elam.dars,elam_id = elam_id , capacity = elam.capacity)
 
                         e.save()
                         elam.active = True
@@ -1569,14 +1545,12 @@ class NahaeeView(generic.TemplateView):
             elam = Elam.objects.get(pk = elam_id)
             elam.vaziat = 'ارارعه میشود'
             elam.accept = True
-            elam.reject = False
             elam.save()
             if request.method == "POST":
                 vahed1 = Vahed.objects.get(pk = vahed_id)
                 value1 = request.POST.get('erae')
                 if value1 == 'yes':
                     vahed1.active = True
-                    vahed1.laghv = False
                     vahed1.save()
                     return HttpResponseRedirect(reverse('uni:page2',args = [a.id]))
         else:
@@ -1642,48 +1616,6 @@ class VahedView(generic.TemplateView):
             return render(request,self.template_name,context)
         else:
             return HttpResponseRedirect(reverse('uni:home'))
-    def post(self,request,admin_id):
-        a = Admin2.objects.get(pk = admin_id)
-        cookie  = str(request.COOKIES.get('access'))
-        if CheckCookie(a,cookie) and request.user.is_authenticated:
-            vahed__id = request.POST.get('laghv')
-            vahed1 = Vahed.objects.get(pk = vahed__id)
-            elam1 = Elam.objects.get(pk = vahed1.elam_id)
-            os = Ostad.objects.get(pk = vahed1.ostad_id)
-            elam1.reject = True
-            elam1.accept = False
-            elam1.active = False
-            elam1.vaziat = 'ارائه نمیشود'
-            elam1.save()
-            list1 = vahed1.time.split(' ')
-            if '' in list1:
-                list1.remove('')
-            for i in list1:
-                list2 = i.split(',')
-                klas1 = Klass.objects.get(pk = int(list2[0]))
-                if list2[1] in klas1.time:
-                    klas1.time = klas1.time.replace(list2[1],'')
-                    klas1.time = re.sub('^\s*','',klas1.time)
-
-                    klas1.khali = str(int(klas1.khali) + 1)
-                    klas1.save()
-                if list2[1] in os.time:
-                    os.time = os.time.replace(list2[1],'')
-                    os.time = re.sub('^\s*','',os.time)
-                    os.save()
-            vahed1.active = False
-            vahed1.accept = False
-            vahed1.laghv = True
-            vahed1.reject = True
-            vahed1.save()
-            
-            return HttpResponseRedirect(reverse('uni:page2',args = [a.id]))
-        else:
-            return HttpResponseRedirect(reverse('uni:home'))
-            
-
-
-
 
 
 
@@ -1900,7 +1832,6 @@ class Vaziat4View(generic.TemplateView):
             return HttpResponseRedirect(reverse('uni:home'))
 
         
-
 # class Vaziat5View(generic.TemplateView):
 #     template_name = 'uni/vaziat.html'
 #     def get(self,request,ostad_id,elam_id):

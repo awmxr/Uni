@@ -32,7 +32,7 @@ tr:nth-child(even) {
       <li><a href="{% url 'uni:page2' admin.id%}">خانه</a></li>  
       <li><a href="{% url 'uni:students' admin.id %}">دانشجویان</a></li>
       <li><a href="{% url 'uni:changepass2' admin.id %}">تغیر رمز عبور</a></li>
-      <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
+      <a href="{% url 'uni:home' %}"><button class="cancelbtn"  style=" height: 54px;text-align: left;" type="button">خروج</button></a>
     </ul>
 
 
@@ -55,48 +55,30 @@ tr:nth-child(even) {
       <!-- <input id = "usernamee" type="text" placeholder="Enter Username" name="uname" value="awmxr"> -->
       <table>
         <tr>
-<<<<<<< HEAD
-            <th style="text-align: center;">تغیر وضعیت</th>
-=======
-            
->>>>>>> 0292f1a416dad2aec506993c2882658de627ef11
-            <th style="text-align: center;">ظرفیت</th>
-            <th style="text-align: center;">روز ها و کلاس</th>
-          <th style="text-align: center;">استاد</th>
-          <th style="text-align: center;">کد درس</th>
-          <th style="text-align: center;">گروه</th>
-          <th style="text-align: center;">درس</th>
+          <th>شماره تلفن همراه</th>
+          <th>تعداد دوره</th>
+          <th>ظرفیت</th>
+          <th>درس</th>
+          <th>استاد</th>
+          
         </tr>
-        {% for i in lastlist %}
-
         <tr>
-<<<<<<< HEAD
-            <th style="text-align: center;"> <button type="submit" name="laghv" value="{{  i.0.id  }}" >لغو</button> </th>
-=======
-            
->>>>>>> 0292f1a416dad2aec506993c2882658de627ef11
-            <th style="text-align: center;">{{i.0.capacity}}</th>
-            
-            <th style="text-align: center;">{% for j in i.2 %}
-                
-                {{j}} {{i.1|get_item:j}} <br>
-                {%endfor%}
-            </th>
-            
-            <th style="text-align: center;">{{i.0.ostad}}</th>
-            <th style="text-align: center;">{{i.0.dars_code}}</th>
-            <th style="text-align: center;">{{i.0.goruh}}</th>
-            <th style="text-align: center;">{{i.0.dars}}</th>
-            
-          </tr>
-
-
-
-
-        {% endfor %}
-        
-
+          <th>{{ i.phone }}</th>
+          <th>{{ i.numbers }}</th>
+          <th>{{ i.capacity }}</th>
+          <th>{{ i.dars }}</th>
+          <th>{{ i.ostad }}</th>
+          
+        </tr>
       </table>
+      <h1>برنامه حضور استاد برای این درس</h1>
+      <table >
+      {% for i in lis1 %}
+      <tr>
+        <th><h3 style="text-align: right;">{{ i }}</h3></th>
+      </tr>
+      {% endfor %}
+    </table>
       
       
       {% if error_message %}<p style="color: red;">{{ error_message }}</p>{% endif %}
@@ -134,9 +116,4 @@ window.onclick = function(event) {
 
 
 </body>
-
-<form id="logoutform" method="POST" action="{% url 'uni:logout' %}">
-  {% csrf_token %}
-  <input type="hidden">
-  </form>
 </html>

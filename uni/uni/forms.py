@@ -1,14 +1,16 @@
 from django import forms
-
-from .models import Student,Ostad,Elam,Klass
-
-
-
+<<<<<<< HEAD:Uni/uni/forms.py
+from .models import Student,Exter,Ostad,Elam,Klass
+=======
+from .models import Student,Exter,Ostad,Elam
+>>>>>>> 34e10441c83d8283fb2b094950ad7dd215b31503:uni/forms.py
 from . import choices
-from django.contrib.auth import authenticate
 
 class Loginform(forms.Form):
     username = forms.CharField(widget = forms.TextInput(attrs={'autocomplete': 'off'}), label = False)
+
+
+class Loginform2(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput,label = False)
 
 class sabtform(forms.ModelForm):
@@ -173,9 +175,48 @@ class Change2Form(forms.ModelForm):
             
             
         } 
+<<<<<<< HEAD:Uni/uni/forms.py
+=======
 
+class ElamForm(forms.ModelForm):
 
+    class Meta:
+        model = Elam
+        fields = [
+            'username',
+            'ostad',
+            'college',
+            'dars',
+            'numbers',
+            'capacity',
+            'phone',
+        ]
+        labels = {
+            'college' : 'دانشکده',
+            'dars' : 'درس',
+            'numbers' : 'تعداد دوره',
+            'capacity' : 'ظرفیت',
+        }
+        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        if os:
+            list1 = [os.dars1,os.dars2,os.dars3,os.dars4]
+            t = ()
+            for i in list1:
+                if i != None:
+                    t = t + ((i,i),)
 
+        widgets = {
+            'college' : forms.Select(choices= choices.college_choices),
+            'dars' : forms.Select(choices= choices.dars_choices),  
+            'username' : forms.HiddenInput(),
+            'ostad':forms.HiddenInput(),
+            'phone' : forms.HiddenInput()
+            
+        } 
+        # initials = {
+        #     'username':os.username,
+        #     'ostad': os,
+        # }
 
 
 
@@ -265,7 +306,7 @@ class darsform(forms.ModelForm):
 
 
         
-
+>>>>>>> 34e10441c83d8283fb2b094950ad7dd215b31503:uni/forms.py
 
 class ElamForm(forms.ModelForm):
 
@@ -274,29 +315,24 @@ class ElamForm(forms.ModelForm):
         fields = [
             'username',
             'ostad',
-            'uni',
             'college',
             'dars',
             'capacity',
             'phone',
-            
             
         ]
         labels = {
             'college' : 'دانشکده',
             'dars' : 'درس',
             'capacity' : 'ظرفیت',
-            'uni':'دانشگاه'
-
         }
-        
-        # os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        # if os:
-        #     list1 = [os.dars1,os.dars2,os.dars3,os.dars4]
-        #     t = ()
-        #     for i in list1:
-        #         if i != None:
-        #             t = t + ((i,i),)
+        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        if os:
+            list1 = [os.dars1,os.dars2,os.dars3,os.dars4]
+            t = ()
+            for i in list1:
+                if i != None:
+                    t = t + ((i,i),)
 
         widgets = {
             'college' : forms.Select(choices= choices.college_choices),
@@ -304,11 +340,13 @@ class ElamForm(forms.ModelForm):
             'username' : forms.HiddenInput(),
             'ostad':forms.HiddenInput(),
             'phone' : forms.HiddenInput(),
-            'uni':forms.Select(choices= choices.uni_choices),
             
             
         } 
-        
+        # initials = {
+        #     'username':os.username,
+        #     'ostad': os,
+        # }
 
 
 
@@ -404,13 +442,11 @@ class KlassForm(forms.ModelForm):
             'college',
             'floor',
             'public_date',
-            'uni',
         ]
         widgets = {
             'college' : forms.HiddenInput(),
             'address' : forms.Textarea() ,  
             'public_date' : forms.HiddenInput(),
-            'uni':forms.HiddenInput(),
         }
         labels = {
             'number':'شماره کلاس',
