@@ -1006,6 +1006,7 @@ class BarnameView2(generic.TemplateView):
                     if i == j:
                         list1.append(dictime[j])
             context = {'admin':a,'i':el,'lis1':list1}
+<<<<<<< HEAD
 
             return render(request,self.template_name,context)
             
@@ -1039,6 +1040,41 @@ class BarnameView4(generic.TemplateView):
         a = Admin2.objects.get(pk = admin_id)
         cookie  = str(request.COOKIES.get('access'))
 
+=======
+
+            return render(request,self.template_name,context)
+            
+        else:
+
+            return HttpResponseRedirect(reverse('uni:home'))
+    def post(self,request,admin_id,elam_id):
+        a = Admin2.objects.get(pk = admin_id)
+        elam = Elam.objects.get(pk = elam_id)
+        cookie  = str(request.COOKIES.get('access'))
+
+        if CheckCookie(a,cookie) and request.user.is_authenticated:
+            if request.method == "POST":
+                value1 = request.POST.get('dars2')
+                if value1 == 'yes':
+                    return HttpResponseRedirect(reverse('uni:erae',args = [a.id,elam.id]))
+                elif value1 == 'no':
+                    elam.reject = True
+                    elam.vaziat = 'اراعه نمیشود'
+                    elam.save()
+                    return HttpResponseRedirect(reverse('uni:barname1',args=[a.id]))
+
+        
+        else:
+            return HttpResponseRedirect(reverse('uni:home'))
+
+class BarnameView4(generic.TemplateView):
+    template_name = 'uni/barname4.html'
+    
+    def get(self,request,admin_id,elam_id):
+        a = Admin2.objects.get(pk = admin_id)
+        cookie  = str(request.COOKIES.get('access'))
+
+>>>>>>> 0f3671b37f4503fef46c3ae4bfd982294a1c5c27
         if CheckCookie(a,cookie) and request.user.is_authenticated:
             el = Elam.objects.get(pk = elam_id)
             tii = el.time.split(' ')
@@ -1395,15 +1431,20 @@ class Erae2View(generic.TemplateView):
                         vahed1.time = kj2
                         kj = os.time
                         kj2 = kj.replace(f'{i}','')
+<<<<<<< HEAD
                         kj2 = re.sub('^\s*','',kj2)
                         os.time = kj2
 
+=======
+                        os.time = kj2
+>>>>>>> 0f3671b37f4503fef46c3ae4bfd982294a1c5c27
                         os.save()
                         
                         vahed1.save()
                         dic1.pop(i)
                         klas = Klass.objects.get(pk = klas_id)
                         kj = klas.time
+<<<<<<< HEAD
 
                         kj3 = str(i)
                         kj2 = kj.replace(kj3,'')
@@ -1415,6 +1456,13 @@ class Erae2View(generic.TemplateView):
                             list15.remove('')
                         
                         kj5 = 25 - len(list15)
+=======
+                        kj3 = str(i)
+                        kj2 = kj.replace(kj3,'')
+                        klas.time = kj2
+                        kj4 = klas.khali
+                        kj5 = str(int(kj4) + 1)
+>>>>>>> 0f3671b37f4503fef46c3ae4bfd982294a1c5c27
                         klas.khali = kj5
                         klas.save()
 
@@ -1440,6 +1488,7 @@ class Erae2View(generic.TemplateView):
                             
                             
                     klas.time += kj
+<<<<<<< HEAD
 
                     list15 = klas.time.split(' ')
                     if '' in list15:
@@ -1462,6 +1511,15 @@ class Erae2View(generic.TemplateView):
                         #         break
                         if not e:
                             e = Vahed(time = timee , uni = elam.uni,ostad = elam.ostad,goruh = elam.goruh , college = elam.college , dars = elam.dars,elam_id = elam_id , capacity = elam.capacity,ostad_id = elam.ostad_id)
+=======
+                    klas.khali = str(int(klas.khali) - 1)
+                    klas.save() 
+                    os.time += kj
+                    os.save()      
+                        
+                    if not elam.active:
+                        e = Vahed(time = timee , ostad = elam.ostad,goruh = elam.goruh , college = elam.college , dars = elam.dars,elam_id = elam_id , capacity = elam.capacity)
+>>>>>>> 0f3671b37f4503fef46c3ae4bfd982294a1c5c27
 
                         e.save()
                         elam.active = True
@@ -1566,20 +1624,31 @@ class NahaeeView(generic.TemplateView):
         a = Admin2.objects.get(pk = admin_id)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(a,cookie) and request.user.is_authenticated:
+<<<<<<< HEAD
             
             elam = Elam.objects.get(pk = elam_id)
             elam.vaziat = 'ارارعه میشود'
             elam.accept = True
             elam.reject = False
+=======
+            elam = Elam.objects.get(pk = elam_id)
+            elam.vaziat = 'ارارعه میشود'
+            elam.accept = True
+>>>>>>> 0f3671b37f4503fef46c3ae4bfd982294a1c5c27
             elam.save()
             if request.method == "POST":
                 vahed1 = Vahed.objects.get(pk = vahed_id)
                 value1 = request.POST.get('erae')
+<<<<<<< HEAD
                 date1 = request.POST.get('emtehan')
                 if value1 == 'yes':
                     vahed1.active = True
                     vahed1.laghv = False
                     vahed1.emtehan_date = date1
+=======
+                if value1 == 'yes':
+                    vahed1.active = True
+>>>>>>> 0f3671b37f4503fef46c3ae4bfd982294a1c5c27
                     vahed1.save()
                     return HttpResponseRedirect(reverse('uni:page2',args = [a.id]))
         else:
@@ -1645,6 +1714,7 @@ class VahedView(generic.TemplateView):
             return render(request,self.template_name,context)
         else:
             return HttpResponseRedirect(reverse('uni:home'))
+<<<<<<< HEAD
     def post(self,request,admin_id):
         a = Admin2.objects.get(pk = admin_id)
         cookie  = str(request.COOKIES.get('access'))
@@ -1687,6 +1757,8 @@ class VahedView(generic.TemplateView):
 
 
 
+=======
+>>>>>>> 0f3671b37f4503fef46c3ae4bfd982294a1c5c27
 
 
 
@@ -1903,13 +1975,29 @@ class Vaziat4View(generic.TemplateView):
             return HttpResponseRedirect(reverse('uni:home'))
 
         
+<<<<<<< HEAD
 
+=======
+>>>>>>> 0f3671b37f4503fef46c3ae4bfd982294a1c5c27
 # class Vaziat5View(generic.TemplateView):
 #     template_name = 'uni/vaziat.html'
 #     def get(self,request,ostad_id,elam_id):
 #         elam = Elam.objects.get(pk = elam_id)
 #         os = Ostad.objects.get(pk = ostad_id)
 #         cookie  = str(request.COOKIES.get('access'))
+<<<<<<< HEAD
+
+#         if CheckCookie(os,cookie) and request.user.is_authenticated:
+#             elam.request = False
+#             elam.save()
+#             response = HttpResponseRedirect(reverse('uni:vaziat',args = [os.id]))
+#             return response
+#         else:
+#             return HttpResponseRedirect(reverse('uni:home'))
+
+
+=======
+>>>>>>> 0f3671b37f4503fef46c3ae4bfd982294a1c5c27
 
 #         if CheckCookie(os,cookie) and request.user.is_authenticated:
 #             elam.request = False
@@ -1934,6 +2022,16 @@ class Vaziat4View(generic.TemplateView):
 
 
 
+<<<<<<< HEAD
+        
+
+
+
+
+
+
+=======
+>>>>>>> 0f3671b37f4503fef46c3ae4bfd982294a1c5c27
 
 
 

@@ -279,7 +279,6 @@ class ElamForm(forms.ModelForm):
             'dars',
             'capacity',
             'phone',
-            'ostad_id',
             
             
         ]
@@ -305,7 +304,6 @@ class ElamForm(forms.ModelForm):
             'username' : forms.HiddenInput(),
             'ostad':forms.HiddenInput(),
             'phone' : forms.HiddenInput(),
-            'ostad_id' : forms.HiddenInput(),
             'uni':forms.Select(choices= choices.uni_choices),
             
             

@@ -156,7 +156,6 @@ class Elam(models.Model):
     goruh = models.CharField(max_length=1000)
     dascode = models.CharField(max_length=1000)
     uni = models.CharField(max_length=2000)
-    ostad_id = models.CharField(max_length=200)
     vaziat = models.CharField(max_length=2000,default = 'درحال بررسی')
     active = models.BooleanField(default=False)
     reject = models.BooleanField(default=False)
@@ -209,15 +208,12 @@ class Vahed(models.Model):
     goruh = models.CharField(max_length=200)
     ostad = models.CharField(max_length=200)
     time = models.CharField(max_length=200)
-    uni = models.CharField(max_length=200)
     college = models.CharField(max_length=200)
     dars_code = models.CharField(max_length=200)
     capacity = models.CharField(max_length=200)
     klas_id = models.CharField(max_length=200)
-    ostad_id = models.CharField(max_length=200)
-    emtehan_date = models.DateField(blank = True , null = True) 
+
     active = models.BooleanField(default=False)
-    laghv = models.BooleanField(default=False)
 
 
     def __str__(self):
