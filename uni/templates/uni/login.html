@@ -75,4 +75,8 @@ window.onclick = function(event) {
 </script>
 
 </body>
+<form id="logoutform" method="POST" action="{% url 'uni:logout' %}">
+  {% csrf_token %}
+  <input type="hidden">
+  </form>
 </html>

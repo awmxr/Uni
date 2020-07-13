@@ -15,6 +15,7 @@
       <li><a href="{% url 'uni:elam1' ostad.id %}">اعلام برنامه ترم</a></li>
       <li><a href="{% url 'uni:students3' ostad.id %}">دانشجویان</a></li>
       <li><a href="{% url 'uni:changepass4' ostad.id %}">تغیر رمز عبور</a></li>
+      <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
       
     </ul>
     
@@ -77,4 +78,8 @@ window.onclick = function(event) {
 </script>
 
 </body>
+<form id="logoutform" method="POST" action="{% url 'uni:logout' %}">
+  {% csrf_token %}
+  <input type="hidden">
+  </form>
 </html>

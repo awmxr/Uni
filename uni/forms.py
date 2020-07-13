@@ -1,16 +1,14 @@
 from django import forms
 
-from .models import Student,Exter,Ostad,Elam,Klass
+from .models import Student,Ostad,Elam,Klass
 
-from .models import Student,Exter,Ostad,Elam
+
 
 from . import choices
+from django.contrib.auth import authenticate
 
 class Loginform(forms.Form):
     username = forms.CharField(widget = forms.TextInput(attrs={'autocomplete': 'off'}), label = False)
-
-
-class Loginform2(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput,label = False)
 
 class sabtform(forms.ModelForm):
@@ -276,27 +274,30 @@ class ElamForm(forms.ModelForm):
         fields = [
             'username',
             'ostad',
+            'uni',
             'college',
             'dars',
             'capacity',
             'phone',
-            'uni',
+            'ostad_id',
+            
             
         ]
         labels = {
             'college' : 'دانشکده',
             'dars' : 'درس',
             'capacity' : 'ظرفیت',
+            'uni':'دانشگاه'
 
         }
         
-        os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
-        if os:
-            list1 = [os.dars1,os.dars2,os.dars3,os.dars4]
-            t = ()
-            for i in list1:
-                if i != None:
-                    t = t + ((i,i),)
+        # os = Ostad.objects.filter(username = Exter.objects.all()[0].exter_name).first()
+        # if os:
+        #     list1 = [os.dars1,os.dars2,os.dars3,os.dars4]
+        #     t = ()
+        #     for i in list1:
+        #         if i != None:
+        #             t = t + ((i,i),)
 
         widgets = {
             'college' : forms.Select(choices= choices.college_choices),
@@ -304,14 +305,12 @@ class ElamForm(forms.ModelForm):
             'username' : forms.HiddenInput(),
             'ostad':forms.HiddenInput(),
             'phone' : forms.HiddenInput(),
-            'uni':forms.HiddenInput(),
+            'ostad_id' : forms.HiddenInput(),
+            'uni':forms.Select(choices= choices.uni_choices),
             
             
         } 
-        # initials = {
-        #     'username':os.username,
-        #     'ostad': os,
-        # }
+        
 
 
 
