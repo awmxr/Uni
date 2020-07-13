@@ -1,0 +1,146 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    
+
+<head>
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<style>
+  table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="{% static 'uni/style2.css' %}">
+</head>
+<body style="text-align: left;">
+
+    
+    <ul>
+      <li><a href="{% url 'uni:page3' ostad.id%}">خانه</a></li>  
+      <li><a href="{% url 'uni:students3' ostad.id %}">دانشجویان</a></li>
+      <li><a href="{% url 'uni:changepass4' ostad.id %}">تغیر رمز عبور</a></li>
+      <a href="{% url 'uni:home' %}"><button class="cancelbtn"  style=" height: 54px;text-align: left;" type="button">خروج</button></a>
+    </ul>
+
+
+
+
+    <div class="w3-container w3-dark-grey">        
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <h2 style="text-align: right; " >{{ ostad.name  }} {{  ostad.last_name  }}</h2> 
+  </div>
+    
+  <form  id = "dem"class="modal-content animate" method="post" style="width: 1300px;">{% csrf_token %}
+    <div class="imgcontainer">
+      <a href=" {% url 'uni:page3' ostad.id %} "><span  class="close" title="Close Modal">&times;</span></a>
+      <br>
+      <br>
+    </div>
+    <h3 style="text-align: center;">لطفا زمان هایی که میتوانید حضور یابید را مشخص کنید</h3>
+    <div style="text-align: right;" class="container">
+      <!-- <label for="uname"><b>Username</b></label> -->
+      <!-- <input id = "usernamee" type="text" placeholder="Enter Username" name="uname" value="awmxr"> -->
+      <table>
+        <tr>
+          <th>چهارشنبه</th>
+          <th>سه شنبه</th>
+          <th>دوشنبه</th>
+          <th>یکشنبه</th>
+          <th>شنبه</th>
+          <th>ساعات</th>
+        </tr>
+        <tr>
+          <td><input type="checkbox" value="41" name = 'timeclass'>41</td>
+          <td><input type="checkbox" value="31" name = 'timeclass'>31</td>
+          <td><input type="checkbox" value="21" name = 'timeclass'>21</td>
+          <td><input type="checkbox" value="11" name = 'timeclass'>11</td>
+          <td><input type="checkbox" value="01" name = 'timeclass'>01</td>
+          <td>8-10</td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" value="42" name = 'timeclass'>42</td>
+          <td><input type="checkbox" value="32" name = 'timeclass'>32</td>
+          <td><input type="checkbox" value="22" name = 'timeclass'>22</td>
+          <td><input type="checkbox" value="12" name = 'timeclass'>12</td>
+          <td><input type="checkbox" value="02" name = 'timeclass'>02</td>
+          <td>10-12</td>
+        </tr>
+        
+        <tr>
+          <td><input type="checkbox" value="43" name = 'timeclass'>43</td>
+          <td><input type="checkbox" value="33" name = 'timeclass'>33</td>
+          <td><input type="checkbox" value="23" name = 'timeclass'>23</td>
+          <td><input type="checkbox" value="13" name = 'timeclass'>13</td>
+          <td><input type="checkbox" value="03" name = 'timeclass'>03</td>
+          <td>13-15</td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" value="44" name = 'timeclass'>44</td>
+          <td><input type="checkbox" value="34" name = 'timeclass'>34</td>
+          <td><input type="checkbox" value="24" name = 'timeclass'>24</td>
+          <td><input type="checkbox" value="14" name = 'timeclass'>14</td>
+          <td><input type="checkbox" value="04" name = 'timeclass'>04</td>
+          <td>15-17</td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" value="45" name = 'timeclass'>45</td>
+          <td><input type="checkbox" value="35" name = 'timeclass'>35</td>
+          <td><input type="checkbox" value="25" name = 'timeclass'>25</td>
+          <td><input type="checkbox" value="15" name = 'timeclass'>15</td>
+          <td><input type="checkbox" value="05" name = 'timeclass'>05</td>
+          <td>17-19</td>
+        </tr>
+        
+
+      </table>
+      
+      
+      {% if error_message %}<p style="color: red;">{{ error_message }}</p>{% endif %}
+      
+      
+
+      <!-- <label for="psw"><b>Password</b></label> -->
+      <!-- <input type="password" placeholder="Enter Password" name="psw" required> -->
+        
+      <button style="background-color: #333333; font-size: large;" type="submit">تایید</button>
+    </div>
+
+    <div class="container" style="background-color:#f1f1f1">
+      <div style="text-align: left;">
+        <a href="{% url 'uni:page3' ostad.id %}"><button type="button" style="text-align: right;"  class="cancelbtn">لغو</button></a>
+        
+      </div>
+    </div>
+
+  </form>
+
+
+<script>
+// Get the modal
+username = document.getElementsById("usernamee").value
+var modal = document.getElementById('id01');
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+</script>
+
+
+</body>
+</html>

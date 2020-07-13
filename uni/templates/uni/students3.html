@@ -17,7 +17,7 @@
             <li><a href="{% url 'uni:dars' ostad.id %}">دروس قابل تدریس</a></li>
             <li><a href="{% url 'uni:elam1' ostad.id %}">اعلام برنامه ترم</a></li>
             <li><a href="{% url 'uni:changepass4' ostad.id %}">تغیر رمز عبور</a></li>
-            <a href="{% url 'uni:home' %}"><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
+            <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
             <!-- <input  style="text-align-last: right;" type="search" placeholder="جست و جو " aria-label="Search" name="search"  > -->
             
         </ul>
@@ -87,6 +87,9 @@
     $(".chosen").chosen();
     </script>
     
-
+    <form id="logoutform" method="POST" action="{% url 'uni:logout' %}">
+      {% csrf_token %}
+      <input type="hidden">
+      </form>
 </html>
 

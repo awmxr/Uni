@@ -12,7 +12,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <ul>
       <li><a href="{% url 'uni:page2' admin.id %}">خانه</a></li>
-        <a href="{% url 'uni:home' %}"><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
+      <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
         
     </ul>
   </div>
@@ -73,4 +73,9 @@ window.onclick = function(event) {
 </script>
 
 </body>
+
+<form id="logoutform" method="POST" action="{% url 'uni:logout' %}">
+  {% csrf_token %}
+  <input type="hidden">
+  </form>
 </html>

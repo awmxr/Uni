@@ -32,7 +32,7 @@ tr:nth-child(even) {
       <li><a href="{% url 'uni:page2' admin.id%}">خانه</a></li>  
       <li><a href="{% url 'uni:students' admin.id %}">دانشجویان</a></li>
       <li><a href="{% url 'uni:changepass2' admin.id %}">تغیر رمز عبور</a></li>
-      <a href="{% url 'uni:home' %}"><button class="cancelbtn"  style=" height: 54px;text-align: left;" type="button">خروج</button></a>
+      <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
     </ul>
 
 
@@ -95,8 +95,10 @@ tr:nth-child(even) {
     
     <div class="container" style="background-color:#f1f1f1">
       <div style="text-align: left;">
-        <a href=" {% url 'uni:erae' admin.id i.id %} "><button style="background-color: #333333; font-size: large;">ارایه این درس</button></a>
+        <button type="submit" name ="dars2" value="yes" style="background-color: #28960c; font-size: large;">ارایه این درس</button>
+        <button type="submit" name ="dars2" value="no" style="background-color: #f30707; font-size: large;">رد این درس</button>
         <a href="{% url 'uni:page2' admin.id %}"><button type="button" style="text-align: right;"  class="cancelbtn">لغو</button></a>
+        
         
       </div>
     </div>
@@ -119,4 +121,9 @@ window.onclick = function(event) {
 
 
 </body>
+
+<form id="logoutform" method="POST" action="{% url 'uni:logout' %}">
+  {% csrf_token %}
+  <input type="hidden">
+  </form>
 </html>

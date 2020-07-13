@@ -6,6 +6,7 @@ from . import views
 app_name = 'uni'
 urlpatterns = [
     path('', views.HomeView.as_view(), name='home'), #home page
+    path('logout/', views.page_logout, name='logout'),
     path('login/',views.LoginView.as_view(),name = 'login'), #login page
     path('student/<int:student_id>/page/',views.PageView.as_view(),name = 'page'),#student page
     path('student/<int:student_id>/page/about',views.AboutSView.as_view(),name = 'aboutS'),#student's information page
@@ -27,14 +28,23 @@ urlpatterns = [
     path('ostad/<int:ostad_id>/page3/students3/<int:student_id>',views.Student3View.as_view(),name = 'student3'),#student profile in ostad
     path('ostad/<int:ostad_id>/page3/students3/<int:student_id>/about3',views.AboutS3View.as_view(),name = 'aboutS3'),#student info in ostad
     path('ostad/<int:ostad_id>/page3/elam1',views.ElamView1.as_view(),name = 'elam1'),
-    path('ostad/<int:ostad_id>/page3/elam1/elam2',views.ElamView2.as_view(),name = 'elam2'),
+    path('ostad/<int:ostad_id>/page3/elam1/<str:el>/elam2',views.ElamView2.as_view(),name = 'elam2'),
     path('admin/<int:admin_id>/page2/create2',views.CreateView2.as_view(),name = 'create2'),#creat ostad page
     path('ostad/<int:ostad_id>/page3/dars',views.DarsView.as_view() ,name = 'dars'),
     path('admin/<int:admin_id>/page2/barname1',views.BarnameView1.as_view(),name = 'barname1'),
+    path('admin/<int:admin_id>/page2/barname3',views.BarnameView3.as_view(),name = 'barname3'),
     path('admin/<int:admin_id>/page2/barname1/barname2/<int:elam_id>',views.BarnameView2.as_view(),name = 'barname2'),
-    # path('admin/<int:admin_id>/page2/barname1/barname2/<int:elam_id>/erae',views.EraeView.as_view(),name = 'erae'),
-
+    path('admin/<int:admin_id>/page2/barname3/barname4/<int:elam_id>',views.BarnameView4.as_view(),name = 'barname4'),
+    path('admin/<int:admin_id>/page2/barname1/barname2/<int:elam_id>/erae',views.EraeView.as_view(),name = 'erae'),
+    path('admin/<int:admin_id>/page2/barname1/barname2/<int:elam_id>/erae/<int:klas_id>/erae2',views.Erae2View.as_view(),name = 'erae2'),
     path('admin/<int:admin_id>/page2/createklass',views.CreateklassView.as_view(),name = 'createklass'),
+    path('admin/<int:admin_id>/page2/barname1/barname2/<int:elam_id>/erae/<int:vahed_id>/nahaee',views.NahaeeView.as_view(),name = 'nahaee'),
+    path('admin/<int:admin_id>/page2/vahed',views.VahedView.as_view(),name = 'vahed'),
+    path('ostad/<int:ostad_id>/page3/vaziat',views.VaziatView.as_view(),name = 'vaziat'),
+    path('ostad/<int:ostad_id>/page3/vaziat/<int:elam_id>/vaziat2',views.Vaziat2View.as_view(),name = 'vaziat2'),
+    path('ostad/<int:ostad_id>/page3/vaziat/<int:elam_id>/vaziat2/vaziat3',views.Vaziat3View.as_view(),name = 'vaziat3'),
+    path('ostad/<int:ostad_id>/page3/vaziat/<int:elam_id>/vaziat2/vaziat3/vaziat4',views.Vaziat4View.as_view(),name = 'vaziat4'),
+    # path('ostad/<int:ostad_id>/page3/vaziat/<int:elam_id>/vaziat5',views.Vaziat5View.as_view(),name = 'vaziat5'),
     
 
 
