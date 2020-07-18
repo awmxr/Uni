@@ -1,0 +1,140 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    
+
+<head>
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<style>
+  table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="{% static 'uni/style2.css' %}">
+</head>
+<body style="text-align: left;">
+
+    
+    <ul>
+        <li><a href="{% url 'uni:page' student.id %}">خانه</a></li>
+            
+            <li><a href="{% url 'uni:aboutS' student.id %}">اطلاعات دانشجو</a></li>
+            <li><a href="{% url 'uni:students2' student.id %}">دانشجویان</a></li>
+            <li><a href=" {% url 'uni:entekhab' student.id %} ">دروس ارائه شده</a></li>
+            <li><a href=" {% url 'uni:entekhab2' student.id %} ">انتخاب واحد</a></li>
+            <li><a href=" {% url 'uni:mydars' student.id %} ">درس های من</a></li>
+            
+            <li><a href="{% url 'uni:changepass' student.id %}">تغیر رمز عبور</a></li>
+            <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
+    </ul>
+
+
+
+
+    <div class="w3-container w3-dark-grey">        
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <h2 style="text-align: right; " >{{ student.name  }} {{  student.last_name  }}</h2> 
+  </div>
+    
+  <form  id = "dem"class="modal-content animate" method="post" style="width: 1300px;">{% csrf_token %}
+    <div class="imgcontainer">
+      <a href=" {% url 'uni:page' student.id %} "><span  class="close" title="Close Modal">&times;</span></a>
+      <br>
+      <br>
+    </div>
+    
+    <div style="text-align: right;" class="container">
+      <!-- <label for="uname"><b>Username</b></label> -->
+      <!-- <input id = "usernamee" type="text" placeholder="Enter Username" name="uname" value="awmxr"> -->
+      
+<table>
+    <tr>
+        <th style="text-align: center;">وضعیت اعتراض</th>
+        <th style="text-align: center;">نمره</th>
+        <th style="text-align: center;">استاد مربوطه</th>
+        <th style="text-align: center;">گروه</th>
+        <th style="text-align: center;">درس</th>
+        <th style="text-align: center;">کد درس</th>
+    </tr>
+    <tr>
+        <th style="text-align: center;"> <p style="color: {{color2}};" >{{vaziat}}</p> </th>
+        <th style="text-align: center;"> {{nomre}} </th>
+        <th style="text-align: center;"> {{vahed.ostad}} </th>
+        <th style="text-align: center;"> {{ vahed.goruh }} </th>
+        <th style="text-align: center;"> {{vahed.dars}} </th>
+        <th style="text-align: center;">{{vahed.dars_code}} </th>
+    </tr>
+</table>
+
+      <h1>متن اعتراض شما</h1>
+      <textarea style="text-align: right;" id="w3review" name="darkhast" rows="4" cols="170" disabled>
+        
+      {{ eteraz.text2 }} 
+    </textarea>
+    
+      <h1>جواب استاد</h1>
+
+      <textarea style="text-align: right;" id="w3review" name="darkhast" rows="4" cols="170" disabled>
+        
+        {{ eteraz.text3 }} 
+      </textarea>
+      
+      
+
+    
+      
+      
+      <div>
+        <!-- <button name = 'eteraz' value='yes' style="background-color: #06af22; font-size: large;" type="submit"> اعتراض</button> -->
+    </div>
+      
+      <!-- <label for="psw"><b>Password</b></label> -->
+      <!-- <input type="password" placeholder="Enter Password" name="psw" required> -->
+        
+      
+    </div>
+
+    <div class="container" style="background-color:#f1f1f1">
+      <div style="text-align: left;">
+        <a href="{% url 'uni:page' student.id %}"><button type="button" style="text-align: right;"  class="cancelbtn">لغو</button></a>
+        
+      </div>
+    </div>
+
+  </form>
+
+
+<script>
+// Get the modal
+username = document.getElementsById("usernamee").value
+var modal = document.getElementById('id01');
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+</script>
+
+
+</body>
+
+<form id="logoutform" method="POST" action="{% url 'uni:logout' %}">
+  {% csrf_token %}
+  <input type="hidden">
+  </form>
+</html>

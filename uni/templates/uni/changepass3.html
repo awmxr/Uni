@@ -1,0 +1,63 @@
+{% load static %}
+<html>
+    <body>
+        <ul>
+            <li><a href="{% url 'uni:page2' admin.id %}">خانه</a></li>
+            <li><a href="{% url 'uni:aboutS2' admin.id  student.id %}">اطلاعات دانشجو</a></li>
+            <li><a href="{% url 'uni:changepass3' admin.id  student.id %}">تغییر رمز عبور دانشجو</a></li>
+            <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
+          </ul>
+    
+        <link rel="stylesheet" type="text/css" href="{% static 'uni/style2.css' %}">
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <div class="w3-container w3-dark-grey">
+            
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+            <h2 style="text-align: right; " >{{ student.name  }} {{  student.last_name  }}</h2> 
+            
+
+            
+        </div>
+        <form id = "dem"class="modal-content animate" method="post">{% csrf_token %}
+            <div class="imgcontainer">
+              <a href="{% url 'uni:page2' admin.id %}"><span class="close" title="Close Modal">&times;</span></a>
+              <br>
+            </div>
+            
+            <div style="text-align: right;" class="container">
+              <!-- <label for="uname"><b>Username</b></label> -->
+              <!-- <input id = "usernamee" type="text" placeholder="Enter Username" name="uname" value="awmxr"> -->
+              
+              {{ form.as_p }}
+              
+        
+              <!-- <label for="psw"><b>Password</b></label> -->
+              <!-- <input type="password" placeholder="Enter Password" name="psw" required> -->
+              {% if error_message %}<p style="color: red;">{{ error_message }}</p>{% endif %}
+             <a href="{% url 'uni:change' admin.id %}"> <button style="background-color: #13b30e; font-size: large;" type="submit">تایید</button></a>
+            </div>
+        
+            <div class="container" style="background-color:#f1f1f1">
+              <div style="text-align: left;">
+               <a href="{% url 'uni:page2' admin.id %}"> <button type="button" style="text-align: right;" onclick="document.getElementById('dem').style.display='none'" class="cancelbtn">لغو</button></a>
+              </div>
+            </div>
+        
+          </form>
+    </body>
+
+
+
+
+
+    <form id="logoutform" method="POST" action="{% url 'uni:logout' %}">
+      {% csrf_token %}
+      <input type="hidden">
+      </form>
+
+
+
+
+
+</html>
+
