@@ -36,9 +36,11 @@ tr:nth-child(even) {
         <li><a href="{% url 'uni:vaziat' ostad.id %}">وضعیت درخواست ها</a></li>
         <li><a href="{% url 'uni:students3' ostad.id %}">دانشجویان</a></li>
         <li><a href="{% url 'uni:mydars2' ostad.id %}">درس های من</a></li>
+        <li><a href="{% url 'uni:eteraz3' ostad.id %}">اعتراضات نمره</a></li>
         <li><a href="{% url 'uni:changepass4' ostad.id %}">تغیر رمز عبور</a></li>
         <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
-    </ul>
+        
+      </ul>
 
 
 
@@ -48,73 +50,31 @@ tr:nth-child(even) {
       <h2 style="text-align: right; " >{{ ostad.name  }} {{  ostad.last_name  }}</h2> 
   </div>
     
-  <form  id = "dem"class="modal-content animate" method="post" style="width: 1300px;">{% csrf_token %}
+  <form  id = "dem"class="modal-content animate" method="post" style="width: 650px;">{% csrf_token %}
     <div class="imgcontainer">
       <a href=" {% url 'uni:page3' ostad.id %} "><span  class="close" title="Close Modal">&times;</span></a>
       <br>
       <br>
     </div>
-    
+
     <div style="text-align: right;" class="container">
-      <!-- <label for="uname"><b>Username</b></label> -->
-      <!-- <input id = "usernamee" type="text" placeholder="Enter Username" name="uname" value="awmxr"> -->
-      <table>
-        <tr>
-            <th style="text-align: center;">نمره دهی</th>
-            <th style="text-align: center;">جنسیت</th>
-            <th style="text-align: center;">ظرفیت</th>
-            <th style="text-align: center;">تاریخ و ساعت امتحان</th>
-            <th style="text-align: center;">روز ها و کلاس</th>
-          <th style="text-align: center;">استاد</th>
-          <th style="text-align: center;">کد درس</th>
-          <th style="text-align: center;">گروه</th>
-          <th style="text-align: center;">واحد</th>
-          <th style="text-align: center;">درس</th>
-        </tr>
-        {% for i in lastlist %}
-
-        <tr>
-            <th style="text-align: center;"><a href=" {% url 'uni:nomre' ostad.id  i.0.id  %}">نمره دهی</a></th>
-            <th style="text-align: center;">{{i.0.sex}}</th>
-            <th style="text-align: center;">{{i.0.capacity}}</th>
-            <th style="text-align: center;">{{i.3}} <br> {{i.4}}</th>
-            
-            <th style="text-align: center;">{% for j in i.2 %}
-                
-                {{j}} {{i.1|get_item:j}} <br>
-                {%endfor%}
-            </th>
-            
-            <th style="text-align: center;">{{i.0.ostad}}</th>
-            <th style="text-align: center;">{{i.0.dars_code}}</th>
-            <th style="text-align: center;">{{i.0.goruh}}</th>
-            <th style="text-align: center;">{{i.0.vahed2}}</th>
-            <th style="text-align: center;">{{i.0.dars}}</th>
-            
-          </tr>
-
-
-
-
-        {% endfor %}
-        
-
-      </table>
-      
-      
+    <h1 style="text-align: right; color:green" > {{ message }} </h1>
+  </div>
+    <div style="text-align: right;" class="container">
       {% if error_message %}<p style="color: red;">{{ error_message }}</p>{% endif %}
       
+      <div>
+        <!-- <button name = 'erae' value='yes' style="background-color: #06af22; font-size: large;" type="submit"> تایید</button> -->
+    </div>
       
-
-      <!-- <label for="psw"><b>Password</b></label> -->
-      <!-- <input type="password" placeholder="Enter Password" name="psw" required> -->
+      
         
       
     </div>
 
     <div class="container" style="background-color:#f1f1f1">
       <div style="text-align: left;">
-        <a href="{% url 'uni:page' ostad.id %}"><button type="button" style="text-align: right;"  class="cancelbtn">لغو</button></a>
+        <a href=" {% url 'uni:page3' ostad.id %} "><button style="background-color: #06af22; font-size: large;" type="button">  تایید </button></a>
         
       </div>
     </div>

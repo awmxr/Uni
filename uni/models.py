@@ -143,10 +143,10 @@ class Ostad(models.Model) :
     online = models.BooleanField(default = False)
     grade = models.CharField(max_length=200,blank = True)
     field = models.CharField(max_length=200,blank = True)
-    dars1 = models.CharField(max_length=200,blank = True)
-    dars2 = models.CharField(max_length=200,blank = True)
-    dars3 = models.CharField(max_length=200,blank = True)
-    dars4 = models.CharField(max_length=200,blank = True)
+    # dars1 = models.CharField(max_length=200,blank = True)
+    # dars2 = models.CharField(max_length=200,blank = True)
+    # dars3 = models.CharField(max_length=200,blank = True)
+    # dars4 = models.CharField(max_length=200,blank = True)
     time = models.CharField(max_length=500,blank = True)
     
     def __str__ (self):

@@ -50,83 +50,31 @@ tr:nth-child(even) {
       <h2 style="text-align: right; " >{{ student.name  }} {{  student.last_name  }}</h2> 
   </div>
     
-  <form  id = "dem"class="modal-content animate" method="post" style="width: 1300px;">{% csrf_token %}
+  <form  id = "dem"class="modal-content animate" method="post" style="width: 650px;">{% csrf_token %}
     <div class="imgcontainer">
       <a href=" {% url 'uni:page' student.id %} "><span  class="close" title="Close Modal">&times;</span></a>
       <br>
       <br>
     </div>
-    
+
     <div style="text-align: right;" class="container">
-      <!-- <label for="uname"><b>Username</b></label> -->
-      <!-- <input id = "usernamee" type="text" placeholder="Enter Username" name="uname" value="awmxr"> -->
-      {% if vahed_nomre   %}
-      <table>
-        <tr>
-          <th style="text-align: center;">اعتراض</th>
-          <th style="text-align: center;">وضعیت</th>
-            <th style="text-align: center;">ساعت امتحان</th>
-            <th style="text-align: center;">تاریخ امتحان</th>  
-          <th style="text-align: center;">نمره</th>
-          <th style="text-align: center;">واحد</th>
-          <th style="text-align: center;">نام درس</th>
-          <th style="text-align: center;">کد درس</th>
-        </tr>
-        {% for i in vahed_nomre %}
-
-        <tr>
-          {% if i.7 %}
-          <th style="text-align: center;"><a href="{% url 'uni:eteraz2' student.id i.0.id %}">مشاهده اعتراض</a></th>
-          {% elif not i.7 %}
-          <th style="text-align: center;"><a href=" {% url 'uni:eteraz' student.id i.0.id %} ">اعتراض</a></th>
-          {% endif %}
-
-          <th style="text-align: center;">{{ i.6 }}</th>
-        <th style="text-align: center;">{{ i.3 }}</th>
-        <th style="text-align: center;">{{ i.2 }}</th>
-        
-        <th style="text-align: center;"><h5>{{ i.1 }}</h5><h4 style="color: {{ i.5 }};"> {{ i.4 }}</h4></th>
-        <th style="text-align: center;">{{ i.0.vahed2 }}</th>
-        <th style="text-align: center;">{{i.0.dars}}</th>
-        <th style="text-align: center;">{{ i.0.dars_code }}</th>    
-        </tr>
-        
-
-        {% endfor %}
-        
-        <table>
-            <tr>
-        
-                <th style="text-align: center;">{{ av }}</th>
-                <br>
-                <th style="text-align: center;">معدل</th>
-            </tr>
-            
-        </table>
-        
-        
-
-      </table>
-      {% else %}
-      <h1 style="color: red;">نمره ای اعلام نشده است</h1>
-
-    {% endif %}
-      
+    <h1 style="text-align: right; color:green" > {{ message }} </h1>
+  </div>
+    <div style="text-align: right;" class="container">
       {% if error_message %}<p style="color: red;">{{ error_message }}</p>{% endif %}
       
       <div>
-        <!-- <button name = 'erae' value='yes' style="background-color: #06af22; font-size: large;" type="submit"> تایید نهایی</button> -->
+        <!-- <button name = 'erae' value='yes' style="background-color: #06af22; font-size: large;" type="submit"> تایید</button> -->
     </div>
       
-      <!-- <label for="psw"><b>Password</b></label> -->
-      <!-- <input type="password" placeholder="Enter Password" name="psw" required> -->
+      
         
       
     </div>
 
     <div class="container" style="background-color:#f1f1f1">
       <div style="text-align: left;">
-        <a href="{% url 'uni:page' student.id %}"><button type="button" style="text-align: right;"  class="cancelbtn">لغو</button></a>
+        <a href=" {% url 'uni:page' student.id %} "><button style="background-color: #06af22; font-size: large;" type="button">  تایید </button></a>
         
       </div>
     </div>

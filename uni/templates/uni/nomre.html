@@ -1,4 +1,5 @@
 {% load static %}
+<link rel="icon" href="{% static 'uni/images/13.png' %}">
 <!DOCTYPE html>
 <html>
     
@@ -30,7 +31,7 @@ tr:nth-child(even) {
     
     <ul>
         <li><a href="{% url 'uni:page3' ostad.id %}">خانه</a></li>
-        <li><a href="{% url 'uni:dars' ostad.id %}">دروس قابل تدریس</a></li>
+        
         <li><a href="{% url 'uni:elam1' ostad.id %}">اعلام برنامه ترم</a></li>
         <li><a href="{% url 'uni:vaziat' ostad.id %}">وضعیت درخواست ها</a></li>
         <li><a href="{% url 'uni:students3' ostad.id %}">دانشجویان</a></li>

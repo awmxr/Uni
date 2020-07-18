@@ -4,7 +4,7 @@ from .models import Student,Admin2, Ostad,Elam,Klass,Account,Vahed,Darkhast,Eter
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
-from .forms import Loginform,sabtform,ChangeForm,ChangePass,Change2Form,ChangePass2,sabtform2,darsform,ElamForm,KlassForm,EntekhabForm
+from .forms import Loginform,sabtform,ChangeForm,ChangePass,Change2Form,ChangePass2,sabtform2,ElamForm,KlassForm,EntekhabForm
 from django.contrib import messages
 from passlib.hash import oracle10
 from . import choices
@@ -210,8 +210,8 @@ class ChangeView(generic.TemplateView):#change info by student
                 form.save()
                 
                 del form
-            
-                return HttpResponseRedirect(reverse('uni:page',args = [s.id]))
+                message = 'تغییرات با موفقیت اعمال شد'
+                return HttpResponseRedirect(reverse('uni:messages',args = [s.id,message]))
             
             elif not form.is_valid():
                 error_message = f'لطفا فرم را کامل پر کنید'
@@ -250,6 +250,15 @@ class CreateView(generic.TemplateView):#create student by admin
         form = sabtform(request.POST)
         if CheckCookie(a,cookie) and request.user.is_authenticated:
             if form.is_valid():
+                nam = form.cleaned_data['username']
+                users = Account.objects.all()
+                for i in users:
+                    
+                    if i.username == nam:
+                        error_message = f'این شماره دانشجویی در حال حاضر وجود دارد'
+                        context = {'form':form,'admin':a,'error_message':error_message}
+                        return render(request ,self.template_name,context)
+                
                 if form.cleaned_data['College'] == 'فنی مهندسی'  and v != 2:
                     v = 2
                     form.fields['field'].widget = forms.Select(choices= choices.field1_choices)
@@ -298,9 +307,9 @@ class CreateView(generic.TemplateView):#create student by admin
                 # v = 0 
                 x = Student.objects.filter(username = z).update(password = y)
                 form = sabtform()
-                success = 'دانشجو با موفقیت ثبت شد'
+                message = 'دانشجو با موفقیت ثبت شد'
                 context = {'form':form,'admin':a}
-                return HttpResponseRedirect(reverse('uni:page2',args = [a.id]))
+                return HttpResponseRedirect(reverse('uni:messagea',args = [a.id,message]))
             if form.is_valid() == False:
                 error_message = f'لطفا فرم را کامل پر کنید'
                 context = {'form':form,'admin':a,'error_message':error_message}
@@ -830,7 +839,8 @@ class ElamView2(generic.TemplateView):
                 w.time = starfunc(w.time)
                 w.public_date = dt.datetime.now()
                 w.save()
-                response = HttpResponseRedirect(reverse('uni:page3',args = [os.id]))
+                message = f'برنامه شما به ادمین دانشکده {w.college} ارسال شد'
+                response = HttpResponseRedirect(reverse('uni:messageos',args = [os.id,message]))
                 if w.time == '':
                     w.delete()
                 return response
@@ -888,9 +898,9 @@ class CreateView2(generic.TemplateView):#create student by admin
                 Ostad.objects.filter(username = z).update(public_date = dt.datetime.now())
                 x = Ostad.objects.filter(username = z).update(password = y)
                 form = sabtform()
-                success = 'استاد با موفقیت ثبت شد'
+                message = 'استاد با موفقیت ثبت شد'
                 context = {'form':form,'admin':a}
-                return HttpResponseRedirect(reverse('uni:page2',args = [a.id]))
+                return HttpResponseRedirect(reverse('uni:messagea',args = [a.id,message]))
             if form.is_valid() == False:
                 error_message = f'لطفا فرم را کامل پر کنید'
                 context = {'form':form,'admin':a,'error_message':error_message}
@@ -899,55 +909,7 @@ class CreateView2(generic.TemplateView):#create student by admin
             logout2(a)
             return HttpResponseRedirect(reverse('uni:home'))
 
-class DarsView(generic.TemplateView):
-    template_name = 'uni/dars.html'
-    
-    
-    def get(self,request,ostad_id):
-        
-        os = Ostad.objects.get(pk = ostad_id)
-        cookie  = str(request.COOKIES.get('access'))
-        if CheckCookie(os,cookie) and request.user.is_authenticated:
-            form = darsform(instance = os)
-            context = {'ostad':os,'form':form}
-            return render(request , self.template_name,context)
-        else:
-            logout2(os)
-            return HttpResponseRedirect(reverse('uni:home'))
-    def post(self,request,ostad_id):
-        os = Ostad.objects.get(pk = ostad_id)
-        cookie  = str(request.COOKIES.get('access'))
-        if CheckCookie(os,cookie) and request.user.is_authenticated:
-            form = darsform(request.POST)
-            if form.is_valid():
-                d1 = form.cleaned_data['dars1']
-                d2 = form.cleaned_data['dars2']
-                d3 = form.cleaned_data['dars3']
-                d4 = form.cleaned_data['dars4']
-                if d1 == '------------------------------------------------------------------------------':
-                    d1 = ''
-                if d2 == '------------------------------------------------------------------------------':
-                    d2 = ''
-                if d3 == '------------------------------------------------------------------------------':
-                    d3 = ''
-                if d4 == '------------------------------------------------------------------------------':
-                    d4 = ''
-                
-                os.dars1 = d1
-                os.dars2 = d2
-                os.dars3 = d3
-                os.dars4 = d4
-                os.save()
-              
-                
-                
-                
-                
-                return HttpResponseRedirect(reverse('uni:page3',args = [os.id]))
 
-        else:
-            logout2(os)
-            return HttpResponseRedirect(reverse('uni:home'))
         
 class ElamView1(generic.TemplateView):
     template_name = 'uni/elam1.html'
@@ -1186,7 +1148,8 @@ class CreateklassView(generic.TemplateView):
         if CheckCookie(a,cookie) and request.user.is_authenticated:
             if form.is_valid():
                 form.save()
-                return HttpResponseRedirect(reverse('uni:page2' ,args= [a.id]))
+                message = 'کلاس با موفقیت ثبت شد'
+                return HttpResponseRedirect(reverse('uni:messagea',args = [a.id,message]))
 
             
                
@@ -1605,7 +1568,7 @@ class NahaeeView(generic.TemplateView):
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(a,cookie) and request.user.is_authenticated:
             elam = Elam.objects.get(pk = elam_id)
-            elam.vaziat = 'ارارعه میشود'
+            elam.vaziat = 'ارارئه میشود'
             elam.accept = True
             elam.reject = False
             elam.save()
@@ -1617,7 +1580,8 @@ class NahaeeView(generic.TemplateView):
                     vahed1.active = True
                     vahed1.laghv = False
                     vahed1.save()
-                    return HttpResponseRedirect(reverse('uni:page2',args = [a.id]))
+                    message = f'درس {vahed1.dars} با موفقیت ارائه شد'
+                    return HttpResponseRedirect(reverse('uni:messagea',args = [a.id,message]))
         else:
             logout2(a)
             return HttpResponseRedirect(reverse('uni:home'))
@@ -1725,8 +1689,8 @@ class VahedView(generic.TemplateView):
             vahed1.laghv = True
             vahed1.reject = True
             vahed1.save()
-            
-            return HttpResponseRedirect(reverse('uni:page2',args = [a.id]))
+            message = f'درس {vahed1.dars} با موفقیت لغو شد'
+            return HttpResponseRedirect(reverse('uni:messagea',args = [a.id,message]))
         else:
             logout2(a)
             return HttpResponseRedirect(reverse('uni:home'))
@@ -1954,7 +1918,8 @@ class Vaziat4View(generic.TemplateView):
                 elam.time = starfunc(elam.time)
                 elam.public_date = dt.datetime.now()
                 elam.save()
-                response = HttpResponseRedirect(reverse('uni:page3',args = [os.id]))
+                message = 'تغییرات با موفقیت اعمال شد'
+                response = HttpResponseRedirect(reverse('uni:messageos',args = [os.id,message]))
                 if elam.time == '':
                     elam.delete()
                 return response
@@ -2132,7 +2097,8 @@ class Entekhab3View(generic.TemplateView):
                 s.darses += str(vahed1.id) + ' '
                 s.darses = starfunc(s.darses)
                 s.save()
-                return HttpResponseRedirect(reverse('uni:page',args = [s.id]))
+                message = f'درس {vahed1.dars} با موفقیت انتخاب شد'
+                return HttpResponseRedirect(reverse('uni:messages',args = [s.id,message]))
         else:
             logout2(s)
             return HttpResponseRedirect(reverse('uni:home'))
@@ -2271,7 +2237,9 @@ class DarkhastView(generic.TemplateView):
                     text2 = request.POST.get('darkhast')
                     e = Darkhast(vahed_id = vahed_id,student_id = s.id,text2 = text2,uni = s.uni,college = s.College )
                     e.save()
-                    return HttpResponseRedirect(reverse('uni:page',args = [s.id]))
+                    vahed1 = Vahed.objects.get(pk = vahed_id)
+                    message = f'درخواست حذف برای درس {vahed1.dars} به ادمین دانشکده {s.College} ارسال شد'
+                    return HttpResponseRedirect(reverse('uni:messages',args = [s.id,message]))
         else:
             logout2(s)
             return HttpResponseRedirect(reverse('uni:home'))
@@ -2547,7 +2515,8 @@ class NomreView(generic.TemplateView):
                 nomre_vahed = starfunc(nomre_vahed)
                 vahed1.nomre = nomre_vahed
                 vahed1.save()
-                response = HttpResponseRedirect(reverse('uni:page3',args = [os.id]))
+                message = 'نمرات با موفقیت ثبت شد'
+                response = HttpResponseRedirect(reverse('uni:messageos',args = [os.id,message]))
                 return response
         else:
             logout2(os)
@@ -2764,11 +2733,13 @@ class Darkhast3View(generic.TemplateView):
                     vahed1.save()
                     # if vahed_code:
                     #     raise ValueError
-                    return HttpResponseRedirect(reverse('uni:page2',args = [a.id]))
+                    message = f'درس {vahed1.dars} برای دانشجو {s.name} {s.last_name} با موفقیت حذف شد'
+                    return HttpResponseRedirect(reverse('uni:messagea',args = [a.id,message]))
                 elif request.POST.get('darkhast3') == 'no':
                     darkhast1.reject = True
                     darkhast1.save()
-                    return HttpResponseRedirect(reverse('uni:page2',args = [a.id]))
+                    message = f'درخواست حذف توسط دانشجو {s.name} {s.last_name} با موفقیت رد شد'
+                    return HttpResponseRedirect(reverse('uni:messagea',args = [a.id,message]))
                 
                 
         else:
@@ -2844,7 +2815,8 @@ class EterazView(generic.TemplateView):
                     text2 = request.POST.get('darkhast')
                     e.text2 = text2
                     e.save()
-                return HttpResponseRedirect(reverse('uni:page',args = [s.id]))
+                    message = 'اعتراض شما با موفقیت ثبت شد'
+                return HttpResponseRedirect(reverse('uni:messages',args = [s.id,message]))
         else:
             logout2(s)
             return HttpResponseRedirect(reverse('uni:home'))
@@ -2968,6 +2940,7 @@ class Eteraz4View(generic.TemplateView):
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(os,cookie) and request.user.is_authenticated: 
             e = Eteraz.objects.get(pk = eteraz_id)  
+            s = Student.objects.get(pk = e.student_id)
             if request.method == 'POST':
                 if request.POST.get('eteraz') == 'yes':
                     if request.POST.get('eteraz2') == 'rad':
@@ -2975,7 +2948,9 @@ class Eteraz4View(generic.TemplateView):
                         e.accept = False
                         e.text3 = request.POST.get('javab')
                         e.save()
-                        response = HttpResponseRedirect(reverse('uni:page3',args = [os.id]))
+                        
+                        message = f'پاسخ شما برای دانشجو {s.name} {s.last_name} ثبت شد'
+                        response = HttpResponseRedirect(reverse('uni:messageos',args = [os.id,message]))
                         return response
                     elif request.POST.get('eteraz2') =='taeed':
                         e.accept = True
@@ -3046,8 +3021,8 @@ class Eteraz5View(generic.TemplateView):
                 s.nomre = re.sub(fr'\b{c2},\d+\b',f' {c2},{nomre1} ',s.nomre)
                 s.nomre = starfunc(s.nomre)
                 s.save()
-                response = HttpResponseRedirect(reverse('uni:page3',args = [os.id]))
-                return response
+                message = f'نمره جدید دانشجو ثبت شد'
+                response = HttpResponseRedirect(reverse('uni:messageos',args = [os.id,message]))
         else:
             logout2(os)
             return HttpResponseRedirect(reverse('uni:home'))
@@ -3055,6 +3030,42 @@ class Eteraz5View(generic.TemplateView):
 
                 
 
+class MessageboxsView(generic.TemplateView):
+    template_name = 'uni/messages.html'
+    def get(self,request,student_id,message):
+        s = Student.objects.get(pk = student_id)
+        cookie  = str(request.COOKIES.get('access'))
+        if CheckCookie(s,cookie) and request.user.is_authenticated:
+            context = {'student':s,'message':message}
+            return render(request,self.template_name,context)
+        else:
+            logout2(s)
+            return HttpResponseRedirect(reverse('uni:home'))
+
+class MessageboxaView(generic.TemplateView):
+    template_name = 'uni/messagea.html'
+    def get(self,request,admin_id,message):
+        a = Admin2.objects.get(pk = admin_id)
+        cookie  = str(request.COOKIES.get('access'))
+        if CheckCookie(a,cookie) and request.user.is_authenticated:
+            context = {'admin':a,'message':message}
+            return render(request,self.template_name,context)
+        else:
+            logout2(a)
+            return HttpResponseRedirect(reverse('uni:home'))
+
+class MessageboxosView(generic.TemplateView):
+    template_name = 'uni/messageos.html'
+    def get(self,request,ostad_id,message):
+        os = Ostad.objects.get(pk = ostad_id)
+        cookie  = str(request.COOKIES.get('access'))
+        if CheckCookie(os,cookie) and request.user.is_authenticated:
+            context = {'ostad':os,'message':message}
+            return render(request,self.template_name,context)
+        else:
+            logout2(os)
+            return HttpResponseRedirect(reverse('uni:home'))
+    
 
 
 

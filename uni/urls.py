@@ -12,8 +12,10 @@ urlpatterns = [
     path('student/<int:student_id>/page/darkhast4',views.Darkhast4View.as_view(),name = 'darkhast4'),
     path('student/<int:student_id>/page/karname',views.KarnameView.as_view(),name = 'karname'),
     path('student/<int:student_id>/page/karname/<int:vahed_id>/eteraz',views.EterazView.as_view(),name = 'eteraz'),
+    path('student/<int:student_id>/<str:message>/messages',views.MessageboxsView.as_view(),name = 'messages'),
+    path('admin/<int:admin_id>/<str:message>/messagea',views.MessageboxaView.as_view(),name = 'messagea'),
+    path('ostad/<int:ostad_id>/<str:message>/messageos',views.MessageboxosView.as_view(),name = 'messageos'),
     path('student/<int:student_id>/page/karname/<int:vahed_id>/eteraz2',views.Eteraz2View.as_view(),name = 'eteraz2'),
-    
     path('student/<int:student_id>/page/mydars',views.MydarsView.as_view(),name = 'mydars'),
     path('student/<int:student_id>/page/mydars/<int:vahed_id>/darkhast',views.DarkhastView.as_view(),name = 'darkhast'),
     path('student/<int:student_id>/page/entekhab',views.EntekhabView.as_view(),name = 'entekhab'),
@@ -49,7 +51,7 @@ urlpatterns = [
     path('ostad/<int:ostad_id>/page3/elam1',views.ElamView1.as_view(),name = 'elam1'),
     path('ostad/<int:ostad_id>/page3/elam1/<str:el>/elam2',views.ElamView2.as_view(),name = 'elam2'),
     path('admin/<int:admin_id>/page2/create2',views.CreateView2.as_view(),name = 'create2'),#creat ostad page
-    path('ostad/<int:ostad_id>/page3/dars',views.DarsView.as_view() ,name = 'dars'),
+    
     path('admin/<int:admin_id>/page2/barname1',views.BarnameView1.as_view(),name = 'barname1'),
     path('admin/<int:admin_id>/page2/barname3',views.BarnameView3.as_view(),name = 'barname3'),
     path('admin/<int:admin_id>/page2/barname1/barname2/<int:elam_id>',views.BarnameView2.as_view(),name = 'barname2'),

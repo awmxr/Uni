@@ -1,4 +1,5 @@
 {% load static %}
+<link rel="icon" href="{% static 'uni/images/13.png' %}">
 <!DOCTYPE html>
 <html>
     
@@ -20,7 +21,7 @@
   <form id = "dem"class="modal-content animate" method="post">{% csrf_token %}
     <div class="imgcontainer">
       <span onclick="document.getElementById('dem').style.display='none'" class="close" title="Close Modal">&times;</span>
-      <img src= "{% static 'D:/Amir/Project/mysite/uni/uni/static/uni/images/12.jpg' %}" alt="Avatar" class="avatar">
+      <img src= "{% static 'uni/images/12.jpg' %}" alt="Avatar" class="avatar">
     </div>
     
     <div style="text-align: right;" class="container">
