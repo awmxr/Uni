@@ -1,10 +1,10 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, Http404 ,HttpResponseRedirect
-from .models import Student,Admin2, Ostad,Elam,Klass,Account,Vahed,Darkhast,Eteraz
+from .models import Student,Admin2, Ostad,Elam,Klass,Account,Vahed,Darkhast,Eteraz,Leader,Boss
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
-from .forms import Loginform,sabtform,ChangeForm,ChangePass,Change2Form,ChangePass2,sabtform2,ElamForm,KlassForm,EntekhabForm
+from .forms import Loginform,sabtform,ChangeForm,ChangePass,Change2Form,ChangePass2,sabtform2,ElamForm,KlassForm,EntekhabForm,sabtform3,sabtform4
 from django.contrib import messages
 from passlib.hash import oracle10
 from . import choices
@@ -89,8 +89,36 @@ class PageView(generic.TemplateView):#student page
             logout2(s)
             return HttpResponseRedirect(reverse('uni:home'))
 
+class LeaderView(generic.TemplateView):#student page
+    
+    template_name = 'uni/leader.html'
+    
+    def get(self,request,leader_id):
+        led = Leader.objects.get(pk = leader_id)
+        cookie  = str(request.COOKIES.get('access'))
+
+        if CheckCookie(led,cookie) and request.user.is_authenticated :
+            return render(request,self.template_name,{'leader':led})
+        
+        else:
+            logout2(led)
+            return HttpResponseRedirect(reverse('uni:home'))
 
 
+class BossView(generic.TemplateView):#student page
+    
+    template_name = 'uni/boss.html'
+    
+    def get(self,request,boss_id):
+        bs = Boss.objects.get(pk = boss_id)
+        cookie  = str(request.COOKIES.get('access'))
+
+        if CheckCookie(bs,cookie) and request.user.is_authenticated :
+            return render(request,self.template_name,{'boss':bs})
+        
+        else:
+            logout2(bs)
+            return HttpResponseRedirect(reverse('uni:home'))
 
             
 
@@ -342,7 +370,7 @@ class LoginView(generic.TemplateView):#login page
             password = form.cleaned_data['password']
             user = authenticate(username = username , password = password)
             if not user:
-                error_message = "The username or password not currect"
+                error_message = "شماره کاربری یا رمز عبور غلط است"
                 context = {'form' : form ,'error_message':error_message }
                 return render(request ,'uni/login.html',context)
             if user.is_student : 
@@ -381,6 +409,34 @@ class LoginView(generic.TemplateView):#login page
                 h = Ostad.objects.filter(username = form.cleaned_data['username']).first()
                 response.set_cookie('access',MakeCookie(h))
                 return response  
+            if user.is_leader : 
+                led = Leader.objects.filter(username = user.username).first()
+                response = HttpResponseRedirect(reverse('uni:leader',args = [led.id]))
+                login(request,user)
+                led.login_date = dt.datetime.now()
+                led.login_date2 = dt.datetime.now()
+                led.login_times = str(int(led.login_times)+1)
+                led.online = True
+                led.save()
+                h = Leader.objects.filter(username = form.cleaned_data['username']).first()
+                response.set_cookie('access',MakeCookie(h))
+                return response
+            if user.is_boss : 
+                bs = Boss.objects.filter(username = user.username).first()
+                response = HttpResponseRedirect(reverse('uni:boss',args = [bs.id]))
+                login(request,user)
+                bs.login_date = dt.datetime.now()
+                bs.login_date2 = dt.datetime.now()
+                bs.login_times = str(int(bs.login_times)+1)
+                bs.online = True
+                bs.save()
+                h = Boss.objects.filter(username = form.cleaned_data['username']).first()
+                response.set_cookie('access',MakeCookie(h))
+                return response 
+            # else:
+            #     error_message = 'شماره کاربری یا رمز عبور غلط است'
+            #     return render(request,self.template_name,{'form' : form ,'error_message':error_message})
+
                       
         error_message = 'لطفا فرم را کامل پر کنید'
         return render(request,self.template_name,{'form' : form ,'error_message':error_message})
@@ -3065,8 +3121,171 @@ class MessageboxosView(generic.TemplateView):
         else:
             logout2(os)
             return HttpResponseRedirect(reverse('uni:home'))
+
+
+
+
+class MessageboxledView(generic.TemplateView):
+    template_name = 'uni/messageled.html'
+    def get(self,request,leader_id,message):
+        led = Leader.objects.get(pk = leader_id)
+        cookie  = str(request.COOKIES.get('access'))
+        if CheckCookie(led,cookie) and request.user.is_authenticated:
+            context = {'leader':led,'message':message}
+            return render(request,self.template_name,context)
+        else:
+            logout2(led)
+            return HttpResponseRedirect(reverse('uni:home'))
+
+
+
+class MessageboxbsView(generic.TemplateView):
+    template_name = 'uni/messagebs.html'
+    def get(self,request,boss_id,message):
+        bs = Boss.objects.get(pk = boss_id)
+        cookie  = str(request.COOKIES.get('access'))
+        if CheckCookie(bs,cookie) and request.user.is_authenticated:
+            context = {'boss':bs,'message':message}
+            return render(request,self.template_name,context)
+        else:
+            logout2(bs)
+            return HttpResponseRedirect(reverse('uni:home'))
+
+
+
+
+
     
 
+class CreatebossView(generic.TemplateView):
+    
+    template_name = 'uni/createboss.html'
+    
+    
+    def get(self,request ,leader_id):
+        led = Leader.objects.get(pk = leader_id)
+        cookie  = str(request.COOKIES.get('access'))
+        if CheckCookie(led,cookie) and request.user.is_authenticated:
+            form = sabtform3()
+            context = {'form':form,'leader':led}
+            return render(request ,self.template_name,context)
+        else:
+            logout2(led)
+            return HttpResponseRedirect(reverse('uni:home'))
+        
+    
+    def post(self,request,leader_id):
+        led = Leader.objects.get(pk = leader_id)
+        cookie  = str(request.COOKIES.get('access'))
+        form = sabtform3(request.POST)
+        if CheckCookie(led,cookie) and request.user.is_authenticated:
+            if form.is_valid():
+                
+                y = oracle10.hash(form.cleaned_data['password'],user = form.cleaned_data['username'])
+                z = form.cleaned_data['username']
+                
+                for key in form.fields:
+                    if form.cleaned_data[key] == '':
+                
+                        error_message = 'لطفا فرم را کامل پر کنید'
+                        context = {'form':form,'leader':led,'error_message':error_message}
+                        return render(request ,self.template_name,context)
+                
+                uni2 = form.cleaned_data['uni']
+                if Boss.objects.filter(uni = uni2).first():
+                    error_message = 'ادمین دانشگاه وجود دارد'
+                    context = {'form':form,'leader':led,'error_message':error_message}
+                    return render(request ,self.template_name,context)
+
+                form.save()
+                user = Account.objects.create_user(username = form.cleaned_data['username'], password=form.cleaned_data['password'])
+                user.is_boss = True
+                user.save()
+                bs = Boss.objects.filter(username = z).first()
+                bs.login_times = '0'
+                bs.public_date = dt.datetime.now()
+                bs.password = y
+               
+                bs.save()
+                message = 'ادمین با موفقیت ثبت شد'
+                return HttpResponseRedirect(reverse('uni:messageled',args = [led.id,message]))
+            if form.is_valid() == False:
+                error_message = f'لطفا فرم را کامل پر کنید'
+                context = {'form':form,'leader':led,'error_message':error_message}
+                return render(request ,self.template_name,context)
+        else:
+            logout2(led)
+            return HttpResponseRedirect(reverse('uni:home'))
+
+
+
+
+
+
+
+
+
+
+class CreateadminView(generic.TemplateView):
+    
+    template_name = 'uni/createadmin.html'
+    
+    
+    def get(self,request ,boss_id):
+        bs = Boss.objects.get(pk = boss_id)
+        cookie  = str(request.COOKIES.get('access'))
+        if CheckCookie(bs,cookie) and request.user.is_authenticated:
+            form = sabtform4()
+            context = {'form':form,'boss':bs}
+            return render(request ,self.template_name,context)
+        else:
+            logout2(bs)
+            return HttpResponseRedirect(reverse('uni:home'))
+        
+    
+    def post(self,request,boss_id):
+        bs = Boss.objects.get(pk = boss_id)
+        cookie  = str(request.COOKIES.get('access'))
+        form = sabtform4(request.POST)
+        if CheckCookie(bs,cookie) and request.user.is_authenticated:
+            if form.is_valid():
+                
+                y = oracle10.hash(form.cleaned_data['password'],user = form.cleaned_data['username'])
+                z = form.cleaned_data['username']
+                
+                for key in form.fields:
+                    if form.cleaned_data[key] == '':
+                
+                        error_message = 'لطفا فرم را کامل پر کنید'
+                        context = {'form':form,'boss':bs,'error_message':error_message}
+                        return render(request ,self.template_name,context)
+                
+                uni2 = bs.uni
+                college2 = form.cleaned_data['College']
+                if Admin2.objects.filter(uni = uni2,College = college2).first():
+                    error_message = 'ادمین دانشکده وجود دارد'
+                    context = {'form':form,'boss':bs,'error_message':error_message}
+                    return render(request ,self.template_name,context)
+
+                form.save()
+                user = Account.objects.create_user(username = form.cleaned_data['username'], password=form.cleaned_data['password'])
+                user.is_admin2 = True
+                user.save()
+                a = Admin2.objects.filter(username = z).first()
+                a.login_times = '0'
+                a.public_date = dt.datetime.now()
+                a.password = y
+                a.uni = bs.uni
+                a.save()
+                message = 'ادمین با موفقیت ثبت شد'
+                return HttpResponseRedirect(reverse('uni:messagebs',args = [bs.id,message]))
+            if form.is_valid() == False:
+                error_message = f'لطفا فرم را کامل پر کنید'
+                context = {'form':form,'boss':bs,'error_message':error_message}
+                return render(request ,self.template_name,context)
+        else:
+            logout2(led)
+            return HttpResponseRedirect(reverse('uni:home'))
 
 
 

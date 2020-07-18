@@ -13,7 +13,7 @@ from django.utils import timezone
 
 
 def MakeCookie(user):
-    d = 'Amir' + str(user.username) + str(user.birthday) + str(user.public_date) + 'Amir' + 'uni' +'mohsen'+'21122112'+ str(user.login_times) + str(user.login_date) + 'mohsen'
+    d = 'Amir' + str(user.username)  + str(user.public_date) + 'Amir' + 'uni' +'mohsen'+'21122112'+ str(user.login_times) + str(user.login_date) + 'mohsen'
     x = oracle10.hash(d,user = user.username)
     return str(x)
 

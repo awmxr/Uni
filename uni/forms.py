@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Student,Ostad,Elam,Klass
+from .models import Student,Ostad,Elam,Klass,Boss,Admin2
 
 
 
@@ -337,6 +337,98 @@ class sabtform2(forms.ModelForm):
             'field':'رشته تحصیلی',
             'grade':'مقطع تحصیلی',
         }
+
+
+
+
+
+class sabtform3(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(forms.ModelForm, self).__init__(*args, **kwargs)
+
+        for key in self.fields:
+            self.fields[key].required = False 
+    class Meta:
+        
+        model = Boss
+        fields = [
+            'username',
+            'name',
+            'last_name',
+            'uni',
+            'password',
+            'phone',
+            
+            
+        ]
+        widgets = {
+            'password' : forms.PasswordInput,
+            
+            'uni': forms.Select(choices= choices.uni_choices),
+            
+            
+            
+        } 
+        
+        
+        labels = {
+            
+            "username": "شماره کاربری",
+            'name':'نام',
+            
+            'uni':'دانشگاه',
+            'last_name':'نام خانوادگی',
+            'password':'پسوورد',
+            'phone':'تلفن همراه',
+        }
+
+
+
+
+
+
+
+
+
+class sabtform4(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(forms.ModelForm, self).__init__(*args, **kwargs)
+
+        for key in self.fields:
+            self.fields[key].required = False 
+    class Meta:
+        
+        model = Admin2
+        fields = [
+            'username',
+            'name',
+            'last_name',
+            'College',
+            'password',
+            'phone',
+            
+            
+        ]
+        widgets = {
+            'password' : forms.PasswordInput,
+            'college': forms.Select(choices= choices.college_choices),
+            
+            
+            
+        } 
+        
+        
+        labels = {
+            
+            "username": "شماره کاربری",
+            'name':'نام',
+            
+            'uni':'دانشگاه',
+            'last_name':'نام خانوادگی',
+            'password':'پسوورد',
+            'phone':'تلفن همراه',
+        }
+
 
 
 

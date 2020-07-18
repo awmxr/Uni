@@ -38,6 +38,8 @@ class Account(AbstractBaseUser):
     username = models.CharField(max_length=200,unique=True)
     
     is_admin2 = models.BooleanField(default=False)
+    is_leader = models.BooleanField(default=False)
+    is_boss = models.BooleanField(default=False)
     is_ostad = models.BooleanField(default=False)
     is_student = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
@@ -109,27 +111,50 @@ class Admin2(models.Model):
     username = models.CharField(max_length=200)
     name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200)
+    phone = models.CharField(max_length=200)
     password = models.CharField(max_length=200)
     public_date = models.DateTimeField(null = True)
     login_date = models.DateTimeField(null = True)
     login_date2 = models.DateTimeField(null = True) 
-    birthday = models.DateTimeField(null = True) 
     login_times = models.CharField(max_length = 10000) 
     online = models.BooleanField(default = False)
     College = models.CharField(max_length=2000, choices= choices.college_choices)
-    field = models.CharField(max_length=200)
+    
     uni = models.CharField(max_length=2000, choices= choices.uni_choices)
     
     def __str__(self):
         return self.name +' ' +  self.last_name
-    
+
+class  Leader(models.Model):
+    username = models.CharField(max_length=200)
+    name = models.CharField(max_length=200)
+    last_name = models.CharField(max_length=200)
+    password = models.CharField(max_length=200)
+    public_date = models.DateTimeField(null = True)
+    login_date = models.DateTimeField(null = True)
+    login_date2 = models.DateTimeField(null = True) 
+    login_times = models.CharField(max_length = 10000) 
+    online = models.BooleanField(default = False)
+
+class Boss(models.Model):
+    username = models.CharField(max_length=200)
+    name = models.CharField(max_length=200)
+    last_name = models.CharField(max_length=200)
+    phone = models.CharField(max_length=200)
+    uni = models.CharField(max_length=200)
+    password = models.CharField(max_length=200)
+    public_date = models.DateTimeField(null = True)
+    login_date = models.DateTimeField(null = True)
+    login_date2 = models.DateTimeField(null = True) 
+    login_times = models.CharField(max_length = 10000) 
+    online = models.BooleanField(default = False)
+
 
 class Ostad(models.Model) :
     username = models.CharField(max_length=200)
     name = models.CharField(max_length=200)
     melli_code = models.CharField(max_length=200)
     uni = models.CharField(max_length=200)
-    # College = models.CharField(max_length=200 )
     last_name = models.CharField(max_length=200)
     password = models.CharField(max_length=200)
     phone = models.CharField(max_length=11)
@@ -143,10 +168,6 @@ class Ostad(models.Model) :
     online = models.BooleanField(default = False)
     grade = models.CharField(max_length=200,blank = True)
     field = models.CharField(max_length=200,blank = True)
-    # dars1 = models.CharField(max_length=200,blank = True)
-    # dars2 = models.CharField(max_length=200,blank = True)
-    # dars3 = models.CharField(max_length=200,blank = True)
-    # dars4 = models.CharField(max_length=200,blank = True)
     time = models.CharField(max_length=500,blank = True)
     
     def __str__ (self):
