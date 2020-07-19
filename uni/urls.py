@@ -7,6 +7,7 @@ app_name = 'uni'
 urlpatterns = [
     
     path('', views.HomeView.as_view(), name='home'), #home page
+    path('aboutus/', views.AboutusView.as_view(), name='aboutus'), 
     path('logout/', views.page_logout, name='logout'),
     path('login/',views.LoginView.as_view(),name = 'login'), #login page
     path('student/<int:student_id>/page/',views.PageView.as_view(),name = 'page'),#student page

@@ -72,6 +72,12 @@ class HomeView(generic.TemplateView):
 
         response = render(request,self.template_name,{})
         return response
+
+class AboutusView(generic.TemplateView):
+    template_name = 'uni/aboutus.html'
+    def get(self, request):
+        response = render(request,self.template_name,{})
+        return response
         
 
 class PageView(generic.TemplateView):#student page

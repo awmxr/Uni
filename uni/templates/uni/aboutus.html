@@ -1,0 +1,80 @@
+{% load static %}
+<link rel="icon" href="{% static 'uni/images/13.png' %}">
+<!DOCTYPE html>
+<html>
+    
+
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="{% static 'uni/style2.css' %}">
+</head>
+<body style="text-align: left;">
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <ul>
+      <li><a href="{% url 'uni:home' %}">خانه</a></li>
+      <li><a href="#contact">مخاطبان</a></li>
+      <li><a href="#about">درباره</a></li>
+      
+        
+    </ul>
+  </div>
+
+  <link rel="stylesheet" type="text/css" href="{% static 'uni/style2.css' %}">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <div class="w3-container w3-dark-grey">
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      
+  </div>
+  <form id = "dem"class="modal-content animate" method="post">{% csrf_token %}
+    <div class="imgcontainer">
+      <a href="{% url 'uni:home' %}"><span class="close" title="Close Modal">&times;</span></a>
+      <br>
+    </div>
+    
+    <div style="text-align: right;" class="container">
+      <!-- <label for="uname"><b>Username</b></label> -->
+      <!-- <input id = "usernamee" type="text" placeholder="Enter Username" name="uname" value="awmxr"> -->
+      
+      <h3 style="text-align: right; " >امیر مروستی نژاد  <br>
+        شماره تلفن همراه:09912148141 <br>آدرس ایمیل : amir.m.n.1380@gmail.com <br><br> <br>محسن عاشوری اردلان  <br>
+        شماره تلفن همراه:09038968110 <br>آدرس ایمیل : mohsenashouriardalan@gmail.com <br>
+        
+   </h3> 
+      
+
+      <!-- <label for="psw"><b>Password</b></label> -->
+      <!-- <input type="password" placeholder="Enter Password" name="psw" required> -->
+        
+     
+    </div>
+
+    <div class="container" style="background-color:#f1f1f1">
+      <div style="text-align: left;">
+       <a href="{% url 'uni:home'  %}"> <button type="button" style="text-align: right;" class="cancelbtn">لغو</button></a>
+      </div>
+    </div>
+
+  </form>
+
+
+<script>
+// Get the modal
+username = document.getElementsById("usernamee").value
+var modal = document.getElementById('id01');
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+</script>
+
+</body>
+
+<form id="logoutform" method="POST" action="{% url 'uni:logout' %}">
+  {% csrf_token %}
+  <input type="hidden">
+  </form>
+</html>
