@@ -3727,3 +3727,99 @@ class EjazeView(generic.TemplateView):
 
 
 
+class ChangePassbsView(generic.TemplateView):#change password by student
+    template_name = 'uni/changepassbs.html'
+    
+    def get(self,request,boss_id):
+        bs = Boss.objects.get(pk = boss_id)
+        cookie  = str(request.COOKIES.get('access'))
+        if CheckCookie(bs,cookie) and request.user.is_authenticated:
+            form = ChangePass()
+            context = {'boss':bs,'form':form,}
+            return render(request,self.template_name,context)
+        else:
+            logout2(bs)
+            return HttpResponseRedirect(reverse('uni:home'))
+    def post(self,request,boss_id):
+        
+        bs = Boss.objects.get(pk = boss_id)
+        cookie  = str(request.COOKIES.get('access'))
+        if CheckCookie(bs,cookie) and request.user.is_authenticated:
+            form = ChangePass(request.POST)
+            if form.is_valid():
+                user = request.user
+                if oracle10.hash(form.cleaned_data['pass1'],user = bs.username) == bs.password:
+                    if form.cleaned_data['pass2'] == form.cleaned_data['pass3']:
+                        bs.password = oracle10.hash(form.cleaned_data['pass3'],user = bs.username)
+                        bs.save()
+                        user.set_password(form.cleaned_data['pass3'])
+                        user.save()
+                        global gb
+                        gb = 1
+                        logout2(bs)
+                        return HttpResponseRedirect(reverse('uni:home'))
+                    else:
+                        error_message = 'تکرار پسوورد جدید همخوانی ندارد.'
+                        context = {'boss':bs,'form':form,'error_message':error_message}
+                        return render(request,self.template_name,context)
+                else:
+                    error_message = f'پسوورد قدیمی نادرست است. '
+                    context = {'boss':bs,'form':form,'error_message':error_message}
+                    return render(request,self.template_name,context)
+            else:
+                error_message = 'لطفا فرم را کامل پر کنید.'
+                context = {'form':form,'boss':bs,'error_message':error_message}
+                return render(request,self.template_name,context)   
+        else:
+            logout2(bs)
+            return HttpResponseRedirect(reverse('uni:home'))
+
+
+
+
+class ChangePassledView(generic.TemplateView):#change password by student
+    template_name = 'uni/changepassled.html'
+    
+    def get(self,request,leader_id):
+        led = Leader.objects.get(pk = leader_id)
+        cookie  = str(request.COOKIES.get('access'))
+        if CheckCookie(led,cookie) and request.user.is_authenticated:
+            form = ChangePass()
+            context = {'leader':led,'form':form,}
+            return render(request,self.template_name,context)
+        else:
+            logout2(led)
+            return HttpResponseRedirect(reverse('uni:home'))
+    def post(self,request,leader_id):
+        
+        led = Leader.objects.get(pk = leader_id)
+        cookie  = str(request.COOKIES.get('access'))
+        if CheckCookie(led,cookie) and request.user.is_authenticated:
+            form = ChangePass(request.POST)
+            if form.is_valid():
+                user = request.user
+                if oracle10.hash(form.cleaned_data['pass1'],user = led.username) == led.password:
+                    if form.cleaned_data['pass2'] == form.cleaned_data['pass3']:
+                        led.password = oracle10.hash(form.cleaned_data['pass3'],user = led.username)
+                        led.save()
+                        user.set_password(form.cleaned_data['pass3'])
+                        user.save()
+                        global gb
+                        gb = 1
+                        logout2(led)
+                        return HttpResponseRedirect(reverse('uni:home'))
+                    else:
+                        error_message = 'تکرار پسوورد جدید همخوانی ندارد.'
+                        context = {'leader':led,'form':form,'error_message':error_message}
+                        return render(request,self.template_name,context)
+                else:
+                    error_message = f'پسوورد قدیمی نادرست است. '
+                    context = {'leader':led,'form':form,'error_message':error_message}
+                    return render(request,self.template_name,context)
+            else:
+                error_message = 'لطفا فرم را کامل پر کنید.'
+                context = {'form':form,'leader':led,'error_message':error_message}
+                return render(request,self.template_name,context)   
+        else:
+            logout2(led)
+            return HttpResponseRedirect(reverse('uni:home'))
