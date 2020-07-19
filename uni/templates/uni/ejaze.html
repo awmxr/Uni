@@ -12,23 +12,16 @@
 
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <ul>
-      <li><a href="{% url 'uni:page' student.id %}">خانه</a></li>
+      <li><a href="{% url 'uni:page2' admin.id %}">خانه</a></li>
+      
             
-            <li><a href="{% url 'uni:aboutS' student.id %}">اطلاعات دانشجو</a></li>
-            <li><a href="{% url 'uni:students2' student.id %}">دانشجویان</a></li>
-            <li><a href=" {% url 'uni:entekhab' student.id %} ">دروس ارائه شده</a></li>
             
-            <li><a href=" {% url 'uni:mydars' student.id %} ">درس های من</a></li>
-            <li><a href=" {% url 'uni:karname' student.id %} ">مشاهده کارنامه</a></li>
-            <li><a href=" {% url 'uni:darkhast4' student.id %} ">درخواست های من</a></li>
-            
-            <li><a href="{% url 'uni:changepass' student.id %}">تغیر رمز عبور</a></li>
             <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
     </ul>
     
   <form id = "dem"class="modal-content animate" method="post">{% csrf_token %}
     <div class="imgcontainer">
-      <a href="{% url 'uni:page' student.id %}"><span class="close" title="Close Modal">&times;</span></a>
+      <a href="{% url 'uni:page2' admin.id %}"><span class="close" title="Close Modal">&times;</span></a>
       <br>
       <br>
       <h2>ترم 991</h2>
@@ -38,8 +31,36 @@
       <!-- <label for="uname"><b>Username</b></label> -->
       <!-- <input id = "usernamee" type="text" placeholder="Enter Username" name="uname" value="awmxr"> -->
       
-      {{ form.as_p }}
-      
+      {% if 1399 in lastlist  %}
+    <p style="text-align: center;"><input  type="checkbox" value="1399" name = 'ejaze' checked>1399</p>
+    {% elif not 1399 in lastlist %}
+    <p style="text-align: center;"><input  type="checkbox" value="1399" name = 'ejaze' >1399</p>
+    {% endif %}
+    {% if 1398 in lastlist  %}
+    <p style="text-align: center;"><input  type="checkbox" value="1398" name = 'ejaze' checked>1398</p>
+    {% elif not 1398 in lastlist %}
+    <p style="text-align: center;"><input  type="checkbox" value="1398" name = 'ejaze' >1398</p>
+    {% endif %}
+    {% if 1397 in lastlist  %}
+    <p style="text-align: center;"><input  type="checkbox" value="1397" name = 'ejaze' checked>1397</p>
+    {% elif not 1397 in lastlist %}
+    <p style="text-align: center;"><input  type="checkbox" value="1397" name = 'ejaze' >1397</p>
+    {% endif %}
+    {% if 1396 in lastlist  %}
+    <p style="text-align: center;"><input  type="checkbox" value="1396" name = 'ejaze' checked>1396</p>
+    {% elif not 1396 in lastlist %}
+    <p style="text-align: center;"><input  type="checkbox" value="1396" name = 'ejaze' >1396</p>
+    {% endif %}
+    {% if 1395 in lastlist  %}
+    <p style="text-align: center;"><input  type="checkbox" value="1395" name = 'ejaze' checked>1395</p>
+    {% elif not 1395 in lastlist %}
+    <p style="text-align: center;"><input  type="checkbox" value="1395" name = 'ejaze' >1395</p>
+    {% endif %}
+    {% if 1394 in lastlist  %}
+    <p style="text-align: center;"><input  type="checkbox" value="1394" name = 'ejaze' checked> 94 و ماقبل</p>
+    {% elif not 1394 in lastlist %}
+    <p style="text-align: center;"><input  type="checkbox" value="1394" name = 'ejaze' >94 و ماقبل</p>
+    {% endif %}
       
       <!-- <div>
         <label >ادمین</label>

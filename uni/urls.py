@@ -5,6 +5,7 @@ from . import views
 
 app_name = 'uni'
 urlpatterns = [
+    
     path('', views.HomeView.as_view(), name='home'), #home page
     path('logout/', views.page_logout, name='logout'),
     path('login/',views.LoginView.as_view(),name = 'login'), #login page
@@ -13,6 +14,11 @@ urlpatterns = [
     path('Leader/<int:leader_id>/leader/createboss',views.CreatebossView.as_view(),name = 'createboss'),
     path('Boss/<int:boss_id>/boss/createadmin',views.CreateadminView.as_view(),name = 'createadmin'),
     path('Boss/<int:boss_id>/boss/',views.BossView.as_view(),name = 'boss'),
+    path('Boss/<int:boss_id>/boss/studentsbs',views.StudentsbsView.as_view(),name = 'studentsbs'),
+    path('Boss/<int:boss_id>/boss/adminsbs',views.AdminsbsView.as_view(),name = 'adminsbs'),
+    path('Boss/<int:boss_id>/boss/adminsbs/<int:admin_id>/adminbs',views.AdminbsView.as_view(),name = 'adminbs'),
+    path('Boss/<int:boss_id>/boss/adminsbs/<int:admin_id>/adminbs/vahedbs2',views.Vahedbs2View.as_view(),name = 'vahedbs2'),
+    path('Boss/<int:boss_id>/boss/studentsbs/<int:student_id>/studentbs',views.StudentbsView.as_view(),name = 'studentbs'),
     path('student/<int:student_id>/page/darkhast4',views.Darkhast4View.as_view(),name = 'darkhast4'),
     path('student/<int:student_id>/page/karname',views.KarnameView.as_view(),name = 'karname'),
     path('student/<int:student_id>/page/karname/<int:vahed_id>/eteraz',views.EterazView.as_view(),name = 'eteraz'),
@@ -28,7 +34,11 @@ urlpatterns = [
     path('student/<int:student_id>/page/entekhab2',views.Entekhab2View.as_view(),name = 'entekhab2'),
     path('student/<int:student_id>/page/entekhab2/<int:vahed_id>/entekhab3',views.Entekhab3View.as_view(),name = 'entekhab3'),
     path('student/<int:student_id>/page/about',views.AboutSView.as_view(),name = 'aboutS'),#student's information page
+    path('Boss/<int:boss_id>/boss/studentsbs/<int:student_id>/studentbs/aboutsbs',views.AboutSbsView.as_view(),name = 'aboutSbs'),
+    path('Boss/<int:boss_id>/boss/studentsbs/<int:student_id>/studentbs/vahedbs',views.VahedbsView.as_view(),name = 'vahedbs'),
+    path('Boss/<int:boss_id>/boss/studentsbs/<int:student_id>/studentbs/karnamebs',views.KarnamebsView.as_view(),name = 'karnamebs'),
     path('admin/<int:admin_id>/page2/',views.Page2View.as_view(),name = 'page2'),#admin's page
+    path('admin/<int:admin_id>/page2/ejaze',views.EjazeView.as_view(),name = 'ejaze'),
     path('admin/<int:admin_id>/page2/darkhast2',views.Darkhast2View.as_view(),name = 'darkhast2'),
     path('admin/<int:admin_id>/page2/darkhast2/<int:darkhast_id>/darkhast3',views.Darkhast3View.as_view(),name = 'darkhast3'),
     path('admin/<int:admin_id>/page2/create',views.CreateView.as_view(),name = 'create'),#creat student page

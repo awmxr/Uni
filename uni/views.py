@@ -2055,12 +2055,25 @@ class Entekhab2View(generic.TemplateView):
     template_name = 'uni/entekhab2.html'
     def get(self,request,student_id):
         s = Student.objects.get(pk = student_id)
+        
+
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(s,cookie) and request.user.is_authenticated:
-            form = EntekhabForm()
-            context = {'student':s,'form':form}
-            return render(request,self.template_name,context)
+            a = Admin2.objects.filter(uni = s.uni,College = s.College).first()
+            list2 = a.ejaze.split(' ')
+            if '' in list2:
+                list2.remove('')
+            list3 = []
+            for i in list2:
+                list3.append(int(i))
+            if int(s.enter_year) in list3:
+                form = EntekhabForm()
+                context = {'student':s,'form':form}
+                return render(request,self.template_name,context)
+            else:
+                message = 'در حال حاضر  مجاز به انتخاب واحد نیستید'
+                return HttpResponseRedirect(reverse('uni:messages',args = [s.id,message]))
             
 
         else:
@@ -3290,6 +3303,89 @@ class CreateadminView(generic.TemplateView):
 
 
     
+class StudentsbsView(generic.TemplateView):
+    template_name = 'uni/studentsbs.html'
+    
+   
+    def get(self,request,boss_id):
+        bs = Boss.objects.get(pk = boss_id)
+        Students = Student.objects.filter(uni = bs.uni)
+        
+        cookie  = str(request.COOKIES.get('access'))
+
+        if CheckCookie(bs,cookie) and request.user.is_authenticated:
+            context = {'boss':bs,'Students':Students}
+            return render(request,self.template_name,context)
+        else:
+            logout2(bs)
+            return HttpResponseRedirect(reverse('uni:home'))
+        
+    def post(self,request,boss_id):
+        bs = Boss.objects.get(pk = boss_id)
+        Students = Student.objects.filter(uni = bs.uni)
+        
+        cookie  = str(request.COOKIES.get('access'))
+        
+        if CheckCookie(bs,cookie) and request.user.is_authenticated:
+            c = request.POST.get('search')
+            students = Student.objects.filter(uni = bs.uni)
+            s = None
+            for i in students:
+                if i.name+' '+i.last_name == c:
+                    s = Student.objects.filter(name = i.name , last_name = i.last_name).first()
+                    break
+            
+
+            if not s:
+                s = Student.objects.filter(username = c).first()
+            context = {'boss':bs,'Students':Students}
+            response = HttpResponseRedirect(reverse('uni:studentbs',args = [bs.id,s.id]))
+            return response
+        else:
+            logout2(bs)
+            return HttpResponseRedirect(reverse('uni:home'))
+
+
+
+
+class StudentbsView(generic.TemplateView):
+    template_name = 'uni/studentbs.html'
+    
+    
+    def get(self,request,boss_id,student_id):
+        s = Student.objects.get(pk = student_id)
+        bs = Boss.objects.get(pk = boss_id)
+        cookie  = str(request.COOKIES.get('access'))
+
+        if CheckCookie(bs,cookie) and request.user.is_authenticated:
+            global gb
+            if gb == 1:
+                messages.success(request, '.پسوورد با موفقیت تغییر کرد ')
+                gb = 0
+            context = {'boss':bs,'student':s}
+            return render(request,self.template_name,context)
+        else:
+            logout2(bs)
+            return HttpResponseRedirect(reverse('uni:home'))
+
+
+
+
+class AboutSbsView(generic.TemplateView):#student info page in ostad
+    
+    template_name = 'uni/aboutSbs.html'
+    
+    def get(self,request,boss_id,student_id):
+        
+        bs = Boss.objects.get(pk = boss_id)
+        s = Student.objects.get(pk = student_id)
+        cookie  = str(request.COOKIES.get('access'))
+        if CheckCookie(bs,cookie) and request.user.is_authenticated:
+            context = {'student':s,'boss':bs}
+            return render(request,self.template_name,context)
+        else:
+            logout2(bs)
+            return HttpResponseRedirect(reverse('uni:home'))
 
 
 
@@ -3297,17 +3393,90 @@ class CreateadminView(generic.TemplateView):
 
 
 
+class VahedbsView(generic.TemplateView):
+    template_name = 'uni/vahedbs.html'
+
+    def get(self,request,boss_id,student_id):
+        bs = Boss.objects.get(pk = boss_id)
+        cookie  = str(request.COOKIES.get('access'))
+
+        if CheckCookie(bs,cookie) and request.user.is_authenticated:
+            s = Student.objects.get(pk = student_id)
+            dictime = {'01':'شنبه 8-10','02':'شنبه 10-12','03':'شنبه 13-15','04':'شنبه 15-17','05':'شنبه 17-19',
+                '11':'یکشنبه 8-10','12':'یکشنبه 10-12','13':'یکشنبه 13-15','14':'یکشنبه 15-17','15':'یکشنبه 17-19',
+                '21':'دوشنبه 8-10','22':' دوشنبه 10-12 ','23':'دوشنبه 13-15','24':'دوشنبه 15-17','25':'دوشنبه 17-19',
+                '31':'سه شنبه 8-10','32':'سه شنبه 10-12','33':'سه شنبه 13-15','34':'سه شنبه 15-17','35':'سه شنبه 17-19',
+                '41':'چهارشنبه 8-10','42':'چهارشنبه 10-12','43':'چهارشنبه 13-15','44':'چهارشنبه 15-17','45':'چهارشنبه  17-19',}
+            
+            vahed1 = []
+            
+            list6 = s.darses.split(' ')
+            if '' in list6:
+                list6.remove('')
+
+            for i in list6 :
+                if i == '':
+                    list6.remove(i)
+                    pass
+                else:
+                    code3 = int(i)
+                    vahed3 = Vahed.objects.get(pk = code3)
+                    vahed1.append(vahed3)
 
 
 
 
-
-
-
-
-
-
-
+            lastlist = []
+            for y in vahed1:
+                dic2 = {}
+                timee = y.time
+                kj = timee.split(' ')
+                list1 = []
+                list2 = []
+                list3 = []
+                list4 = []
+                list5 = []
+                for i in kj:
+                    if i =='':
+                        kj.remove(i)
+                for i in kj:
+                    list1.append(i.split(','))
+                for i in list1:
+                    klas = Klass.objects.get(pk = int(i[0]))
+                    list2.append(klas)
+                    list3.append(i[1])
+                for i in range(len(list3)):
+                    if list3[i] == '1':
+                        list3[i] = '01'
+                    if list3[i] == '2':
+                        list3[i] = '02'
+                    if list3[i] == '3':
+                        list3[i] = '03'
+                    if list3[i] == '4':
+                        list3[i] = '04'
+                for i in list3:
+                    for j in dictime:
+                        if i == j:
+                            list4.append(dictime[j])    
+                for i in list2:
+                    kj = 'طبقه' +' '+ i.floor +' '+ i.college +' '+ 'کلاس' +' '+ i.number
+                    list5.append(kj)
+                for i in range(len(list4)):
+                    dic2[list4[i]] = list5[i]
+                    
+                if y.exam:
+                    exam2 = JalaliDateTime(y.exam).strftime("%Y/%m/%d")
+                    exam3 = JalaliDateTime(y.exam).strftime("%H:%M")
+                else:
+                    exam2 = None
+                    exam3 = None
+                lastlist.append([y,dic2,list4,exam2,exam3])
+            
+            context = {'student':s,'boss':bs,'vaheds':lastlist}
+            return render(request,self.template_name,context)
+        else:
+            logout2(bs)
+            return HttpResponseRedirect(reverse('uni:home'))
 
 
 
@@ -3320,8 +3489,235 @@ class CreateadminView(generic.TemplateView):
 
 
 
+class KarnamebsView(generic.TemplateView):
+    template_name = 'uni/karnamebs.html'
+    def get(self,request,boss_id,student_id):
+        bs = Boss.objects.get(pk = boss_id)
+        cookie  = str(request.COOKIES.get('access'))
+        s = Student.objects.get(pk = student_id)
+        if CheckCookie(bs,cookie) and request.user.is_authenticated:
+            list1 = s.nomre.split(' ')
+            av = 0
+            final_list = []
+            if '' in list1:
+                list1.remove('')
+            
+
+            for i in list1:
+                list2 = i.split(',')
+                if '' in list2:
+                    list2.remove('')
+                
+                vahed1 = Vahed.objects.get(pk = list2[0])
+                exam2 = JalaliDateTime(vahed1.exam).strftime("%Y/%m/%d")
+                exam3 = JalaliDateTime(vahed1.exam).strftime("%H:%M")
+                if float(list2[1]) >= 10:
+                    vaziat = 'قبول'
+                    color2 = 'green'
+                elif float(list2[1]) < 10:
+                    vaziat = 'مردود'
+                    color2 = 'red'
+
+                final_list.append([vahed1,list2[1],exam2,exam3,vaziat,color2])
+            summ = 0
+            summ2 = 0
+            for i in final_list:
+                zarib = int(i[0].vahed2)
+                score = int(i[1])
+                summ2 += zarib
+                summ += zarib*score
+            if final_list:
+                av = summ / summ2
+                if av >= 10:
+                    av = float(str(av)[:5])
+                elif av < 10:
+                    av = float(str(av)[:4])
 
 
+                
+            context = {'student':s,'vahed_nomre':final_list,'av':av,'boss':bs}
+            
+            return render(request,self.template_name,context)
+        else:
+            logout2(bs)
+            return HttpResponseRedirect(reverse('uni:home'))
+
+
+
+
+class AdminsbsView(generic.TemplateView):
+    template_name = 'uni/adminsbs.html'
+    
+   
+    def get(self,request,boss_id):
+        bs = Boss.objects.get(pk = boss_id)
+        admins = Admin2.objects.filter(uni = bs.uni)
+        
+        cookie  = str(request.COOKIES.get('access'))
+
+        if CheckCookie(bs,cookie) and request.user.is_authenticated:
+            context = {'boss':bs,'admins':admins}
+            return render(request,self.template_name,context)
+        else:
+            logout2(bs)
+            return HttpResponseRedirect(reverse('uni:home'))
+        
+    def post(self,request,boss_id):
+        bs = Boss.objects.get(pk = boss_id)
+        Students = Student.objects.filter(uni = bs.uni)
+        
+        cookie  = str(request.COOKIES.get('access'))
+        
+        if CheckCookie(bs,cookie) and request.user.is_authenticated:
+            c = request.POST.get('search')
+            admins = Admin2.objects.filter(uni = bs.uni)
+            a = None
+            for i in admins:
+                if i.name+' '+i.last_name == c:
+                    a = Admin2.objects.filter(name = i.name , last_name = i.last_name).first()
+                    break
+            
+
+            if not a:
+                a = Admin2.objects.filter(username = c).first()
+            context = {'boss':bs,'admins':admins}
+            response = HttpResponseRedirect(reverse('uni:adminbs',args = [bs.id,a.id]))
+            return response
+        else:
+            logout2(bs)
+            return HttpResponseRedirect(reverse('uni:home'))
+
+
+
+class AdminbsView(generic.TemplateView):
+    template_name = 'uni/adminbs.html'
+    
+    
+    def get(self,request,boss_id,admin_id):
+        a = Admin2.objects.get(pk = admin_id)
+        bs = Boss.objects.get(pk = boss_id)
+        cookie  = str(request.COOKIES.get('access'))
+
+        if CheckCookie(bs,cookie) and request.user.is_authenticated:
+            global gb
+            if gb == 1:
+                messages.success(request, '.پسوورد با موفقیت تغییر کرد ')
+                gb = 0
+            context = {'boss':bs,'admin':a}
+            return render(request,self.template_name,context)
+        else:
+            logout2(bs)
+            return HttpResponseRedirect(reverse('uni:home'))
+
+
+class Vahedbs2View(generic.TemplateView):
+    template_name = 'uni/vahedbs2.html'
+    def get(self,request,boss_id,admin_id):
+        bs = Boss.objects.get(pk = boss_id)
+        a = Admin2.objects.get(pk = admin_id)
+        cookie  = str(request.COOKIES.get('access'))
+        if CheckCookie(bs,cookie) and request.user.is_authenticated:
+            dictime = {'01':'شنبه 8-10','02':'شنبه 10-12','03':'شنبه 13-15','04':'شنبه 15-17','05':'شنبه 17-19',
+                '11':'یکشنبه 8-10','12':'یکشنبه 10-12','13':'یکشنبه 13-15','14':'یکشنبه 15-17','15':'یکشنبه 17-19',
+                '21':'دوشنبه 8-10','22':' دوشنبه 10-12 ','23':'دوشنبه 13-15','24':'دوشنبه 15-17','25':'دوشنبه 17-19',
+                '31':'سه شنبه 8-10','32':'سه شنبه 10-12','33':'سه شنبه 13-15','34':'سه شنبه 15-17','35':'سه شنبه 17-19',
+                '41':'چهارشنبه 8-10','42':'چهارشنبه 10-12','43':'چهارشنبه 13-15','44':'چهارشنبه 15-17','45':'چهارشنبه  17-19',}
+            vahed1 = Vahed.objects.filter(active = True,uni = bs.uni,college = a.College)
+            lastlist = []
+            
+            for y in vahed1:
+                dic2 = {}
+                timee = y.time
+                kj = timee.split(' ')
+                list1 = []
+                list2 = []
+                list3 = []
+                list4 = []
+                list5 = []
+                for i in kj:
+                    if i =='':
+                        kj.remove(i)
+                for i in kj:
+                    list1.append(i.split(','))
+                for i in list1:
+                    klas = Klass.objects.get(pk = int(i[0]))
+                    list2.append(klas)
+                    list3.append(i[1])
+                for i in range(len(list3)):
+                    if list3[i] == '1':
+                        list3[i] = '01'
+                    if list3[i] == '2':
+                        list3[i] = '02'
+                    if list3[i] == '3':
+                        list3[i] = '03'
+                    if list3[i] == '4':
+                        list3[i] = '04'
+                for i in list3:
+                    for j in dictime:
+                        if i == j:
+                            list4.append(dictime[j])    
+                for i in list2:
+                    kj = 'طبقه' +' '+ i.floor +' '+ i.college +' '+ 'کلاس' +' '+ i.number
+                    list5.append(kj)
+                for i in range(len(list4)):
+                    dic2[list4[i]] = list5[i]
+                    
+                if y.exam:
+                    exam2 = JalaliDateTime(y.exam).strftime("%Y/%m/%d")
+                    exam3 = JalaliDateTime(y.exam).strftime("%H:%M")
+                else:
+                    exam2 = None
+                    exam3 = None
+                lastlist.append([y,dic2,list4,exam2,exam3])
+                 
+            context = {'admin':a,'lastlist':lastlist,'boss':bs}
+            return render(request,self.template_name,context)
+        else:
+            logout2(bs)
+            return HttpResponseRedirect(reverse('uni:home'))
+
+class EjazeView(generic.TemplateView):
+    template_name = 'uni/ejaze.html'
+    def get(self,request,admin_id):
+        a = Admin2.objects.get(pk = admin_id)
+        cookie  = str(request.COOKIES.get('access'))
+        if CheckCookie(a,cookie) and request.user.is_authenticated:
+            a.ejaze = starfunc(a.ejaze)
+            a.save()
+
+            list1 = a.ejaze.split(' ')
+            if list1:
+                if '' in list1:
+                    list1.remove('')
+                last_list = []
+                for i in list1:
+                    last_list.append(int(i))
+                
+            elif not list1:
+                last_list = []
+            context = {'admin':a,'lastlist':last_list}
+            return render(request,self.template_name,context)
+        else:
+            logout2(a)
+            return HttpResponseRedirect(reverse('uni:home'))
+    
+    def post(self,request,admin_id):
+        a = Admin2.objects.get(pk = admin_id)
+        cookie  = str(request.COOKIES.get('access'))
+        if CheckCookie(a,cookie) and request.user.is_authenticated:
+            if request.method == 'POST':
+                list2 = request.POST.getlist('ejaze')
+                str2 = ''
+                for i in list2:
+                    str2 += ' ' + i +' '
+                a.ejaze = str2    
+                a.ejaze = starfunc(a.ejaze)
+                a.save()
+                message = 'دسترسی انتخاب واحد ثبت شد'
+                return HttpResponseRedirect(reverse('uni:messagea',args = [a.id,message]))
+        else:
+            logout2(a)
+            return HttpResponseRedirect(reverse('uni:home'))
 
 
 

@@ -3,10 +3,10 @@
 <html>
     <body>
         <ul>
-            <li><a href="{% url 'uni:leader' boss.id %}">خانه</a></li>
-            <li><a href="{% url 'uni:createadmin' boss.id %}">ساخت ادمین دانشکده</a></li>
-            <li><a href="{% url 'uni:studentsbs' boss.id %}">دانشجویان</a></li>
-            <li><a href="{% url 'uni:adminsbs' boss.id %}">ادمین ها</a></li>
+            <li><a href="{% url 'uni:boss' boss.id %}">خانه</a></li>
+            <li><a href="{% url 'uni:vahedbs2' boss.id admin.id %}">واحد های ارائه شده</a></li>
+            
+            
             <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
           </ul>
     
@@ -15,9 +15,15 @@
         <div class="w3-container w3-dark-grey">
             
             <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-            <h2 style="text-align: right; " >{{ boss.name  }} {{  boss.last_name  }}</h2> 
-            <h2 style="text-align: right; ">ادمین دانشگاه {{boss.uni}}</h2>
-            
+            <h2 style="text-align: right; " >{{ admin.name  }} {{  admin.last_name  }}</h2> 
+            <h2 style="text-align: right; " >ادمین دانشکده  {{admin.College}}</h2> 
+            {% if messages %}
+        <ul style="color: aliceblue ;background-color: rgb(8, 148, 78);" class="messages">
+            {% for message in messages %}
+            <h2>  <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>  {{ message }}</li></h2>
+            {% endfor %}
+        </ul>
+            {% endif %}
             
 
             
@@ -25,14 +31,11 @@
     </body>
 
 
+
     <form id="logoutform" method="POST" action="{% url 'uni:logout' %}">
         {% csrf_token %}
         <input type="hidden">
         </form>
-
-
-
-
 
 
 
