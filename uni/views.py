@@ -3822,4 +3822,4 @@ class ChangePassledView(generic.TemplateView):#change password by student
                 return render(request,self.template_name,context)   
         else:
             logout2(led)
-            return HttpResponseRedirect(reverse('uni:home'))
+            return HttpResponseRedirect(reverse('uni:home')) 
