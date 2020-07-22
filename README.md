@@ -2,7 +2,7 @@
 
 In this project, we are going to build a university website using the attractive django framework.
 
-we have 3 type of user in this project
+we have 5 type of user in this project
 
 1-Leader:
           can Build "Boss user"
