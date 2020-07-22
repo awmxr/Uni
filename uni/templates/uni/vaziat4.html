@@ -30,10 +30,16 @@ tr:nth-child(even) {
 
     
     <ul>
-      <li><a href="{% url 'uni:page3' ostad.id%}">خانه</a></li>  
-      <li><a href="{% url 'uni:students3' ostad.id %}">دانشجویان</a></li>
-      <li><a href="{% url 'uni:changepass4' ostad.id %}">تغیر رمز عبور</a></li>
-      <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
+      <li><a href="{% url 'uni:page3' ostad.id %}">خانه</a></li>
+            
+            <li><a href="{% url 'uni:elam1' ostad.id %}">اعلام برنامه ترم</a></li>
+            <li><a href="{% url 'uni:vaziat' ostad.id %}">وضعیت درخواست ها</a></li>
+            <li><a href="{% url 'uni:students3' ostad.id %}">دانشجویان</a></li>
+            <li><a href="{% url 'uni:mydars2' ostad.id %}">درس های من</a></li>
+            <li><a href="{% url 'uni:eteraz3' ostad.id %}">اعتراضات نمره</a></li>
+            <li><a href="{% url 'uni:changepass4' ostad.id %}">تغیر رمز عبور</a></li>
+            
+            <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
     </ul>
 
 
@@ -56,53 +62,53 @@ tr:nth-child(even) {
       <!-- <input id = "usernamee" type="text" placeholder="Enter Username" name="uname" value="awmxr"> -->
       <table>
         <tr>
-          <th>چهارشنبه</th>
-          <th>سه شنبه</th>
-          <th>دوشنبه</th>
-          <th>یکشنبه</th>
-          <th>شنبه</th>
-          <th>ساعات</th>
+          <th style="text-align: center;">چهارشنبه</th>
+          <th style="text-align: center;">سه شنبه</th>
+          <th style="text-align: center;">دوشنبه</th>
+          <th style="text-align: center;">یکشنبه</th>
+          <th style="text-align: center;">شنبه</th>
+          <th style="text-align: center;">ساعات</th>
         </tr>
         <tr>
-          <td><input type="checkbox" value="41" name = 'timeclass'>41</td>
-          <td><input type="checkbox" value="31" name = 'timeclass'>31</td>
-          <td><input type="checkbox" value="21" name = 'timeclass'>21</td>
-          <td><input type="checkbox" value="11" name = 'timeclass'>11</td>
-          <td><input type="checkbox" value="01" name = 'timeclass'>01</td>
-          <td>8-10</td>
+          <td style="text-align: center;"><input type="checkbox" value="41" name = 'timeclass'></td>
+          <td style="text-align: center;"><input type="checkbox" value="31" name = 'timeclass'></td>
+          <td style="text-align: center;"><input type="checkbox" value="21" name = 'timeclass'></td>
+          <td style="text-align: center;"><input type="checkbox" value="11" name = 'timeclass'></td>
+          <td style="text-align: center;"><input type="checkbox" value="01" name = 'timeclass'></td>
+          <td style="text-align: center;">8-10</td>
         </tr>
         <tr>
-          <td><input type="checkbox" value="42" name = 'timeclass'>42</td>
-          <td><input type="checkbox" value="32" name = 'timeclass'>32</td>
-          <td><input type="checkbox" value="22" name = 'timeclass'>22</td>
-          <td><input type="checkbox" value="12" name = 'timeclass'>12</td>
-          <td><input type="checkbox" value="02" name = 'timeclass'>02</td>
-          <td>10-12</td>
+          <td style="text-align: center;"><input type="checkbox" value="42" name = 'timeclass'></td>
+          <td style="text-align: center;"><input type="checkbox" value="32" name = 'timeclass'></td>
+          <td style="text-align: center;"><input type="checkbox" value="22" name = 'timeclass'></td>
+          <td style="text-align: center;"><input type="checkbox" value="12" name = 'timeclass'></td>
+          <td style="text-align: center;"><input type="checkbox" value="02" name = 'timeclass'></td>
+          <td style="text-align: center;">10-12</td>
         </tr>
         
         <tr>
-          <td><input type="checkbox" value="43" name = 'timeclass'>43</td>
-          <td><input type="checkbox" value="33" name = 'timeclass'>33</td>
-          <td><input type="checkbox" value="23" name = 'timeclass'>23</td>
-          <td><input type="checkbox" value="13" name = 'timeclass'>13</td>
-          <td><input type="checkbox" value="03" name = 'timeclass'>03</td>
-          <td>13-15</td>
+          <td style="text-align: center;"><input type="checkbox" value="43" name = 'timeclass'></td>
+          <td style="text-align: center;"><input type="checkbox" value="33" name = 'timeclass'></td>
+          <td style="text-align: center;"><input type="checkbox" value="23" name = 'timeclass'></td>
+          <td style="text-align: center;"><input type="checkbox" value="13" name = 'timeclass'></td>
+          <td style="text-align: center;"><input type="checkbox" value="03" name = 'timeclass'></td>
+          <td style="text-align: center;">13-15</td>
         </tr>
         <tr>
-          <td><input type="checkbox" value="44" name = 'timeclass'>44</td>
-          <td><input type="checkbox" value="34" name = 'timeclass'>34</td>
-          <td><input type="checkbox" value="24" name = 'timeclass'>24</td>
-          <td><input type="checkbox" value="14" name = 'timeclass'>14</td>
-          <td><input type="checkbox" value="04" name = 'timeclass'>04</td>
-          <td>15-17</td>
+          <td style="text-align: center;"><input type="checkbox" value="44" name = 'timeclass'></td>
+          <td style="text-align: center;"><input type="checkbox" value="34" name = 'timeclass'></td>
+          <td style="text-align: center;"><input type="checkbox" value="24" name = 'timeclass'></td>
+          <td style="text-align: center;"><input type="checkbox" value="14" name = 'timeclass'></td>
+          <td style="text-align: center;"><input type="checkbox" value="04" name = 'timeclass'></td>
+          <td style="text-align: center;">15-17</td>
         </tr>
         <tr>
-          <td><input type="checkbox" value="45" name = 'timeclass'>45</td>
-          <td><input type="checkbox" value="35" name = 'timeclass'>35</td>
-          <td><input type="checkbox" value="25" name = 'timeclass'>25</td>
-          <td><input type="checkbox" value="15" name = 'timeclass'>15</td>
-          <td><input type="checkbox" value="05" name = 'timeclass'>05</td>
-          <td>17-19</td>
+          <td style="text-align: center;"><input type="checkbox" value="45" name = 'timeclass'></td>
+          <td style="text-align: center;"><input type="checkbox" value="35" name = 'timeclass'></td>
+          <td style="text-align: center;"><input type="checkbox" value="25" name = 'timeclass'></td>
+          <td style="text-align: center;"><input type="checkbox" value="15" name = 'timeclass'></td>
+          <td style="text-align: center;"><input type="checkbox" value="05" name = 'timeclass'></td>
+          <td style="text-align: center;">17-19</td>
         </tr>
         
 
@@ -147,5 +153,5 @@ window.onclick = function(event) {
 <form id="logoutform" method="POST" action="{% url 'uni:logout' %}">
   {% csrf_token %}
   <input type="hidden">
-  </form>
+</form>
 </html>

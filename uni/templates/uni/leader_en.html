@@ -1,0 +1,56 @@
+{% load static %}
+<link rel="icon" href="{% static 'uni/images/13.png' %}">
+<html>
+    <body>
+        <ul>
+            <li><a href="{% url 'uni:leader' leader.id %}">Home</a></li>
+            <li><a href="{% url 'uni:createboss' leader.id %}">Create University Admin</a></li>
+            <li><a href="{% url 'uni:changepassled' leader.id %}">Change Password</a></li>
+
+            <form method ="POST" >
+                {% csrf_token %}
+              <select  onchange="this.form.submit()"   name='lang'  style="height: 40px;width: 100px; background-color: rgb(39, 37, 37); border-color: rgb(39, 37, 37); color:aliceblue">
+                {% if leader.lang == 'fa' %}
+                <option selected value="fa">فارسی</option>
+                <option value="en">English</option>
+                {% else %}
+                <option selected value="en">English</option>
+                <option value="fa">فارسی</option>
+                {% endif %}
+                
+              </select>
+            </form>
+            <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">Exit</button></a>
+          </ul>
+    
+        <link rel="stylesheet" type="text/css" href="{% static 'uni/style2.css' %}">
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <div class="w3-container w3-dark-grey">
+            
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+            <h2 style="text-align: left; " >{{ leader.name  }} {{  leader.last_name  }}</h2> 
+            <h2 style="text-align: left; " >Main Admin</h2> 
+            
+
+            
+        </div>
+    </body>
+
+
+    <form id="logoutform" method="POST" action="{% url 'uni:logout' %}">
+        {% csrf_token %}
+        <input type="hidden">
+        </form>
+
+
+
+
+
+
+
+
+
+
+
+</html>
+

@@ -31,10 +31,19 @@ tr:nth-child(even) {
 
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <ul>
-        <li><a href="{% url 'uni:page' student.id %}">خانه</a></li>
-        
-        <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
-        <!-- <input  style="text-align-last: right;" type="search" placeholder="جست و جو " aria-label="Search" name="search"  > -->
+      <li><a href="{% url 'uni:page' student.id %}">خانه</a></li>
+            
+      <li><a href="{% url 'uni:aboutS' student.id %}">اطلاعات دانشجو</a></li>
+      <li><a href="{% url 'uni:students2' student.id %}">دانشجویان</a></li>
+      <li><a href=" {% url 'uni:entekhab' student.id %} ">دروس ارائه شده</a></li>
+      <li><a href=" {% url 'uni:entekhab2' student.id %} ">انتخاب واحد</a></li>
+      <li><a href=" {% url 'uni:mydars' student.id %} ">درس های من</a></li>
+      <li><a href=" {% url 'uni:karname' student.id %} ">مشاهده کارنامه</a></li>
+      <li><a href=" {% url 'uni:darkhast4' student.id %} ">درخواست های من</a></li>
+      
+      <li><a href="{% url 'uni:changepass' student.id %}">تغیر رمز عبور</a></li>
+      
+<a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
         
     </ul>
   </div>
@@ -55,9 +64,9 @@ tr:nth-child(even) {
       <!-- <label for="uname"><b>Username</b></label> -->
       <!-- <input id = "usernamee" type="text" placeholder="Enter Username" name="uname" value="awmxr"> -->
       
-      <h3 style="text-align: right; " >درس : {{ vahed.dars  }} <br> 
+      <h3 style="text-align: right; " >درس : {{ dars  }} <br> 
         استاد مربوطه : {{ vahed.ostad  }} <br> گروه  : {{ vahed.goruh }} <br>
-        ظرفیت : {{ vahed.capacity }} <br> جنسیت : {{ vahed.sex }}<br> کد درس : {{ vahed.dars_code }} <br> تاریخ امتحان : {{ vahed.exam }} <br>
+        ظرفیت : {{ vahed.capacity }} <br> جنسیت : {{sex }}<br> کد درس : {{ vahed.dars_code }} <br> تاریخ امتحان : {{ vahed.exam }} <br>
         واحد : {{ vahed.vahed2 }} <br>
         <br>
         <br>

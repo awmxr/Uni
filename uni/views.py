@@ -1,22 +1,56 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, Http404 ,HttpResponseRedirect
-from .models import Student,Admin2, Ostad,Elam,Klass,Account,Vahed,Darkhast,Eteraz,Leader,Boss
+from .models import Student,Admin2, Ostad,Elam,Klass,Account,Vahed,Darkhast,Eteraz,Leader,Boss,Exter,Forget
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
 from .forms import Loginform,sabtform,ChangeForm,ChangePass,Change2Form,ChangePass2,sabtform2,ElamForm,KlassForm,EntekhabForm,sabtform3,sabtform4
+from .forms_en import Loginform_en,sabtform_en,ChangeForm_en,ChangePass_en,Change2Form_en,ChangePass2_en,sabtform2_en,ElamForm_en,KlassForm_en,EntekhabForm_en,sabtform3_en,sabtform4_en
 from django.contrib import messages
 from passlib.hash import oracle10
 from . import choices
+from . import choices_en
+from .dictt import livedict,religiondict,sexdict,fielddict,collegedict,unidict,gradedict,coursedict,darsdict
+from .dictt_en import livedict_en,religiondict_en,sexdict_en,fielddict_en,collegedict_en,unidict_en,gradedict_en,coursedict_en,darsdict_en
 from django import forms
 import datetime as dt
-from .cookie import CheckCookie,MakeCookie,starfunc
+from .cookie import CheckCookie,MakeCookie,starfunc,manfifunc,replacel,checktime,disapledtime,vahedtime,vahedtime2,replaceii
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate,login,logout
 from django.template.defaulttags import register
 import re
 from persiantools.jdatetime import JalaliDateTime
+import socket
+
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
+def changetemplate(user,template_name2):
+    if user.lang == 'fa':
+        template_name = template_name2
+    else:
+        template_name = re.sub('.html','_en.html',template_name2)
+    return template_name
+
+
+def changelang(user,lang,template_name2):
+    user.lang = lang
+    aco = Account.objects.filter(username = user.username).first()
+    aco.lang = lang
+    aco.save()
+    user.save()
+    if user.lang == 'fa':
+        template_name = template_name2
+    else:
+        template_name = re.sub('.html','_en.html',template_name2)
+    return template_name
 
 def logout2(user):
     user.login_date = None
@@ -63,19 +97,60 @@ gb = 0 #use for message: if gb == 1: message is exist
 
 class HomeView(generic.TemplateView):
     template_name = 'uni/home.html'
+    # template_name_en = 'uni/home_en.html'
     def get(self, request):
-        
         global gb
         if gb == 1:
             messages.success(request, '.پسوورد با موفقیت تغییر کرد لطفا دوباره وارد شوید')
             gb = 0
+        return render(request,self.template_name,{'lang':'fa'})
+    def post(self, request):
+        if request.method == 'POST':
+            lang = request.POST.get('lang')
+            if lang == 'en':
+                return HttpResponseRedirect(reverse('uni:home_en'))
+            else:
+                return render(request,self.template_name,{'lang':'en'})
 
-        response = render(request,self.template_name,{})
-        return response
+
+
+
+
+    # messages.success(request, 'Password Has Been Changed Successfully Please Login Again')
+
+
+
+class Home_enView(generic.TemplateView):
+    template_name = 'uni/home_en.html'
+    def get(self, request):
+        global gb
+        if gb == 1:
+            messages.success(request, 'Password Has Been Changed Successfully Please Login Again')
+            gb = 0
+        return render(request,self.template_name,{'lang':'en'})
+    def post(self, request):
+        if request.method == 'POST':
+            lang = request.POST.get('lang')
+            if lang == 'fa':
+                return HttpResponseRedirect(reverse('uni:home'))
+            else:
+                return render(request,self.template_name,{'lang':'fa'})
+
+
+
+            
+
+
 
 class AboutusView(generic.TemplateView):
     template_name = 'uni/aboutus.html'
-    def get(self, request):
+    # template_name = 'uni/aboutus_en.html'
+    def get(self, request,lang):
+        if lang == 'fa':
+            pass
+        else:
+            self.template_name = 'uni/aboutus_en.html'
+
         response = render(request,self.template_name,{})
         return response
         
@@ -83,9 +158,11 @@ class AboutusView(generic.TemplateView):
 class PageView(generic.TemplateView):#student page
     
     template_name = 'uni/page.html'
+    # template_name = 'uni/page_en.html'
     
     def get(self,request,student_id):
         s = Student.objects.get(pk = student_id)
+        self.template_name = changetemplate(s,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(s,cookie) and request.user.is_authenticated :
@@ -94,13 +171,29 @@ class PageView(generic.TemplateView):#student page
         else:
             logout2(s)
             return HttpResponseRedirect(reverse('uni:home'))
+    def post(self,request,student_id):
+        s = Student.objects.get(pk = student_id)
+        
+        cookie  = str(request.COOKIES.get('access'))
+
+        if CheckCookie(s,cookie) and request.user.is_authenticated :
+            if request.method == 'POST':    
+                lang = request.POST.get('lang')
+                self.template_name = changelang(s,lang,self.template_name)
+                context = {'student':s}
+                return render(request,self.template_name,context)
+        else:
+            logout2(s)
+            return HttpResponseRedirect(reverse('uni:home'))
 
 class LeaderView(generic.TemplateView):#student page
     
     template_name = 'uni/leader.html'
-    
+    # template_name = 'uni/leader_en.html'
+
     def get(self,request,leader_id):
         led = Leader.objects.get(pk = leader_id)
+        self.template_name = changetemplate(led,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(led,cookie) and request.user.is_authenticated :
@@ -109,19 +202,57 @@ class LeaderView(generic.TemplateView):#student page
         else:
             logout2(led)
             return HttpResponseRedirect(reverse('uni:home'))
+    def post(self,request,leader_id):
+        led = Leader.objects.get(pk = leader_id)
+        
+        cookie  = str(request.COOKIES.get('access'))
+
+        if CheckCookie(led,cookie) and request.user.is_authenticated :
+            if request.method == 'POST':    
+                lang = request.POST.get('lang')
+                self.template_name = changelang(led,lang,self.template_name)
+                context = {'leader':led}
+                return render(request,self.template_name,context)
+        else:
+            logout2(led)
+            return HttpResponseRedirect(reverse('uni:home'))
 
 
 class BossView(generic.TemplateView):#student page
     
     template_name = 'uni/boss.html'
-    
+    # template_name = 'uni/boss_en.html'
+
     def get(self,request,boss_id):
         bs = Boss.objects.get(pk = boss_id)
+        self.template_name = changetemplate(bs,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(bs,cookie) and request.user.is_authenticated :
-            return render(request,self.template_name,{'boss':bs})
+            if bs.lang == 'fa':
+                uni2 = unidict[bs.uni]
+            else:
+                uni2 = unidict_en[bs.uni]
+            return render(request,self.template_name,{'boss':bs,'uni':uni2})
         
+        else:
+            logout2(bs)
+            return HttpResponseRedirect(reverse('uni:home'))
+    def post(self,request,boss_id):
+        bs = Boss.objects.get(pk = boss_id)
+        
+        cookie  = str(request.COOKIES.get('access'))
+
+        if CheckCookie(bs,cookie) and request.user.is_authenticated :
+            if request.method == 'POST':    
+                lang = request.POST.get('lang')
+                self.template_name = changelang(bs,lang,self.template_name)
+                if bs.lang == 'fa':
+                    uni2 = unidict[bs.uni]
+                else:
+                    uni2 = unidict_en[bs.uni]
+                context = {'boss':bs,'uni':uni2}
+                return render(request,self.template_name,context)
         else:
             logout2(bs)
             return HttpResponseRedirect(reverse('uni:home'))
@@ -131,18 +262,48 @@ class BossView(generic.TemplateView):#student page
 class Page2View(generic.TemplateView):#admin page
     
     template_name = 'uni/page2.html'
-    
+    # template_name = 'uni/page2_en.html'
     
     def get(self,request,admin_id):
         
         # messages.success(request, 'Email sent successfully.')
         a = Admin2.objects.get(pk = admin_id)
+        self.template_name = changetemplate(a,self.template_name)
         Admins = Admin2.objects.all()
         Students = Student.objects.all()
         cookie  = str(request.COOKIES.get('access'))
         d = CheckCookie(a,cookie)
         if d and request.user.is_authenticated:
-            return render(request,self.template_name,{'admin':a,'Admins':Admins,'Students':Students})
+            if a.lang == 'fa':
+                uni2 = unidict[a.uni]
+                college2 = collegedict[a.College]
+            else:
+                college2 = collegedict_en[a.College]
+                uni2 = unidict_en[a.uni]
+            return render(request,self.template_name,{'admin':a,'Admins':Admins,'Students':Students,'uni2':uni2,'college2':college2})
+        else:
+            logout2(a)
+            return HttpResponseRedirect(reverse('uni:home'))
+    def post(self,request,admin_id):
+        a = Admin2.objects.get(pk = admin_id)
+        
+        cookie  = str(request.COOKIES.get('access'))
+
+        if CheckCookie(a,cookie) and request.user.is_authenticated :
+            
+            if request.method == 'POST': 
+                
+                lang = request.POST.get('lang')
+                self.template_name = changelang(a,lang,self.template_name)   
+                if a.lang == 'fa':
+                    uni2 = unidict[a.uni]
+                    college2 = collegedict[a.College]
+                else:
+                    college2 = collegedict_en[a.College]
+                    uni2 = unidict_en[a.uni]
+                
+                context = {'admin':a,'uni2':uni2,'college2':college2}
+                return render(request,self.template_name,context)
         else:
             logout2(a)
             return HttpResponseRedirect(reverse('uni:home'))
@@ -152,10 +313,12 @@ class Page2View(generic.TemplateView):#admin page
 class Page3View(generic.TemplateView):#ostad page
     
     template_name = 'uni/page3.html'
+    # template_name = 'uni/page3_en.html'
     
     def get(self,request,ostad_id):
         
         os = Ostad.objects.get(pk = ostad_id)
+        self.template_name = changetemplate(os,self.template_name)
         w = Elam.objects.filter(username = os.username ,time = '').first()
         if w and w.time == '':
             w.delete()
@@ -167,6 +330,20 @@ class Page3View(generic.TemplateView):#ostad page
         else:
             logout2(os)
             return HttpResponseRedirect(reverse('uni:home'))
+    def post(self,request,ostad_id):
+        os = Ostad.objects.get(pk = ostad_id)
+        
+        cookie  = str(request.COOKIES.get('access'))
+
+        if CheckCookie(os,cookie) and request.user.is_authenticated :
+            if request.method == 'POST':    
+                lang = request.POST.get('lang')
+                self.template_name = changelang(os,lang,self.template_name)
+                context = {'ostad':os}
+                return render(request,self.template_name,context)
+        else:
+            logout2(os)
+            return HttpResponseRedirect(reverse('uni:home'))
   
 
 
@@ -174,12 +351,22 @@ class Page3View(generic.TemplateView):#ostad page
 class AboutSView(generic.TemplateView):#student info page
     
     template_name = 'uni/aboutS.html'
+    # template_name = 'uni/aboutS_en.html'
     
     def get(self,request,student_id):
         s = Student.objects.get(pk = student_id)
+        self.template_name = changetemplate(s,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(s,cookie) and request.user.is_authenticated:
-            context = {'student':s}
+            if s.lang == 'fa':
+                field2 = fielddict[s.field]
+                college2 = collegedict[s.College]
+                uni2 = unidict[s.uni]
+            else:
+                field2 = fielddict_en[s.field]
+                college2 = collegedict_en[s.College]
+                uni2 = unidict_en[s.uni]
+            context = {'student':s,'field':field2,'college':college2,'uni':uni2}
             return render(request,self.template_name,context)
         else:
             logout2(s)
@@ -188,14 +375,24 @@ class AboutSView(generic.TemplateView):#student info page
 class AboutS3View(generic.TemplateView):#student info page in ostad
     
     template_name = 'uni/aboutS3.html'
+    # template_name = 'uni/aboutS3_en.html'
     
     def get(self,request,ostad_id,student_id):
         
         os = Ostad.objects.get(pk = ostad_id)
+        self.template_name = changetemplate(os,self.template_name)
         s = Student.objects.get(pk = student_id)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(os,cookie) and request.user.is_authenticated:
-            context = {'student':s,'ostad':os}
+            if os.lang == 'fa':
+                uni2 = unidict[s.uni]
+                college2 = collegedict[s.College]
+                field2 = fielddict[s.field]
+            else:
+                uni2 = unidict_en[s.uni]
+                college2 = collegedict_en[s.College]
+                field2 = fielddict_en[s.field]
+            context = {'student':s,'ostad':os,'uni':uni2,'college':college2,'field':field2}
             return render(request,self.template_name,context)
         else:
             logout2(os)
@@ -204,15 +401,25 @@ class AboutS3View(generic.TemplateView):#student info page in ostad
     
 class AboutS2View(generic.TemplateView):#student info page in admin
     
+    # template_name = 'uni/aboutS2_en.html'
     template_name = 'uni/aboutS2.html'
     
     def get(self,request,admin_id,student_id):
         
         a = Admin2.objects.get(pk = admin_id)
+        self.template_name = changetemplate(a,self.template_name)
         s = Student.objects.get(pk = student_id)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(a,cookie) and request.user.is_authenticated:
-            context = {'student':s,'admin':a}
+            if a.lang == 'fa':
+                uni2 = unidict[s.uni]
+                college2 = collegedict[s.College]
+                field2 = fielddict[s.field]
+            else:
+                uni2 = unidict_en[s.uni]
+                college2 = collegedict_en[s.College]
+                field2 = fielddict_en[s.field]
+            context = {'student':s,'admin':a,'uni':uni2,'college':college2,'field':field2}
             return render(request,self.template_name,context)
         else:
             logout2(a)
@@ -221,14 +428,18 @@ class AboutS2View(generic.TemplateView):#student info page in admin
     
 class ChangeView(generic.TemplateView):#change info by student
     
+    # template_name = 'uni/change_en.html'
     template_name = 'uni/change.html'
     
     def get(self,request,student_id):
         s = Student.objects.get(pk = student_id)
+        self.template_name = changetemplate(s,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(s,cookie) and request.user.is_authenticated:
-            
-            form = ChangeForm(instance=s)
+            if s.lang == 'fa':
+                form = ChangeForm(instance=s)
+            else:
+                form = ChangeForm_en(instance=s)
             form.student = s
             context = {'form':form,'student':s}
             return render(request,self.template_name,context)
@@ -237,18 +448,25 @@ class ChangeView(generic.TemplateView):#change info by student
             return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,student_id):
         s = Student.objects.get(pk = student_id)
+        self.template_name = changetemplate(s,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(s,cookie) and request.user.is_authenticated:
-            form = ChangeForm(request.POST,instance=s)
+            if s.lang == 'fa':
+                form = ChangeForm(request.POST,instance=s)
+                message = 'تغییرات با موفقیت اعمال شد'
+            else:
+                form = ChangeForm_en(request.POST,instance=s)
+                message = 'Changes Applied Successfully'
             if form.is_valid():
                 form.save()
-                
                 del form
-                message = 'تغییرات با موفقیت اعمال شد'
                 return HttpResponseRedirect(reverse('uni:messages',args = [s.id,message]))
             
             elif not form.is_valid():
-                error_message = f'لطفا فرم را کامل پر کنید'
+                if s.lang == 'fa':
+                    error_message = f'لطفا فرم را کامل پر کنید'
+                else:
+                    error_message = f'Please Complete The Form'
                 context = {'form':form,'student':s,'error_message':error_message}
                 return render(request,self.template_name,context)
         else:
@@ -261,14 +479,18 @@ class ChangeView(generic.TemplateView):#change info by student
 v = 0
 class CreateView(generic.TemplateView):#create student by admin
     
+    # template_name = 'uni/create_en.html'
     template_name = 'uni/create.html'
-    
     
     def get(self,request ,admin_id):
         a = Admin2.objects.get(pk = admin_id)
+        self.template_name = changetemplate(a,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(a,cookie) and request.user.is_authenticated:
-            form = sabtform()
+            if a.lang == 'fa':
+                form = sabtform()
+            else:
+                form = sabtform_en()
             context = {'form':form,'admin':a}
             return render(request ,self.template_name,context)
         else:
@@ -280,8 +502,13 @@ class CreateView(generic.TemplateView):#create student by admin
         global v
         # v = 0
         a = Admin2.objects.get(pk = admin_id)
+        
+        self.template_name = changetemplate(a,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
-        form = sabtform(request.POST)
+        if a.lang == 'fa':
+            form = sabtform(request.POST)
+        else:
+            form = sabtform_en(request.POST)
         if CheckCookie(a,cookie) and request.user.is_authenticated:
             if form.is_valid():
                 nam = form.cleaned_data['username']
@@ -289,45 +516,28 @@ class CreateView(generic.TemplateView):#create student by admin
                 for i in users:
                     
                     if i.username == nam:
-                        error_message = f'این شماره دانشجویی در حال حاضر وجود دارد'
+                        if a.lang == 'fa':
+                            error_message = f'این شماره دانشجویی در حال حاضر وجود دارد'
+                        else:
+                            error_message = f'Student ID Does Not Exist At The Moment'
                         context = {'form':form,'admin':a,'error_message':error_message}
                         return render(request ,self.template_name,context)
                 
-                if form.cleaned_data['College'] == 'فنی مهندسی'  and v != 2:
-                    v = 2
-                    form.fields['field'].widget = forms.Select(choices= choices.field1_choices)
-                    context = {'form':form,'admin':a,}
-                    return render(request ,self.template_name,context)
-                elif form.cleaned_data['College'] == 'علوم پایه'  and v != 3:
-                    v = 3
-                    form.fields['field'].widget = forms.Select(choices= choices.field2_choices)
-                    context = {'form':form,'admin':a,}
-                    return render(request ,self.template_name,context)
-                elif form.cleaned_data['College'] == 'علوم اقتصادی و اداری' and v != 4:
-                    v = 4
-                    form.fields['field'].widget = forms.Select(choices= choices.fileld3_choices)
-                    context = {'form':form,'admin':a,}
-                    return render(request ,self.template_name,context)
-                elif form.cleaned_data['College'] == 'علوم سیاسی'  and v != 5:
-                    v = 5
-                    form.fields['field'].widget = forms.Select(choices= choices.fileld4_choices)
-                    context = {'form':form,'admin':a,}
-                    return render(request ,self.template_name,context)
-                elif form.cleaned_data['College'] == 'علوم دریایی'  and v != 6:
-                    v = 6
-                    form.fields['field'].widget = forms.Select(choices= choices.fileld5_choices)
-                    context = {'form':form,'admin':a,}
-                    return render(request ,self.template_name,context)
+
                 y = oracle10.hash(form.cleaned_data['password'],user = form.cleaned_data['username'])
                 z = form.cleaned_data['username']
-                v = 0
+                
                 for key in form.fields:
                     if form.cleaned_data[key] == '':
-                        # v = 0
-                        error_message = 'لطفا فرم را کامل پر کنید'
+                        
+                        if a.lang == 'fa':
+                            error_message = 'لطفا فرم را کامل پر کنید'
+                        else:
+                            error_message = 'Please Complete The Form'
                         context = {'form':form,'admin':a,'error_message':error_message}
                         return render(request ,self.template_name,context)
-                v = 1
+
+                
                 date1 = request.POST.get('date')
                 form.save()
                 Student.objects.filter(username = z).update(birthday = date1)
@@ -338,14 +548,23 @@ class CreateView(generic.TemplateView):#create student by admin
                 user.save()
                 
                 
-                # v = 0 
+                
                 x = Student.objects.filter(username = z).update(password = y)
+                s = Student.objects.filter(username = z).first()
+                s.sex = request.POST.get('sex')
+                s.save()
                 form = sabtform()
-                message = 'دانشجو با موفقیت ثبت شد'
+                if a.lang == 'fa':
+                    message = 'دانشجو با موفقیت ثبت شد'
+                else:
+                    message = 'Student Added Successfully'
                 context = {'form':form,'admin':a}
                 return HttpResponseRedirect(reverse('uni:messagea',args = [a.id,message]))
             if form.is_valid() == False:
-                error_message = f'لطفا فرم را کامل پر کنید'
+                if a.lang == 'fa':
+                    error_message = f'لطفا فرم را کامل پر کنید'
+                else:
+                    error_message = f'Please Complete The Form'
                 context = {'form':form,'admin':a,'error_message':error_message}
                 return render(request ,self.template_name,context)
         else:
@@ -361,26 +580,55 @@ class LoginView(generic.TemplateView):#login page
     
     # model = Student
     template_name = 'uni/login.html'
+    # template_name = 'uni/login_en.html'
 
-    def get(self , request):
-
-        form = Loginform()
-        context = {'form' : form}
+    def get(self , request,lang):
+        
+        
+        
+                
+        if lang == 'fa':
+            form = Loginform()
+        else:
+            self.template_name = 'uni/login_en.html'
+            form = Loginform_en()
+        context = {'form' : form,'lang':lang}
         response = render(request,self.template_name,context)
         return response
+    
+
         
-    def post(self,request):
-        form = Loginform(request.POST)
+    def post(self,request,lang):
+        
+        if lang == 'fa':
+            form = Loginform(request.POST)
+        else:
+            self.template_name = 'uni/login_en.html'
+            form = Loginform_en(request.POST)
+        
+
+
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
             user = authenticate(username = username , password = password)
             if not user:
-                error_message = "شماره کاربری یا رمز عبور غلط است"
+                
+                if lang == 'fa':
+                    error_message = "شماره کاربری یا رمز عبور غلط است"
+                else:
+                    error_message = "Wrong Username or Password !"
+            
                 context = {'form' : form ,'error_message':error_message }
-                return render(request ,'uni/login.html',context)
-            if user.is_student : 
+                return render(request , self.template_name ,context)
+            if user.is_student :
+                
                 s = Student.objects.filter(username = user.username).first()
+                aco = Account.objects.filter(username = s.username ).first()
+                hostname = socket.gethostname()
+                ip_address = socket.gethostbyname(hostname)
+                aco.ip_address = ip_address
+                aco.save()
                 response = HttpResponseRedirect(reverse('uni:page',args = [s.id]))
                 login(request,user)
                 s.login_date = dt.datetime.now()
@@ -393,6 +641,11 @@ class LoginView(generic.TemplateView):#login page
                 return response
             if user.is_admin2 : 
                 a = Admin2.objects.filter(username = user.username).first()
+                aco = Account.objects.filter(username = a.username ).first()
+                hostname = socket.gethostname()
+                ip_address = socket.gethostbyname(hostname)
+                aco.ip_address = ip_address
+                aco.save()
                 response = HttpResponseRedirect(reverse('uni:page2',args = [a.id]))
                 login(request,user)
                 a.login_date = dt.datetime.now()
@@ -405,6 +658,11 @@ class LoginView(generic.TemplateView):#login page
                 return response
             if user.is_ostad : 
                 os = Ostad.objects.filter(username = user.username).first()
+                aco = Account.objects.filter(username = os.username ).first()
+                hostname = socket.gethostname()
+                ip_address = socket.gethostbyname(hostname)
+                aco.ip_address = ip_address
+                aco.save()
                 response = HttpResponseRedirect(reverse('uni:page3',args = [os.id]))
                 login(request,user)
                 os.login_date = dt.datetime.now()
@@ -417,6 +675,11 @@ class LoginView(generic.TemplateView):#login page
                 return response  
             if user.is_leader : 
                 led = Leader.objects.filter(username = user.username).first()
+                aco = Account.objects.filter(username = led.username ).first()
+                hostname = socket.gethostname()
+                ip_address = socket.gethostbyname(hostname)
+                aco.ip_address = ip_address
+                aco.save()
                 response = HttpResponseRedirect(reverse('uni:leader',args = [led.id]))
                 login(request,user)
                 led.login_date = dt.datetime.now()
@@ -429,6 +692,11 @@ class LoginView(generic.TemplateView):#login page
                 return response
             if user.is_boss : 
                 bs = Boss.objects.filter(username = user.username).first()
+                aco = Account.objects.filter(username = bs.username ).first()
+                hostname = socket.gethostname()
+                ip_address = socket.gethostbyname(hostname)
+                aco.ip_address = ip_address
+                aco.save()
                 response = HttpResponseRedirect(reverse('uni:boss',args = [bs.id]))
                 login(request,user)
                 bs.login_date = dt.datetime.now()
@@ -443,18 +711,26 @@ class LoginView(generic.TemplateView):#login page
             #     error_message = 'شماره کاربری یا رمز عبور غلط است'
             #     return render(request,self.template_name,{'form' : form ,'error_message':error_message})
 
-                      
-        error_message = 'لطفا فرم را کامل پر کنید'
+        if lang == 'fa':
+            error_message = 'لطفا فرم را کامل پر کنید'
+        else:
+            error_message = 'Please Complete The Form'
         return render(request,self.template_name,{'form' : form ,'error_message':error_message})
 
 class ChangePassView(generic.TemplateView):#change password by student
     template_name = 'uni/changepass.html'
+    # template_name = 'uni/changepass_en.html'
     
     def get(self,request,student_id):
         s = Student.objects.get(pk = student_id)
+        self.template_name = changetemplate(s,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(s,cookie) and request.user.is_authenticated:
-            form = ChangePass()
+            if s.lang == 'fa':
+                form = ChangePass()
+
+            else:
+                form = ChangePass_en()
             context = {'student':s,'form':form,}
             return render(request,self.template_name,context)
         else:
@@ -463,9 +739,13 @@ class ChangePassView(generic.TemplateView):#change password by student
     def post(self,request,student_id):
         
         s = Student.objects.get(pk = student_id)
+        self.template_name = changetemplate(s,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(s,cookie) and request.user.is_authenticated:
-            form = ChangePass(request.POST)
+            if s.lang =='fa':
+                form = ChangePass(request.POST)
+            else:
+                form = ChangePass_en(request.POST)
             if form.is_valid():
                 user = request.user
                 if oracle10.hash(form.cleaned_data['pass1'],user = s.username) == s.password:
@@ -479,15 +759,24 @@ class ChangePassView(generic.TemplateView):#change password by student
                         logout2(s)
                         return HttpResponseRedirect(reverse('uni:home'))
                     else:
-                        error_message = 'تکرار پسوورد جدید همخوانی ندارد.'
+                        if s.lang == 'fa':
+                            error_message = 'تکرار پسوورد جدید همخوانی ندارد.'
+                        else:
+                            error_message = 'New Passwords Must Be Same.'
                         context = {'student':s,'form':form,'error_message':error_message}
                         return render(request,self.template_name,context)
                 else:
-                    error_message = f'پسوورد قدیمی نادرست است. '
+                    if s.lang == 'fa':
+                        error_message = f'پسوورد قدیمی نادرست است. '
+                    else:
+                        error_message = f'Your Old Password Is Not True'
                     context = {'student':s,'form':form,'error_message':error_message}
                     return render(request,self.template_name,context)
             else:
-                error_message = 'لطفا فرم را کامل پر کنید.'
+                if s.lang =='fa':
+                    error_message = 'لطفا فرم را کامل پر کنید.'
+                else:
+                    error_message = 'Please Complete The Form'
                 context = {'form':form,'student':s,'error_message':error_message}
                 return render(request,self.template_name,context)   
         else:
@@ -497,13 +786,18 @@ class ChangePassView(generic.TemplateView):#change password by student
 
 class ChangePassView2(generic.TemplateView):#change password by admin
     template_name = 'uni/changepass2.html'
+    # template_name = 'uni/changepass2_en.html'
     
     
     def get(self,request,admin_id):
         a = Admin2.objects.get(pk = admin_id)
+        self.template_name = changetemplate(a,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(a,cookie):
-            form = ChangePass()
+            if a.lang == 'fa':
+                form = ChangePass()
+            else:
+                form = ChangePass_en()
             context = {'admin':a,'form':form,}
             return render(request,self.template_name,context)
         else:
@@ -512,9 +806,14 @@ class ChangePassView2(generic.TemplateView):#change password by admin
     def post(self,request,admin_id):
         
         a = Admin2.objects.get(pk = admin_id)
+        self.template_name = changetemplate(a,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(a,cookie) and request.user.is_authenticated:
-            form = ChangePass(request.POST)
+            if a.lang == 'fa':
+                form = ChangePass(request.POST)
+            else:
+                form = ChangePass_en(request.POST)
+
             if form.is_valid():
                 user = request.user
                 if oracle10.hash(form.cleaned_data['pass1'],user = a.username) == a.password:
@@ -528,15 +827,24 @@ class ChangePassView2(generic.TemplateView):#change password by admin
                         logout2(a)
                         return HttpResponseRedirect(reverse('uni:home'))
                     else:
-                        error_message = 'تکرار پسوورد جدید همخوانی ندارد.'
+                        if a.lang == 'fa':
+                            error_message = 'تکرار پسوورد جدید همخوانی ندارد.'
+                        else:
+                            error_message = 'New Passwords Must Be Same.'
                         context = {'admin':a,'form':form,'error_message':error_message}
                         return render(request,self.template_name,context)
                 else:
-                    error_message = f'پسوورد قدیمی نادرست است. '
+                    if a.lang == 'fa':
+                        error_message = f'پسوورد قدیمی نادرست است. '
+                    else:
+                        error_message = f'Your Old Password Is Not True'
                     context = {'admin':a,'form':form,'error_message':error_message}
                     return render(request,self.template_name,context)
             else:
-                error_message = 'لطفا فرم را کامل پر کنید.'
+                if a.lang == 'fa':
+                    error_message = 'لطفا فرم را کامل پر کنید.'
+                else:
+                    error_message = 'Please Complete The Form'
                 context = {'form':form,'admin':a,'error_message':error_message}
                 return render(request,self.template_name,context)   
         else:
@@ -546,12 +854,17 @@ class ChangePassView2(generic.TemplateView):#change password by admin
 
 class ChangePassView4(generic.TemplateView):#change password by ostad
     template_name = 'uni/changepass4.html'
+    # template_name = 'uni/changepass4_en.html'
     
     def get(self,request,ostad_id):
         os = Ostad.objects.get(pk = ostad_id)
+        self.template_name = changetemplate(os,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(os,cookie):
-            form = ChangePass()
+            if os.lang == 'fa':
+                form = ChangePass()
+            else:
+                form = ChangePass_en()
             context = {'ostad':os,'form':form,}
             return render(request,self.template_name,context)
         else:
@@ -560,9 +873,13 @@ class ChangePassView4(generic.TemplateView):#change password by ostad
     def post(self,request,ostad_id):
         
         os = Ostad.objects.get(pk = ostad_id)
+        self.template_name = changetemplate(os,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(os,cookie) and request.user.is_authenticated:
-            form = ChangePass(request.POST)
+            if os.lang == 'fa':
+                form = ChangePass(request.POST)
+            else:
+                form = ChangePass_en(request.POST)
             if form.is_valid():
                 user = request.user
                 if oracle10.hash(form.cleaned_data['pass1'],user = os.username) == os.password:
@@ -576,15 +893,24 @@ class ChangePassView4(generic.TemplateView):#change password by ostad
                         logout2(os)
                         return HttpResponseRedirect(reverse('uni:home'))
                     else:
-                        error_message = 'تکرار پسوورد جدید همخوانی ندارد.'
+                        if os.lang == 'fa':
+                            error_message = 'تکرار پسوورد جدید همخوانی ندارد.'
+                        else:
+                            error_message = 'New Passwords Must Be Same.'
                         context = {'ostad':os,'form':form,'error_message':error_message}
                         return render(request,self.template_name,context)
                 else:
-                    error_message = f'پسوورد قدیمی نادرست است. '
+                    if os.lang == 'fa':
+                        error_message = f'پسوورد قدیمی نادرست است. '
+                    else:
+                        error_message = f'Your Old Password Is Not True'
                     context = {'ostad':os,'form':form,'error_message':error_message}
                     return render(request,self.template_name,context)
             else:
-                error_message = 'لطفا فرم را کامل پر کنید.'
+                if os.lang == 'fa':
+                    error_message = 'لطفا فرم را کامل پر کنید.'
+                else:
+                    error_message = 'Please Complete The Form'
                 context = {'form':form,'ostad':os,'error_message':error_message}
                 return render(request,self.template_name,context)   
         else:
@@ -594,10 +920,12 @@ class ChangePassView4(generic.TemplateView):#change password by ostad
 
 class StudentsView(generic.TemplateView):#student list in admin
     template_name = 'uni/students.html'
+    # template_name = 'uni/students_en.html'
     
    
     def get(self,request,admin_id):
         a = Admin2.objects.get(pk = admin_id)
+        self.template_name = changetemplate(a,self.template_name)
         Students = Student.objects.filter(College = a.College,uni = a.uni)
         
         cookie  = str(request.COOKIES.get('access'))
@@ -612,6 +940,7 @@ class StudentsView(generic.TemplateView):#student list in admin
     def post(self,request,admin_id):
         Students = Student.objects.all()
         a = Admin2.objects.get(pk = admin_id)
+        self.template_name = changetemplate(a,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         
         if CheckCookie(a,cookie) and request.user.is_authenticated:
@@ -635,17 +964,22 @@ class StudentsView(generic.TemplateView):#student list in admin
 
 class Student1View(generic.TemplateView):#student profile in admin
     template_name = 'uni/student1.html'
+    # template_name = 'uni/student1_en.html'
     
     
     def get(self,request,admin_id,student_id):
         s = Student.objects.get(pk = student_id)
         a = Admin2.objects.get(pk = admin_id)
+        self.template_name = changetemplate(a,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(a,cookie) and request.user.is_authenticated:
             global gb
             if gb == 1:
-                messages.success(request, '.پسوورد با موفقیت تغییر کرد ')
+                if a.lang == 'fa':
+                    messages.success(request, '.پسوورد با موفقیت تغییر کرد ')
+                else:
+                    messages.success(request, 'Password Has Been Changed Successfully')
                 gb = 0
             context = {'admin':a,'student':s}
             return render(request,self.template_name,context)
@@ -655,11 +989,13 @@ class Student1View(generic.TemplateView):#student profile in admin
 
 
 class Student3View(generic.TemplateView):#student profile in ostad
+    # template_name = 'uni/student3_en.html'
     template_name = 'uni/student3.html'
     
     def get(self,request,ostad_id,student_id):
         s = Student.objects.get(pk = student_id)
         os = Ostad.objects.get(pk = ostad_id)
+        self.template_name = changetemplate(os,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(os,cookie) and request.user.is_authenticated:
@@ -673,9 +1009,11 @@ class Student3View(generic.TemplateView):#student profile in ostad
     
 class Students3View(generic.TemplateView):#student list in ostad
     template_name = 'uni/students3.html'
+    # template_name = 'uni/students3_en.html'
     
     def get(self,request,ostad_id):
         os = Ostad.objects.get(pk = ostad_id)
+        self.template_name = changetemplate(os,self.template_name)
         Students = Student.objects.filter(uni = os.uni)
         cookie  = str(request.COOKIES.get('access'))
 
@@ -689,6 +1027,7 @@ class Students3View(generic.TemplateView):#student list in ostad
     def post(self,request,ostad_id):
         Students = Student.objects.all()
         os = Ostad.objects.get(pk = ostad_id)
+        self.template_name = changetemplate(os,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         
         if CheckCookie(os,cookie) and request.user.is_authenticated:
@@ -712,15 +1051,19 @@ class Students3View(generic.TemplateView):#student list in ostad
 
 class Change2View(generic.TemplateView):#change student's info by admin
     template_name = 'uni/change2.html'
+    # template_name = 'uni/change2_en.html'
    
    
     def get(self,request,admin_id,student_id):
         a = Admin2.objects.get(pk = admin_id)
+        self.template_name = changetemplate(a,self.template_name)
         s = Student.objects.get(pk = student_id)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(a,cookie) and request.user.is_authenticated:
-            
-            form = Change2Form(instance=s)
+            if a.lang == 'fa':
+                form = Change2Form(instance=s)
+            else:
+                form = Change2Form_en(instance=s)
             form.student = s
             # a = Admin.objects.get(pk = admin_id)
             context = {'form':form,'student':s,'admin':a}
@@ -732,9 +1075,13 @@ class Change2View(generic.TemplateView):#change student's info by admin
     def post(self,request,admin_id,student_id):
         a = Admin2.objects.get(pk = admin_id)
         s = Student.objects.get(pk = student_id)
+        self.template_name = changetemplate(a,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(a,cookie) and request.user.is_authenticated:
-            form = Change2Form(request.POST,instance=s)
+            if a.lang == 'fa':
+                form = Change2Form(request.POST,instance=s)
+            else:
+                form = Change2Form_en(request.POST,instance=s)
         if form.is_valid():
             form.save()
             
@@ -745,7 +1092,12 @@ class Change2View(generic.TemplateView):#change student's info by admin
         elif not form.is_valid():
             s = Student.objects.get(pk = student_id)
             a = Admin2.objects.get(pk = admin_id)
-            error_message = f'لطفا فرم را کامل پر کنید'
+            if a.lang == 'fa':
+                error_message = f'لطفا فرم را کامل پر کنید'
+            else:
+                error_message = f'Please Complete The Form'
+            
+            
             context = {'form':form,'student':s,'error_message':error_message,'admin':a}
             return render(request,self.template_name,context)
         else:
@@ -756,13 +1108,19 @@ class Change2View(generic.TemplateView):#change student's info by admin
 
 class ChangePassView3(generic.TemplateView):#change student's password by admin
     template_name = 'uni/changepass3.html'
+    # template_name = 'uni/changepass3_en.html'
     
     def get(self,request,admin_id,student_id):
         a = Admin2.objects.get(pk = admin_id)
+        self.template_name = changetemplate(a,self.template_name)
         s = Student.objects.get(pk = student_id)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(a,cookie) and request.user.is_authenticated:
-            form = ChangePass2()
+            if a.lang == 'fa':
+                form = ChangePass2()
+            else:
+                form = ChangePass2_en()
+
             context = {'admin':a,'form':form,'student':s}
             return render(request,self.template_name,context)
         else:
@@ -772,9 +1130,14 @@ class ChangePassView3(generic.TemplateView):#change student's password by admin
         
         a = Admin2.objects.get(pk = admin_id)
         s = Student.objects.get(pk = student_id)
+        self.template_name = changetemplate(a,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(a,cookie) and request.user.is_authenticated:
-            form = ChangePass2(request.POST)
+            if a.lang == 'fa':
+                form = ChangePass2(request.POST)
+            else:
+                form = ChangePass2_en(request.POST)
+
             if form.is_valid():
                 
                 if form.cleaned_data['pass2'] == form.cleaned_data['pass3']:
@@ -785,16 +1148,31 @@ class ChangePassView3(generic.TemplateView):#change student's password by admin
                     t.set_password(form.cleaned_data['pass3'])
                     t.save()
                     s.save()
+
                     global gb
                     gb = 1
+                    if request.method == 'POST':
+                        f2 = request.POST.get('forget')
+                        if f2 == '1':
+                            f1 = Forget.objects.filter(uni = s.uni,college = s.College,username = s.username,check = False).first()
+                            if f1:
+                                f1.check = True
+                                f1.save()
+
                     return HttpResponseRedirect(reverse('uni:student1',args = [a.id,s.id]))
                 else:
-                    error_message = 'تکرار پسوورد جدید همخوانی ندارد.'
+                    if a.lang == 'fa':
+                        error_message = 'تکرار پسوورد جدید همخوانی ندارد.'
+                    else:
+                        error_message = 'New Passwords Must Be Same.'
                     context = {'form':form,'admin':a,'error_message':error_message,'student':s}
                     return render(request,self.template_name,context)
                 
             else:
-                error_message = 'لطفا فرم را کامل پر کنید.'
+                if a.lang == 'fa':
+                    error_message = 'لطفا فرم را کامل پر کنید.'
+                else:
+                    error_message = 'Please Complete The Form'
                 context = {'form':form,'admin':a,'error_message':error_message,'student':s}
                 return render(request,self.template_name,context)   
         else:
@@ -805,9 +1183,11 @@ class ChangePassView3(generic.TemplateView):#change student's password by admin
 
 class StudentsView2(generic.TemplateView):#student list in student
     template_name = 'uni/students2.html'
+    # template_name = 'uni/students2_en.html'
     
     def get(self,request,student_id):
         s = Student.objects.get(pk = student_id)
+        self.template_name = changetemplate(s,self.template_name)
         Students = Student.objects.filter(uni = s.uni)
         
         cookie  = str(request.COOKIES.get('access'))
@@ -822,6 +1202,7 @@ class StudentsView2(generic.TemplateView):#student list in student
     def post(self,request,student_id):
         Students = Student.objects.all()
         s = Student.objects.get(pk = student_id)
+        self.template_name = changetemplate(s,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         
         if CheckCookie(s,cookie) and request.user.is_authenticated:
@@ -848,10 +1229,12 @@ class StudentsView2(generic.TemplateView):#student list in student
 
 class Student2View(generic.TemplateView):#studnet profile in student
     template_name = 'uni/student2.html'
+    # template_name = 'uni/student2_en.html'
     
     def get(self,request,student_id,student2_id):
         s2 = Student.objects.get(pk = student2_id)
         s = Student.objects.get(pk = student_id)
+        self.template_name = changetemplate(s,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(s,cookie) and request.user.is_authenticated:
@@ -863,9 +1246,11 @@ class Student2View(generic.TemplateView):#studnet profile in student
 
 class ElamView2(generic.TemplateView):
     template_name = 'uni/elam2.html'
+    # template_name = 'uni/elam2_en.html'
     
     def get(self,request,ostad_id,el):
         os = Ostad.objects.get(pk = ostad_id)
+        self.template_name = changetemplate(os,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(os,cookie) and request.user.is_authenticated:
@@ -876,6 +1261,7 @@ class ElamView2(generic.TemplateView):
             return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,ostad_id,el):
         os = Ostad.objects.get(pk = ostad_id)
+        self.template_name = changetemplate(os,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(os,cookie) and request.user.is_authenticated:
@@ -887,7 +1273,10 @@ class ElamView2(generic.TemplateView):
                 for i in timess:
                     te = te + i + ' '
                 if te == '':
-                    error_message = 'لطفا یک زمان را انتخاب کنید'
+                    if os.lang == 'fa':
+                        error_message = 'لطفا یک زمان را انتخاب کنید'
+                    else:
+                        error_message = 'Please Choose At Least One Time.'
                     context = {'ostad':os,'error_message':error_message}
                     return render(request,self.template_name,context)
                 
@@ -901,7 +1290,13 @@ class ElamView2(generic.TemplateView):
                 w.time = starfunc(w.time)
                 w.public_date = dt.datetime.now()
                 w.save()
-                message = f'برنامه شما به ادمین دانشکده {w.college} ارسال شد'
+                
+                if os.lang == 'fa':
+                    college2 = collegedict[w.college]
+                    message = f'برنامه شما به ادمین دانشکده {college2} ارسال شد'
+                else:
+                    college2 = collegedict_en[w.college]
+                    message = f' Your Schedule Has Been Sent To Admin of {college2} College '
                 response = HttpResponseRedirect(reverse('uni:messageos',args = [os.id,message]))
                 if w.time == '':
                     w.delete()
@@ -919,13 +1314,18 @@ class ElamView2(generic.TemplateView):
 class CreateView2(generic.TemplateView):#create student by admin
     
     template_name = 'uni/create2.html'
+    # template_name = 'uni/create2_en.html'
     
     
     def get(self,request ,admin_id):
         a = Admin2.objects.get(pk = admin_id)
+        self.template_name = changetemplate(a,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(a,cookie) and request.user.is_authenticated:
-            form = sabtform2()
+            if a.lang == 'fa':
+                form = sabtform2()
+            else:
+                form = sabtform2_en()
             context = {'form':form,'admin':a}
             return render(request ,self.template_name,context)
         else:
@@ -935,18 +1335,34 @@ class CreateView2(generic.TemplateView):#create student by admin
     
     def post(self,request,admin_id):
         a = Admin2.objects.get(pk = admin_id)
+        self.template_name = changetemplate(a,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
-        form = sabtform2(request.POST)
+        if a.lang == 'fa':
+            form = sabtform2(request.POST)
+        else:
+            form = sabtform2_en(request.POST)
         if CheckCookie(a,cookie) and request.user.is_authenticated:
             if form.is_valid():
                 
                 y = oracle10.hash(form.cleaned_data['password'],user = form.cleaned_data['username'])
                 z = form.cleaned_data['username']
+                ac = Account.objects.all()
+                for i in ac:
+                    if z == i.username:
+                        if a.lang == 'fa':
+                            error_message = 'این کد کاربری در حال حاضر موجود میباشد'
+                        else:
+                            error_message = 'This user code is in use'
+                        context = {'form':form,'admin':a,'error_message':error_message}
+                        return render(request ,self.template_name,context)
+
                 
                 for key in form.fields:
                     if form.cleaned_data[key] == '':
-                
-                        error_message = 'لطفا فرم را کامل پر کنید'
+                        if a.lang == 'fa':
+                            error_message = 'لطفا فرم را کامل پر کنید'
+                        else:
+                            error_message = 'Please Complete The Form'
                         context = {'form':form,'admin':a,'error_message':error_message}
                         return render(request ,self.template_name,context)
                 
@@ -959,12 +1375,19 @@ class CreateView2(generic.TemplateView):#create student by admin
                 Ostad.objects.filter(username = z).update(login_times = '0')
                 Ostad.objects.filter(username = z).update(public_date = dt.datetime.now())
                 x = Ostad.objects.filter(username = z).update(password = y)
-                form = sabtform()
-                message = 'استاد با موفقیت ثبت شد'
+                if a.lang == 'fa':
+                    form = sabtform()
+                    message = 'استاد با موفقیت ثبت شد'
+                else:
+                    form = sabtform_en()
+                    message = 'Professor Added Successfully'
                 context = {'form':form,'admin':a}
                 return HttpResponseRedirect(reverse('uni:messagea',args = [a.id,message]))
             if form.is_valid() == False:
-                error_message = f'لطفا فرم را کامل پر کنید'
+                if a.lang == 'fa':
+                    error_message = f'لطفا فرم را کامل پر کنید'
+                else:
+                    error_message = f'Please Complete The Form'
                 context = {'form':form,'admin':a,'error_message':error_message}
                 return render(request ,self.template_name,context)
         else:
@@ -975,14 +1398,18 @@ class CreateView2(generic.TemplateView):#create student by admin
         
 class ElamView1(generic.TemplateView):
     template_name = 'uni/elam1.html'
+    # template_name = 'uni/elam1_en.html'
     
     
     def get(self,request,ostad_id):
         os = Ostad.objects.get(pk = ostad_id)
+        self.template_name = changetemplate(os,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(os,cookie) and request.user.is_authenticated:
-            
-            form = ElamForm(initial = {"username": os.username,'ostad':os,'phone':os.phone,'uni':os.uni,'ostad_id':os.id})
+            if os.lang == 'fa':
+                form = ElamForm(initial = {"username": os.username,'ostad':os,'phone':os.phone,'uni':os.uni,'ostad_id':os.id})
+            else:
+                form = ElamForm_en(initial = {"username": os.username,'ostad':os,'phone':os.phone,'uni':os.uni,'ostad_id':os.id})
             context = {'ostad':os,'form':form}
             return render(request,self.template_name,context)
             
@@ -993,51 +1420,59 @@ class ElamView1(generic.TemplateView):
 
     def post(self,request,ostad_id):
         os = Ostad.objects.get(pk = ostad_id)
+        self.template_name = changetemplate(os,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(os,cookie) and request.user.is_authenticated:
-            
-            form = ElamForm(request.POST,initial = {"username": os.username,'ostad':os,'ostad_id':ostad_id,'phone':os.phone})
+            if os.lang == 'fa':
+                form = ElamForm(request.POST,initial = {"username": os.username,'ostad':os,'ostad_id':ostad_id,'phone':os.phone})
+            else:
+                form = ElamForm_en(request.POST,initial = {"username": os.username,'ostad':os,'ostad_id':ostad_id,'phone':os.phone})
             if form.is_valid():
                 if form.cleaned_data['college'] == '------------------------------------------------------------------------------' or form.cleaned_data['dars'] == '------------------------------------------------------------------------------':
-                    error_message = 'لطفا فرم را کامل پر کنید'
+                    if os.lang == 'fa':
+                        error_message = 'لطفا فرم را کامل پر کنید'
+                    else:
+                        error_message = 'Please Complete The Form'
                     context = {'ostad':os,'form':form,'error_message':error_message}
                     return render(request,self.template_name,context)
                 
                 form.save() 
                 ww = list(Elam.objects.filter(dars = form.cleaned_data['dars']).all())
                 Elam.objects.filter(username = os.username ,college = form.cleaned_data['college'],dars = form.cleaned_data['dars'],goruh = '').update(goruh = len(ww))
-                darsdict = {
-                    'فیزیک 1':3,
-                    'ریاضی 1':3,
-                    'فیزیک 2':3,
-                    'ریاضی 2':3,
-                    'شیمی':3,
-                    'زبان':3,
-                    'زبان تخصصی':3,
-                    'ادبیات':3,
-                    'مبانی کامپیوتر':4,
-                    'برنامه نویسی پیشرفته':4,
-                    'معادلات دیفرانسیل':3,
-                    'ریاضیات گسسته':3,
-                    'مدار های الکتریکی و الکترونیکی':3,
-                    'مدار منطقی':4,
-                    'ساختمان داده':3,
-                    'شبکه':3,
-                    'جبر خطی کاربردی':3,
-                    'آمار احتمال مهندسی':3,
-                    'نظریه زبان ها و ماشین ها':3,
-                    'معماری کامپیوتر':3,
-                    'سیستم عامل':3,
-                    'انقلاب':2,
-                    'انسان در اسلام':2,
-                    'دانش خانواده':2,
-                    'تفسیر قرآن':2
+                
+                vaheddict = {
+                    '1':3,
+                    '2':3,
+                    '3':3,
+                    '4':3,
+                    '5':3,
+                    '6':3,
+                    '7':3,
+                    '8':3,
+                    '9':4,
+                    '10':4,
+                    '11':3,
+                    '12':3,
+                    '13':3,
+                    '14':4,
+                    '15':3,
+                    '16':3,
+                    '17':3,
+                    '18':3,
+                    '19':3,
+                    '20':3,
+                    '21':3,
+                    '22':2,
+                    '23':2,
+                    '24':2,
+                    '25':2
                 }
-                vahed4 = darsdict[form.cleaned_data['dars']]
+                vahed4 = vaheddict[form.cleaned_data['dars']]
                 w = Elam.objects.filter(username = os.username ,college = form.cleaned_data['college'],dars = form.cleaned_data['dars'],goruh = len(ww)).first()
                 w.vahed = vahed4
                 w.ostad_id = os.id
-                w.vaziat = 'در حال بررسی'
+                w.vaziat = '0'
+                
                 w.save()
 
                 return HttpResponseRedirect(reverse('uni:elam2',args = [os.id,w]))
@@ -1051,15 +1486,30 @@ class ElamView1(generic.TemplateView):
 
 class BarnameView1(generic.TemplateView):
     template_name = 'uni/barname1.html'
+    # template_name = 'uni/barname1_en.html'
     
     def get(self,request,admin_id):
         a = Admin2.objects.get(pk = admin_id)
+        self.template_name = changetemplate(a,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(a,cookie) and request.user.is_authenticated:
+            if a.lang == 'fa':
+                sexdict = {'1':'موئنث' , '2':'مذکر','3':'مشترک'}
+            else:
+                sexdict = {'1':'female','2':'male','3':'Both'}
             
             e = Elam.objects.filter(uni = a.uni,college = a.College,reject = False,active =False,request = True )
-            context = {'admin':a,'Elam':e}
+            lastlist = []
+            for i in e:
+                if a.lang == 'fa':
+                    dars2 = darsdict[i.dars]
+                else:
+                    dars2 = darsdict_en[i.dars]
+                lastlist.append([i,sexdict[i.sex],dars2])
+
+            
+            context = {'admin':a,'Elam':lastlist}
             return render(request,self.template_name,context)
             
             
@@ -1068,15 +1518,28 @@ class BarnameView1(generic.TemplateView):
             return HttpResponseRedirect(reverse('uni:home'))
 class BarnameView3(generic.TemplateView):
     template_name = 'uni/barname3.html'
+    # template_name = 'uni/barname3_en.html'
     
     def get(self,request,admin_id):
         a = Admin2.objects.get(pk = admin_id)
+        self.template_name = changetemplate(a,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(a,cookie) and request.user.is_authenticated:
-            
+            if a.lang == 'fa':
+                sexdict = {'1':'موئنث' , '2':'مذکر','3':'مشترک'}
+            else:
+                sexdict = {'1':'female','2':'male','3':'Both'}
+
             e = Elam.objects.filter(uni = a.uni,college = a.College,reject = True,active =False ,request = True )
-            context = {'admin':a,'Elam':e}
+            lastlist = []
+            for i in e:
+                if a.lang == 'fa':
+                    dars2 = darsdict[i.dars]
+                else:
+                    dars2 = darsdict_en[i.dars]
+                lastlist.append([i,sexdict[i.sex],dars2])
+            context = {'admin':a,'Elam':lastlist}
             return render(request,self.template_name,context)
             
             
@@ -1088,26 +1551,41 @@ class BarnameView3(generic.TemplateView):
 
 class BarnameView2(generic.TemplateView):
     template_name = 'uni/barname2.html'
+    # template_name = 'uni/barname2_en.html'
     
     def get(self,request,admin_id,elam_id):
         a = Admin2.objects.get(pk = admin_id)
+        self.template_name = changetemplate(a,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(a,cookie) and request.user.is_authenticated:
             el = Elam.objects.get(pk = elam_id)
             tii = el.time.split(' ')
             tii.sort()
-            dictime = {'01':'شنبه 8-10','02':'شنبه 10-12','03':'شنبه 13-15','04':'شنبه 15-17','05':'شنبه 17-19',
-            '11':'یکشنبه 8-10','12':'یکشنبه 10-12','13':'یکشنبه 13-15','14':'یکشنبه 15-17','15':'یکشنبه 17-19',
-            '21':'دوشنبه 8-10','22':' دوشنبه 10-12 ','23':'دوشنبه 13-15','24':'دوشنبه 15-17','25':'دوشنبه 17-19',
-            '31':'سه شنبه 8-10','32':'سه شنبه 10-12','33':'سه شنبه 13-15','34':'سه شنبه 15-17','35':'سه شنبه 17-19',
-            '41':'چهارشنبه 8-10','42':'چهارشنبه 10-12','43':'چهارشنبه 13-15','44':'چهارشنبه 15-17','45':'چهارشنبه  17-19',}
+            if a.lang == 'fa':
+                sexdict = {'1':'موئنث' , '2':'مذکر','3':'مشترک'}
+                dars2 = darsdict[el.dars]
+                dictime = {'01':'شنبه 8-10','02':'شنبه 10-12','03':'شنبه 13-15','04':'شنبه 15-17','05':'شنبه 17-19',
+                '11':'یکشنبه 8-10','12':'یکشنبه 10-12','13':'یکشنبه 13-15','14':'یکشنبه 15-17','15':'یکشنبه 17-19',
+                '21':'دوشنبه 8-10','22':' دوشنبه 10-12 ','23':'دوشنبه 13-15','24':'دوشنبه 15-17','25':'دوشنبه 17-19',
+                '31':'سه شنبه 8-10','32':'سه شنبه 10-12','33':'سه شنبه 13-15','34':'سه شنبه 15-17','35':'سه شنبه 17-19',
+                '41':'چهارشنبه 8-10','42':'چهارشنبه 10-12','43':'چهارشنبه 13-15','44':'چهارشنبه 15-17','45':'چهارشنبه  17-19',}
+            else:
+                dars2 = darsdict_en[el.dars]
+                sexdict = {'1':'female','2':'male','3':'Both'}
+                dictime = {'01':'Saturday 8-10','02':'Saturday 10-12','03':'Saturday 13-15','04':'Saturday 15-17','05':'Saturday 17-19',
+                '11':'Sunday 8-10','12':'Sunday 10-12','13':'Sunday 13-15','14':'Sunday 15-17','15':'Sunday 17-19',
+                '21':'Monday 8-10','22':' Monday 10-12 ','23':'Monday 13-15','24':'Monday 15-17','25':'Monday 17-19',
+                '31':'Tuesday 8-10','32':'Tuesday 10-12','33':'Tuesday 13-15','34':'Tuesday 15-17','35':'Tuesday 17-19',
+                '41':'Wednesday 8-10','42':'Wednesday 10-12','43':'Wednesday 13-15','44':'Wednesday 15-17','45':'Wednesday  17-19',}
+           
+            
             list1 =[]
             for i in tii:
                 for j in dictime:
                     if i == j:
                         list1.append(dictime[j])
-            context = {'admin':a,'i':el,'lis1':list1}
+            context = {'admin':a,'i':el,'lis1':list1,'sex':sexdict[el.sex],'dars':dars2}
 
             return render(request,self.template_name,context)
             
@@ -1117,6 +1595,7 @@ class BarnameView2(generic.TemplateView):
             return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,admin_id,elam_id):
         a = Admin2.objects.get(pk = admin_id)
+        self.template_name = changetemplate(a,self.template_name)
         elam = Elam.objects.get(pk = elam_id)
         cookie  = str(request.COOKIES.get('access'))
 
@@ -1127,7 +1606,8 @@ class BarnameView2(generic.TemplateView):
                     return HttpResponseRedirect(reverse('uni:erae',args = [a.id,elam.id]))
                 elif value1 == 'no':
                     elam.reject = True
-                    elam.vaziat = 'ارائه نمیشود'
+                    
+                    elam.vaziat = '2'
                     elam.save()
                     return HttpResponseRedirect(reverse('uni:barname1',args=[a.id]))
 
@@ -1138,26 +1618,41 @@ class BarnameView2(generic.TemplateView):
 
 class BarnameView4(generic.TemplateView):
     template_name = 'uni/barname4.html'
+    # template_name = 'uni/barname4_en.html'
     
     def get(self,request,admin_id,elam_id):
         a = Admin2.objects.get(pk = admin_id)
+        self.template_name = changetemplate(a,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(a,cookie) and request.user.is_authenticated:
             el = Elam.objects.get(pk = elam_id)
             tii = el.time.split(' ')
             tii.sort()
-            dictime = {'01':'شنبه 8-10','02':'شنبه 10-12','03':'شنبه 13-15','04':'شنبه 15-17','05':'شنبه 17-19',
-            '11':'یکشنبه 8-10','12':'یکشنبه 10-12','13':'یکشنبه 13-15','14':'یکشنبه 15-17','15':'یکشنبه 17-19',
-            '21':'دوشنبه 8-10','22':' دوشنبه 10-12 ','23':'دوشنبه 13-15','24':'دوشنبه 15-17','25':'دوشنبه 17-19',
-            '31':'سه شنبه 8-10','32':'سه شنبه 10-12','33':'سه شنبه 13-15','34':'سه شنبه 15-17','35':'سه شنبه 17-19',
-            '41':'چهارشنبه 8-10','42':'چهارشنبه 10-12','43':'چهارشنبه 13-15','44':'چهارشنبه 15-17','45':'چهارشنبه  17-19',}
+            if a.lang == 'fa':
+                dars2 = darsdict[el.dars]
+                sexdict = {'1':'موئنث' , '2':'مذکر','3':'مشترک'}
+                dictime = {'01':'شنبه 8-10','02':'شنبه 10-12','03':'شنبه 13-15','04':'شنبه 15-17','05':'شنبه 17-19',
+                '11':'یکشنبه 8-10','12':'یکشنبه 10-12','13':'یکشنبه 13-15','14':'یکشنبه 15-17','15':'یکشنبه 17-19',
+                '21':'دوشنبه 8-10','22':' دوشنبه 10-12 ','23':'دوشنبه 13-15','24':'دوشنبه 15-17','25':'دوشنبه 17-19',
+                '31':'سه شنبه 8-10','32':'سه شنبه 10-12','33':'سه شنبه 13-15','34':'سه شنبه 15-17','35':'سه شنبه 17-19',
+                '41':'چهارشنبه 8-10','42':'چهارشنبه 10-12','43':'چهارشنبه 13-15','44':'چهارشنبه 15-17','45':'چهارشنبه  17-19',}
+            else:
+                dars2 = darsdict_en[el.dars]
+                sexdict = {'1':'female','2':'male','3':'Both'}
+                dictime = {'01':'Saturday 8-10','02':'Saturday 10-12','03':'Saturday 13-15','04':'Saturday 15-17','05':'Saturday 17-19',
+                '11':'Sunday 8-10','12':'Sunday 10-12','13':'Sunday 13-15','14':'Sunday 15-17','15':'Sunday 17-19',
+                '21':'Monday 8-10','22':' Monday 10-12 ','23':'Monday 13-15','24':'Monday 15-17','25':'Monday 17-19',
+                '31':'Tuesday 8-10','32':'Tuesday 10-12','33':'Tuesday 13-15','34':'Tuesday 15-17','35':'Tuesday 17-19',
+                '41':'Wednesday 8-10','42':'Wednesday 10-12','43':'Wednesday 13-15','44':'Wednesday 15-17','45':'Wednesday  17-19',}
+            
+            
             list1 =[]
             for i in tii:
                 for j in dictime:
                     if i == j:
                         list1.append(dictime[j])
-            context = {'admin':a,'i':el,'lis1':list1}
+            context = {'admin':a,'i':el,'lis1':list1,'sex':sexdict[el.sex],'dars':dars2}
 
             return render(request,self.template_name,context)
             
@@ -1167,6 +1662,7 @@ class BarnameView4(generic.TemplateView):
             return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,admin_id,elam_id):
         a = Admin2.objects.get(pk = admin_id)
+        self.template_name = changetemplate(a,self.template_name)
         elam = Elam.objects.get(pk = elam_id)
         cookie  = str(request.COOKIES.get('access'))
 
@@ -1190,11 +1686,16 @@ class BarnameView4(generic.TemplateView):
 
 class CreateklassView(generic.TemplateView):
     template_name = 'uni/createklass.html'
+    # template_name = 'uni/createklass_en.html'
     
     def get(self,request,admin_id):
         a = Admin2.objects.get(pk = admin_id)
+        self.template_name = changetemplate(a,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
-        form = KlassForm(initial = {"college": a.College,'public_date':dt.datetime.now(),'uni':a.uni})
+        if a.lang == 'fa':
+            form = KlassForm(initial = {"college": a.College,'public_date':dt.datetime.now(),'uni':a.uni,'khali':'25'})
+        else:
+            form = KlassForm_en(initial = {"college": a.College,'public_date':dt.datetime.now(),'uni':a.uni,'khali':'25'})
         if CheckCookie(a,cookie) and request.user.is_authenticated:
             
             context = {'admin':a,'form':form}
@@ -1205,13 +1706,37 @@ class CreateklassView(generic.TemplateView):
             return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,admin_id):
         a = Admin2.objects.get(pk = admin_id)
+        self.template_name = changetemplate(a,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
-        form = KlassForm(request.POST ,initial = {"college": a.College,'public_date':dt.datetime.now()})
+        
+
         if CheckCookie(a,cookie) and request.user.is_authenticated:
+            if a.lang =='fa':
+                form = KlassForm(request.POST ,initial = {"college": a.College,'public_date':dt.datetime.now(),'uni':a.uni,'khali':'25'})
+            else:
+                form = KlassForm_en(request.POST ,initial = {"college": a.College,'public_date':dt.datetime.now(),'uni':a.uni,'khali':'25'})
+            
+                
             if form.is_valid():
-                form.save()
-                message = 'کلاس با موفقیت ثبت شد'
-                return HttpResponseRedirect(reverse('uni:messagea',args = [a.id,message]))
+                
+                at = Klass.objects.filter(number = form.cleaned_data['number'] ,college = a.College, uni = a.uni ).first()
+                if at:
+                    if a.lang == 'fa':
+                        form = KlassForm(initial = {"college": a.College,'public_date':dt.datetime.now(),'uni':a.uni})
+                        error_message = 'این کلاس وجود دارد'
+                        
+                    else:
+                        form = KlassForm_en(initial = {"college": a.College,'public_date':dt.datetime.now(),'uni':a.uni})
+                        error_message = 'This class already exists'
+                    context = {'admin':a,'form':form,'error_message':error_message}
+                    return render(request,self.template_name,context)
+                else:
+                    form.save()
+                    if a.lang == 'fa':
+                        message = 'کلاس با موفقیت ثبت شد'
+                    else:
+                        message = 'Class Added Successfully'
+                    return HttpResponseRedirect(reverse('uni:messagea',args = [a.id,message]))
 
             
                
@@ -1226,18 +1751,18 @@ class CreateklassView(generic.TemplateView):
 
 class EraeView(generic.TemplateView):
     template_name = 'uni/erae.html'
+    # template_name = 'uni/erae_en.html'
     
 
     def get(self,request,admin_id,elam_id):
         a = Admin2.objects.filter(username = request.user.username).first()
+        self.template_name = changetemplate(a,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         
         if CheckCookie(a,cookie) and request.user.is_authenticated:
             elam = Elam.objects.get(pk = elam_id)
             os = Ostad.objects.filter(username = elam.username).first()
-            # if uuu == 1:
-            #     klaseses = Klass.objects.get(pk = 8)
-            #     test(a,elam,klaseses)
+            
             list10 = os.time.split(' ')
             for i in range(len(list10)):
                 if list10[i] == '':
@@ -1245,7 +1770,7 @@ class EraeView(generic.TemplateView):
                 else:
                     list10[i] = int(list10[i])
             list2 = elam.time.split(' ')
-            # list2.pop()
+            
             for i in range(len(list2)):
                 if list2[i] == '':
                     list2.remove('')
@@ -1254,13 +1779,12 @@ class EraeView(generic.TemplateView):
             klas = Klass.objects.filter(college = a.College)
             list3 = []
             
-            # u = 0
-            # u2 = 0
+            
             for i in klas:
                 u = 0
                 u2 = 0
                 list1 = i.time.split(' ')
-                # list1.pop()
+                
                 for l in range(len(list1)):
                     
                     if list1[l] == '':
@@ -1275,10 +1799,7 @@ class EraeView(generic.TemplateView):
                         if j in dic1:
                             if not dic1[j]==i.id:
                                 u = u + 1
-                if dic1:
-                    for h in list(dic1):
-                        if dic1[h] == i.id:
-                            u2 += 1
+                
                 r = len(list2)
                 list3.append([i,r - u,u2])
             context = {'klas':list3,'admin':a,'elam':elam}
@@ -1290,15 +1811,17 @@ class EraeView(generic.TemplateView):
 dic1 = {}
 class Erae2View(generic.TemplateView):
     template_name = 'uni/erae2.html'
+    # template_name = 'uni/erae2_en.html'
+
     def get(self,request,admin_id,elam_id,klas_id):
         a = Admin2.objects.filter(username = request.user.username).first()
+        self.template_name = changetemplate(a,self.template_name)
         elam = Elam.objects.get(pk = elam_id)
         klas = Klass.objects.get(pk = klas_id)
         cookie  = str(request.COOKIES.get('access'))
-        
+        os = Ostad.objects.get(pk = elam.ostad_id)
         if CheckCookie(a,cookie) and request.user.is_authenticated:
-            # if uuu == 1:
-            #     test2(a,elam)
+           
             list1 = elam.time.split(' ')
             for i in range(len(list1)):
                 if list1[i] == '':
@@ -1314,113 +1837,62 @@ class Erae2View(generic.TemplateView):
             
             
            
+            checklist = []
+            disabeldlist = []
+            disabeldlist2 = []
+            checklist2 = []
             
             if elam.active:
-                vahed1 = Vahed.objects.filter(elam_id = elam_id).first()
-                klases = vahed1.klas_id.split(' ')
-                for i in range(len(klases)):
-                    if klases[i] == '':
-                        klases[i] = None
-                # if str(klas_id) in klases:
-                    
-                list9 = vahed1.time.split(' ')
-                list9 = [x for x in list9 if x != '']
-
-                for j in list9:
-                    list11 = []
-                    list11 = j.split(',')
-                    for j in range(len(list11)):
-                        if list11[j] == '':
-                            list11.remove('')
-                        else:
-                            list11[j] = int(list11[j])
-                        
-                        n = list11[0]
-                        b = list11[1]
-                        dic1[b] = n
-                        # os.time += str(n)+' '
-                        # os.save()
-                        # list10.append(n)
-
+                exter2 = Exter.objects.filter(elam_id = elam_id).first()
+                checklist = checktime(exter2.time_klass,klas_id)
+                if ''in checklist:
+                    checklist.remove('')
+                disabeldlist = disapledtime(exter2.time_klass,klas_id)
+                if ''in disabeldlist:
+                    disabeldlist.remove('')
                 
-                 
-                for i in list(dic1):
-                    if type(i)==str:
-                        dic1.pop(i)
-                # else:
+                for i in range(len(disabeldlist)):
+                    disabeldlist2.append(int(disabeldlist[i]))
+                for i in range(len(checklist)):
+                    checklist2.append(int(checklist[i]))
+                
+            else:
+                elam.active = True
+                elam.save()
 
-
-            list10 = []
-            os = Ostad.objects.filter(username = elam.username).first()
-            list10 = os.time.split(' ')
-            for i in range(len(list10)):
-                if list10[i] == '':
-                    list10.remove('')
-                else:
-                    list10[i] = int(list10[i])
-
-            # for i in list1:
-            #     if i in list10:
-            #         list1.remove(i)
-
-            # list10.pop()
-            # for i in list1:
-            #     if i in list2:
-            #         list1.remove(i)
-            # for i in range(len(list1)):
-            #     for j in list10:
-            #         if i == j:
-            #             del list1[i]
-            # zip2 = zip(list1,list10)
-            list13= list2 + list10
+            list18 = os.time.split(' ')
+            if '' in list18:
+                list18.remove('')
+            
+            list13= list(set(list2 + disabeldlist2 ))
             list12 = set(list1) - set(list13)
-            # list12 = list(set(list1) - set(list10))
+            list12 = set(list12) - set(checklist2)
+            list12 = set(list12) - set(disabeldlist2)
             list1 = list(list12)
             
-                
             
-            # for i in range(len(list1)):
-            #     if list1[i] == '01':
-            #         list1[i] = 1
-            #     if list1[i] == '02':
-            #         list1[i] = 2
-            #     if list1[i] == '03':
-            #         list1[i] = 3
-            #     if list1[i] == '04':
-            #         list1[i] = 4
-            #     if list1[i] == '':
-            #         list1[i] = None
-            #     else:
-            #         list1[i] = int(list1[i])
-            # for i in list10:
-            #     if i[1] in list1:
-            #         list1.remove(i[1])
-            # if not elam.active or not klas_id in klases:
-            #     # if not klas_id in klases:
-            #     list10.append(True)
-                    
-            # list10.append([1,2])
             list3 = [41,31,21,11,1]
             list4 = [42,32,22,12,2]
             list5 = [43,33,23,13,3]
             list6 = [44,34,24,14,4]
             list7 = [45,35,25,15,5]
             list8 = [0,1,2,3,4]
-            # bv = str(type(list10[0]))
-            # bv2 = str(type(list1[1]))
-            context = {'bv':1,'bv2':1,'list1':list1,'list2':list2,'list3':list3,'admin':a,'list4':list4,'list5':list5,'list6':list6,'list7':list7,'list8':list8,'elam':elam,'klas_id':klas_id,'dic':dic1,'list10':list10}
+
+            context = {'bv':list1,'bv2':disabeldlist2,'list1':list1,'list2':list2,'list3':list3,'admin':a,'list4':list4,'list5':list5,'list6':list6,'list7':list7,'list8':list8,'elam':elam,'klas_id':klas_id,'checklist':checklist2}
             return render(request,self.template_name,context)
+        else:
+            logout2(a)
+            return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,admin_id,elam_id,klas_id):
         cookie  = str(request.COOKIES.get('access'))
         a = Admin2.objects.get(pk = admin_id)
-        
+        self.template_name = changetemplate(a,self.template_name)
         elam = Elam.objects.get(pk = elam_id)
         os = Ostad.objects.filter(username = elam.username).first()
+        klass1 = Klass.objects.get(pk = klas_id)
         if CheckCookie(a,cookie) and request.user.is_authenticated:
             
-                
             if request.method == 'POST':
-                
                 timess = request.POST.getlist('timeclass')
                 timess2 = []
                 for i in range(len(timess)):
@@ -1428,136 +1900,74 @@ class Erae2View(generic.TemplateView):
                         pass
                     else:
                         timess2.append(int(timess[i]))
-                vahed1 = Vahed.objects.filter(elam_id = elam_id).first()
-                # vahed1.time.replace(f"{klas_id}"," ")
-                # vahed1.save()
-                for i in list(dic1):
-                    if not i in timess2 and dic1[i] == klas_id:
-                        
-                        kj = vahed1.time
-                        kj3 = str(klas_id)+','+str(i)
-                        # kj3 = f'{klas_id},{i}'
-                        kj2 = kj.replace(kj3,'')
-                        vahed1.time = kj2
-                        kj = os.time
-                        kj2 = kj.replace(f'{i}','')
-                        kj2 = re.sub('^\s*','',kj2)
-                        os.time = kj2
+                exter_text = ''
+                exter2 = Exter.objects.filter(elam_id = elam_id).first()
+                if not exter2:
+                    exter2 = Exter(elam_id = elam_id)
+                for i in timess2:
+                    p = str(i)
+                    b = re.search(fr'\b{p}\b',exter2.time)
+                    if b:
+                        exter_text += ' ' + str(i) + ' '
+                        pass
+                    else:
+                        exter_text += ' ' + str(i) + ' '
+                        exter2.time += ' ' + str(i) + ' '
+                exter2.time = starfunc(exter2.time)
+                exter_text = starfunc(exter_text)
+                exter_time = exter_text
+                
+                if exter_text:
+                    exter_text = 'i' + exter_text + 'i'
+                    exter_text = 'l' + str(klas_id) + ',' + exter_text +'l'
+                
+                if not exter2:
+                    exter2 = Exter(elam_id = elam_id)
+                    exter2.save()
+                # if exter_text:
+                #     exter_time3 = exter_time.split(' ')
+                #     if '' in exter_time3:
+                #         exter_time3.remove('')
+                #     for i in exter_time3:
+                #         b = re.search(fr'\b{i}\b',exter_time)
+                #         if b:
+                #             pass
+                #         else:
+                #             exter2.time += ' '+i+' '
 
-                        os.save()
-                        
-                        vahed1.save()
-                        dic1.pop(i)
-                        klas = Klass.objects.get(pk = klas_id)
-                        kj = klas.time
 
-                        kj3 = str(i)
-                        kj2 = kj.replace(kj3,'')
-                        kj2 = re.sub('^\s*','',kj2)
-                        klas.time = kj2
-                        kj4 = klas.khali
-                        list15 = klas.time.split(' ')
-                        if '' in list15:
-                            list15.remove('')
-                        
-                        kj5 = 25 - len(list15)
-                        klas.khali = kj5
-                        klas.save()
-
-                        # print(dic1[i])
+                exter2.time = starfunc(exter2.time)
+                exter2.save()
+                if exter_text:
+                    exter_text = starfunc(exter_text)
+                    b = list(exter_time)
+                    b.pop()
+                    exter_time = ''
+                    for i in b:
+                        exter_time+=i
                     
-                        
+                    # raise ValueError
+                    exter2.time_klass = replacel(exter2.time_klass,klas_id,exter_time) 
+                    exter2.time_klass = replaceii(exter2.time_klass)
+                    exter2.time_klass = manfifunc(exter2.time_klass)
+                    exter2.save()
+                else:
+                    exter2.time_klass = replacel(exter2.time_klass,klas_id,exter_time) 
+                    exter2.time_klass = replaceii(exter2.time_klass)
+                    exter2.time_klass = manfifunc(exter2.time_klass)
+                    exter2.save()
+
+
+                if request.POST.get('erae') == 'yes':
+                   return HttpResponseRedirect(reverse('uni:nahaee',args = [a.id,elam.id])) 
+
+                if request.POST.get('erae') == 'back':
+                    return HttpResponseRedirect(reverse('uni:erae',args = [a.id,elam.id]))
+
+                   
+                    
                 
 
-                        
-                    
-                        
-                
-                klas = Klass.objects.get(pk = klas_id)
-                klastimelist = klas.time.split(' ')       
-                if '' in klastimelist:
-                    klastimelist.remove('')
-
-                if len(timess2) != 0:
-                    timee = ''
-                    # klas = Klass.objects.get(pk = klas_id)
-                    kj = ''
-                    for i in timess2:
-                        timee += str(klas_id)+',' + str(i) +' '
-                        if not str(i) in klastimelist:
-                            kj += str(i) + ' '
-                            
-                            
-                    klas.time += kj
-
-                    list15 = klas.time.split(' ')
-                    if '' in list15:
-                        list15.remove('')
-                        
-                    kj5 = 25 - len(list15)
-                    klas.khali = kj5
-                    klas.time = starfunc(klas.time)
-                    klas.save() 
-                    os.time += kj
-                    os.save()      
-                    
-                    
-                    if not elam.active:
-                        e = None
-                        e = Vahed.objects.filter(elam_id = elam.id).first()
-                        # for i in vaheds:
-                        #     if i.elam_id == elam.id and i.laghv == True:
-                        #         e = i
-                        #         e.laghv = False
-                        #         break
-                        if not e:
-                            e = Vahed(time = timee,vahed2 = elam.vahed,sex = elam.sex , uni = elam.uni,ostad = elam.ostad,goruh = elam.goruh , college = elam.college , dars = elam.dars,elam_id = elam_id , capacity = elam.capacity,capacity2 = elam.capacity,ostad_id = elam.ostad_id,por = '0')
-                        e.time = timee
-                        e.time = starfunc(e.time)
-                        e.save()
-                        elam.active = True
-                        elam.save()
-
-                        
-                        c = f'{e.id},'
-                        if not  re.search(fr'\b *{c}\b',klas.vaheds) or re.search(fr'\b{c} *\b',klas.vaheds):
-                            klas.vaheds += str(e.id) + ' '
-                            klas.vaheds = starfunc(klas.vaheds)
-                            klas.save()
-
-                        
-                        
-                        # os.time = timee
-                        # os.save()
-                    list14 = timee.split(' ')
-
-                    if elam.active:
-                        e = Vahed.objects.filter(elam_id = elam_id).first()
-                        for i in list14:
-                            if not str(i) in e.time:
-                                e.time += ' ' + str(i)
-                                e.save()
-                        os = Ostad.objects.filter(username = elam.username).first()
-                        # os.time = timee
-                        # os.save()
-                    
-
-                    if not str(klas_id) in e.klas_id:
-                        e.klas_id += str(klas_id)+ ' '
-                        e.klas_id = starfunc(e.klas_id)
-                        e.save()
-
-
-                
-
-                value1 = request.POST.get('erae')
-
-                if value1 == 'back':
-                    # uuu = 1
-                    return HttpResponseRedirect(reverse('uni:erae' ,args= [a.id,elam.id]))
-                if value1 == 'yes':
-                    vahed1 = Vahed.objects.filter(elam_id = elam_id).first()
-                    return HttpResponseRedirect(reverse('uni:nahaee' ,args= [a.id,elam.id,vahed1.id]))
         else:
             logout2(a)
             return HttpResponseRedirect(reverse('uni:home'))
@@ -1574,49 +1984,62 @@ def get_item(dictionary, key):
 class NahaeeView(generic.TemplateView):
     global dic1
     dic1 = {}
+
     template_name = 'uni/nahaee.html'
-    def get(self,request,admin_id,elam_id,vahed_id):
+    # template_name = 'uni/nahaee_en.html'
+    
+    def get(self,request,admin_id,elam_id):
         a = Admin2.objects.get(pk = admin_id)
+        self.template_name = changetemplate(a,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(a,cookie) and request.user.is_authenticated:
             elam = Elam.objects.get(pk = elam_id)
-            
-            vahed1 = Vahed.objects.get(pk = vahed_id)
             os = Ostad.objects.filter(username = elam.username).first()
-            kj = str(a.id) + str(elam.goruh) + str(os.id) + str(vahed1.id)
-            vahed1.dars_code = kj
-            vahed1.save()
+            exter2 = Exter.objects.filter(elam_id = elam_id).first()
+            kj = str(a.id) + str(elam.goruh) + str(os.id) + str(elam.id)
+            exter2.code = kj
+            exter2.save()
+            # vahed1.dars_code = kj
             
-            dictime = {'01':'شنبه 8-10','02':'شنبه 10-12','03':'شنبه 13-15','04':'شنبه 15-17','05':'شنبه 17-19',
-                '11':'یکشنبه 8-10','12':'یکشنبه 10-12','13':'یکشنبه 13-15','14':'یکشنبه 15-17','15':'یکشنبه 17-19',
-                '21':'دوشنبه 8-10','22':' دوشنبه 10-12 ','23':'دوشنبه 13-15','24':'دوشنبه 15-17','25':'دوشنبه 17-19',
-                '31':'سه شنبه 8-10','32':'سه شنبه 10-12','33':'سه شنبه 13-15','34':'سه شنبه 15-17','35':'سه شنبه 17-19',
-                '41':'چهارشنبه 8-10','42':'چهارشنبه 10-12','43':'چهارشنبه 13-15','44':'چهارشنبه 15-17','45':'چهارشنبه  17-19',}
-            timee = vahed1.time.split(' ')
+            if a.lang == 'fa':
+                dars2 = darsdict[elam.dars]
+                sexdict = {'1':'موئنث' , '2':'مذکر','3':'مشترک'}
+                dictime = {'01':'شنبه 8-10','02':'شنبه 10-12','03':'شنبه 13-15','04':'شنبه 15-17','05':'شنبه 17-19',
+                    '11':'یکشنبه 8-10','12':'یکشنبه 10-12','13':'یکشنبه 13-15','14':'یکشنبه 15-17','15':'یکشنبه 17-19',
+                    '21':'دوشنبه 8-10','22':' دوشنبه 10-12 ','23':'دوشنبه 13-15','24':'دوشنبه 15-17','25':'دوشنبه 17-19',
+                    '31':'سه شنبه 8-10','32':'سه شنبه 10-12','33':'سه شنبه 13-15','34':'سه شنبه 15-17','35':'سه شنبه 17-19',
+                    '41':'چهارشنبه 8-10','42':'چهارشنبه 10-12','43':'چهارشنبه 13-15','44':'چهارشنبه 15-17','45':'چهارشنبه  17-19',}
+            else:
+                dars2 = darsdict_en[elam.dars]
+                sexdict = {'1':'female','2':'male','3':'Both'}
+                dictime = {'01':'Saturday 8-10','02':'Saturday 10-12','03':'Saturday 13-15','04':'Saturday 15-17','05':'Saturday 17-19',
+                '11':'Sunday 8-10','12':'Sunday 10-12','13':'Sunday 13-15','14':'Sunday 15-17','15':'Sunday 17-19',
+                '21':'Monday 8-10','22':' Monday 10-12 ','23':'Monday 13-15','24':'Monday 15-17','25':'Monday 17-19',
+                '31':'Tuesday 8-10','32':'Tuesday 10-12','33':'Tuesday 13-15','34':'Tuesday 15-17','35':'Tuesday 17-19',
+                '41':'Wednesday 8-10','42':'Wednesday 10-12','43':'Wednesday 13-15','44':'Wednesday 15-17','45':'Wednesday  17-19',}
+            
+            timee = exter2.time.split(' ')
             for i in timee:
                 if i =='':
                     timee.remove(i)
-            list3 = []
-            for i in timee:
-                list2 = i.split(',')
-                list3.append(list2[1])
-            for i in range(len(list3)):
-                if list3[i] == '1':
-                    list3[i] = '01'
-                if list3[i] == '2':
-                    list3[i] = '02'
-                if list3[i] == '3':
-                    list3[i] = '03'
-                if list3[i] == '4':
-                    list3[i] = '04'
+            
+            for i in range(len(timee)):
+                if timee[i] == '1':
+                    timee[i] = '01'
+                if timee[i] == '2':
+                    timee[i] = '02'
+                if timee[i] == '3':
+                    timee[i] = '03'
+                if timee[i] == '4':
+                    timee[i] = '04'
 
             list1 =[]
-            for i in list3:
+            for i in timee:
                 for j in dictime:
                     if i == j:
                         list1.append(dictime[j])    
 
-            context = {'vahed':vahed1,'list1':list1,'admin':a,'elam':elam,'ll':len(list1)}
+            context = {'list1':list1,'admin':a,'elam':elam,'ll':len(list1),'sex':sexdict[elam.sex],'dars':dars2,'os':os,'exter':exter2}
             
             return render(request,self.template_name,context)
         else:
@@ -1625,25 +2048,136 @@ class NahaeeView(generic.TemplateView):
 
         
 
-    def post(self,request,admin_id,elam_id,vahed_id):
+    def post(self,request,admin_id,elam_id):
         a = Admin2.objects.get(pk = admin_id)
+        self.template_name = changetemplate(a,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(a,cookie) and request.user.is_authenticated:
             elam = Elam.objects.get(pk = elam_id)
-            elam.vaziat = 'ارارئه میشود'
+
+            
+            elam.vaziat = '3'
+            
             elam.accept = True
             elam.reject = False
             elam.save()
             if request.method == "POST":
-                vahed1 = Vahed.objects.get(pk = vahed_id)
+                vahed1 = Vahed.objects.filter(elam_id = elam_id).first()
                 value1 = request.POST.get('erae')
                 if value1 == 'yes':
+                    examdate = request.POST.get('exam')
+                    if examdate == '':
+                        elam = Elam.objects.get(pk = elam_id)
+                        os = Ostad.objects.filter(username = elam.username).first()
+                        exter2 = Exter.objects.filter(elam_id = elam_id).first()
+                        kj = str(a.id) + str(elam.goruh) + str(os.id) + str(elam.id)
+                        exter2.code = kj
+                        exter2.save()
+                        # vahed1.dars_code = kj
+                        
+                        if a.lang == 'fa':
+                            dars2 = darsdict[elam.dars]
+                            sexdict = {'1':'موئنث' , '2':'مذکر','3':'مشترک'}
+                            dictime = {'01':'شنبه 8-10','02':'شنبه 10-12','03':'شنبه 13-15','04':'شنبه 15-17','05':'شنبه 17-19',
+                                '11':'یکشنبه 8-10','12':'یکشنبه 10-12','13':'یکشنبه 13-15','14':'یکشنبه 15-17','15':'یکشنبه 17-19',
+                                '21':'دوشنبه 8-10','22':' دوشنبه 10-12 ','23':'دوشنبه 13-15','24':'دوشنبه 15-17','25':'دوشنبه 17-19',
+                                '31':'سه شنبه 8-10','32':'سه شنبه 10-12','33':'سه شنبه 13-15','34':'سه شنبه 15-17','35':'سه شنبه 17-19',
+                                '41':'چهارشنبه 8-10','42':'چهارشنبه 10-12','43':'چهارشنبه 13-15','44':'چهارشنبه 15-17','45':'چهارشنبه  17-19',}
+                        else:
+                            dars2 = darsdict_en[elam.dars]
+                            sexdict = {'1':'female','2':'male','3':'Both'}
+                            dictime = {'01':'Saturday 8-10','02':'Saturday 10-12','03':'Saturday 13-15','04':'Saturday 15-17','05':'Saturday 17-19',
+                            '11':'Sunday 8-10','12':'Sunday 10-12','13':'Sunday 13-15','14':'Sunday 15-17','15':'Sunday 17-19',
+                            '21':'Monday 8-10','22':' Monday 10-12 ','23':'Monday 13-15','24':'Monday 15-17','25':'Monday 17-19',
+                            '31':'Tuesday 8-10','32':'Tuesday 10-12','33':'Tuesday 13-15','34':'Tuesday 15-17','35':'Tuesday 17-19',
+                            '41':'Wednesday 8-10','42':'Wednesday 10-12','43':'Wednesday 13-15','44':'Wednesday 15-17','45':'Wednesday  17-19',}
+                        
+                        timee = exter2.time.split(' ')
+                        for i in timee:
+                            if i =='':
+                                timee.remove(i)
+                        
+                        for i in range(len(timee)):
+                            if timee[i] == '1':
+                                timee[i] = '01'
+                            if timee[i] == '2':
+                                timee[i] = '02'
+                            if timee[i] == '3':
+                                timee[i] = '03'
+                            if timee[i] == '4':
+                                timee[i] = '04'
+
+                        list1 =[]
+                        for i in timee:
+                            for j in dictime:
+                                if i == j:
+                                    list1.append(dictime[j])    
+                        if a.lang == 'fa':
+                            error_message = 'لطفا تاریخ را اعلام کنید'
+                        else:
+                            error_message = 'Please announce the date'
+
+                        context = {'error_message':error_message,'list1':list1,'admin':a,'elam':elam,'ll':len(list1),'sex':sexdict[elam.sex],'dars':dars2,'os':os,'exter':exter2}
+                        
+                        return render(request,self.template_name,context)
+
+                    elam = Elam.objects.get(pk = elam_id)
+                    exter2 = Exter.objects.filter(elam_id = elam_id).first()
+                    os = Ostad.objects.filter(username = elam.username).first()
+                    exter2.time = starfunc(exter2.time)
+                    os.time += ' '+exter2.time+' '
+                    os.time = starfunc(os.time)
+                    os.save()
+                    vahed1 = Vahed.objects.filter(ostad_id = elam.ostad_id,elam_id = elam_id).first()
+                    if vahed1:
+                        vahed1.time = vahedtime(exter2.time_klass)
+                        vahed1.laghv = False
+                    elif not vahed1:
+                        vahed1 = Vahed(ostad_id = elam.ostad_id,elam_id = elam_id,dars = elam.dars,ostad = elam.ostad,uni = elam.uni,college = elam.college,time = vahedtime(exter2.time_klass),vahed2 = elam.vahed,capacity = elam.capacity,sex = elam.sex,capacity2 = elam.capacity,por = '0',goruh = elam.goruh)
+                    vahed1.save()
+
+                    vahed1.time = starfunc(vahed1.time)
+                    # kj = str(a.id) + str(elam.goruh) + str(os.id) + str(vahed1.id)
+                    # vahed1.dars_code = kj
+                    vahed1.save()
+                    z3 = vahedtime2(exter2.time_klass)
+                    for i in z3:
+                        klas3 = Klass.objects.get(pk = int(i[0]))
+                        klas3.time += ' ' + i[1] +' '
+                        klas3.time = starfunc(klas3.time)
+                        klas3.khali = str(int(klas3.khali) - 1)
+                        klas3.save()
+                    
                     vahed1.exam = request.POST.get('exam')
                     vahed1.active = True
                     vahed1.laghv = False
                     vahed1.save()
-                    message = f'درس {vahed1.dars} با موفقیت ارائه شد'
+                    exter2 = Exter.objects.filter(elam_id = elam_id).first().delete()
+                    
+                    if a.lang == 'fa':
+                        dars2 = darsdict[vahed1.dars]
+                        message = f'درس {dars2} با موفقیت ارائه شد'
+                    else:
+                        dars2 = darsdict_en[vahed1.dars]
+                        message = f'The {dars2} Course Has Been Presented Successfully'
                     return HttpResponseRedirect(reverse('uni:messagea',args = [a.id,message]))
+                else:
+                    exter2 = Exter.objects.filter(elam_id = elam_id).first()
+                    if exter2:
+                        exter2 = Exter.objects.filter(elam_id = elam_id).first().delete()
+                    elam1 = Elam.objects.get(pk = elam_id)
+                    elam1.active = False
+                    elam1.accept = False
+                    # elam1.reject = False
+                    elam1.request = True
+                    elam1.save()
+                    if a.lang == 'fa':
+                        message = 'لغو شد'
+                    else:
+                        
+                        message = 'Canceled'
+                    return HttpResponseRedirect(reverse('uni:messagea',args = [a.id,message]))
+
         else:
             logout2(a)
             return HttpResponseRedirect(reverse('uni:home'))
@@ -1651,20 +2185,41 @@ class NahaeeView(generic.TemplateView):
 
 class VahedView(generic.TemplateView):
     template_name = 'uni/vahed.html'
+    # template_name = 'uni/vahed_en.html'
+
     def get(self,request,admin_id):
         a = Admin2.objects.get(pk = admin_id)
+        self.template_name = changetemplate(a,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(a,cookie) and request.user.is_authenticated:
-            dictime = {'01':'شنبه 8-10','02':'شنبه 10-12','03':'شنبه 13-15','04':'شنبه 15-17','05':'شنبه 17-19',
-                '11':'یکشنبه 8-10','12':'یکشنبه 10-12','13':'یکشنبه 13-15','14':'یکشنبه 15-17','15':'یکشنبه 17-19',
-                '21':'دوشنبه 8-10','22':' دوشنبه 10-12 ','23':'دوشنبه 13-15','24':'دوشنبه 15-17','25':'دوشنبه 17-19',
-                '31':'سه شنبه 8-10','32':'سه شنبه 10-12','33':'سه شنبه 13-15','34':'سه شنبه 15-17','35':'سه شنبه 17-19',
-                '41':'چهارشنبه 8-10','42':'چهارشنبه 10-12','43':'چهارشنبه 13-15','44':'چهارشنبه 15-17','45':'چهارشنبه  17-19',}
+            if a.lang == 'fa':
+                sexdict = {'1':'موئنث' , '2':'مذکر','3':'مشترک'}
+                dictime = {'01':'شنبه 8-10','02':'شنبه 10-12','03':'شنبه 13-15','04':'شنبه 15-17','05':'شنبه 17-19',
+                    '11':'یکشنبه 8-10','12':'یکشنبه 10-12','13':'یکشنبه 13-15','14':'یکشنبه 15-17','15':'یکشنبه 17-19',
+                    '21':'دوشنبه 8-10','22':' دوشنبه 10-12 ','23':'دوشنبه 13-15','24':'دوشنبه 15-17','25':'دوشنبه 17-19',
+                    '31':'سه شنبه 8-10','32':'سه شنبه 10-12','33':'سه شنبه 13-15','34':'سه شنبه 15-17','35':'سه شنبه 17-19',
+                    '41':'چهارشنبه 8-10','42':'چهارشنبه 10-12','43':'چهارشنبه 13-15','44':'چهارشنبه 15-17','45':'چهارشنبه  17-19',}
+            else:
+                
+                sexdict = {'1':'female','2':'male','3':'Both'}
+                
+                dictime = {'01':'Saturday 8-10','02':'Saturday 10-12','03':'Saturday 13-15','04':'Saturday 15-17','05':'Saturday 17-19',
+                '11':'Sunday 8-10','12':'Sunday 10-12','13':'Sunday 13-15','14':'Sunday 15-17','15':'Sunday 17-19',
+                '21':'Monday 8-10','22':' Monday 10-12 ','23':'Monday 13-15','24':'Monday 15-17','25':'Monday 17-19',
+                '31':'Tuesday 8-10','32':'Tuesday 10-12','33':'Tuesday 13-15','34':'Tuesday 15-17','35':'Tuesday 17-19',
+                '41':'Wednesday 8-10','42':'Wednesday 10-12','43':'Wednesday 13-15','44':'Wednesday 15-17','45':'Wednesday  17-19',}
+            
+            
+            
             vahed1 = Vahed.objects.filter(active = True)
             lastlist = []
             
             for y in vahed1:
                 dic2 = {}
+                if a.lang == 'fa':
+                    dars2 = darsdict[y.dars]
+                else:
+                    dars2 = darsdict_en[y.dars]
                 timee = y.time
                 kj = timee.split(' ')
                 list1 = []
@@ -1695,7 +2250,12 @@ class VahedView(generic.TemplateView):
                         if i == j:
                             list4.append(dictime[j])    
                 for i in list2:
-                    kj = 'طبقه' +' '+ i.floor +' '+ i.college +' '+ 'کلاس' +' '+ i.number
+                    if a.lang == 'fa':
+                        college2 = collegedict[i.college]
+                        kj = 'طبقه' +' '+ i.floor +' '+ college2 +' '+ 'کلاس' +' '+ i.number
+                    else:
+                        college2 = collegedict_en[i.college]
+                        kj = 'Floor' +' '+ i.floor +' '+ college2 +' '+ 'Class' +' '+ i.number
                     list5.append(kj)
                 for i in range(len(list4)):
                     dic2[list4[i]] = list5[i]
@@ -1706,7 +2266,7 @@ class VahedView(generic.TemplateView):
                 else:
                     exam2 = None
                     exam3 = None
-                lastlist.append([y,dic2,list4,exam2,exam3])
+                lastlist.append([y,dic2,list4,exam2,exam3,sexdict[y.sex],dars2])
                  
             context = {'admin':a,'lastlist':lastlist}
             return render(request,self.template_name,context)
@@ -1715,6 +2275,7 @@ class VahedView(generic.TemplateView):
             return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,admin_id):
         a = Admin2.objects.get(pk = admin_id)
+        self.template_name = changetemplate(a,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(a,cookie) and request.user.is_authenticated:
             vahed__id = request.POST.get('laghv')
@@ -1724,7 +2285,8 @@ class VahedView(generic.TemplateView):
             elam1.reject = True
             elam1.accept = False
             elam1.active = False
-            elam1.vaziat = 'ارائه نمیشود'
+            
+            elam1.vaziat = '2'
             elam1.save()
             list1 = vahed1.time.split(' ')
             if '' in list1:
@@ -1733,25 +2295,35 @@ class VahedView(generic.TemplateView):
                 list2 = i.split(',')
                 klas1 = Klass.objects.get(pk = int(list2[0]))
                 
-                # klas1.time = klas1.time.replace(list2[1],'')
+                
                 c = list2[1]
-                if re.search(fr'\b{c} \b',klas1.time) or re.search(fr'\b {c}\b',klas1.time):
+                c = starfunc(c)
+                c = c[:-1]
+                
+                if re.search(fr'\b{c}\b',klas1.time):
                     klas1.khali = str(int(klas1.khali) + 1)
-                    klas1.time = re.sub('^\s*','',klas1.time)
-                    klas1.time = re.sub(fr'\b {c}\b','',klas1.time)
-                    klas1.time = re.sub(fr'\b{c} \b','',klas1.time)
                     klas1.save()
-                if re.search(fr'\b{c} \b',os.time) or re.search(fr'\b {c}\b',os.time):
-                    os.time = re.sub('^\s*','',os.time)
-                    os.time = re.sub(fr'\b {c}\b','',os.time)
-                    os.time = re.sub(fr'\b{c} \b','',os.time)
+                    klas1.time = starfunc(klas1.time)
+                    klas1.time = re.sub(fr'\b{c}\b','',klas1.time)
+                    klas1.time = starfunc(klas1.time)
+                    klas1.save()
+                if re.search(fr'\b{c}\b',os.time):
+                    os.time = starfunc(os.time)
+                    os.time = re.sub(fr'\b{c}\b','',os.time)
+                    os.time = starfunc(os.time)
                     os.save()
             vahed1.active = False
             vahed1.accept = False
             vahed1.laghv = True
             vahed1.reject = True
             vahed1.save()
-            message = f'درس {vahed1.dars} با موفقیت لغو شد'
+            if a.lang == 'fa':
+                dars2 = darsdict[vahed1.dars]
+                message = f'درس {dars2} با موفقیت لغو شد'
+            else:
+                dars2 = darsdict_en[vahed1.dars]
+                message = f'The {dars2} Course Has Been Canceled Successfully'
+            
             return HttpResponseRedirect(reverse('uni:messagea',args = [a.id,message]))
         else:
             logout2(a)
@@ -1768,12 +2340,29 @@ class VahedView(generic.TemplateView):
 
 class VaziatView(generic.TemplateView):
     template_name = 'uni/vaziat.html'
+    # template_name = 'uni/vaziat_en.html'
+
     def get(self, request, ostad_id):
         os = Ostad.objects.get(pk = ostad_id)
+        self.template_name = changetemplate(os,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(os,cookie) and request.user.is_authenticated:
+
+
+            if os.lang == 'fa':
+                vaziatdict = {'0':'درحال بررسی','1':'توسط استاد لغو شده','2':'توسط ادمین دانشکده رد شده است','3':'ارائه میشود'}
+            else:
+                vaziatdict = {'0':'Pending','1':'Canceled By Professor','2':'Not Provided','3':'Presented'}
+
+            
             elams = Elam.objects.filter(ostad_id = ostad_id)
-            context = {'ostad':os,'elams':elams}
+            last_list =[]
+            for i in elams:
+                if os.lang == 'fa':
+                    last_list.append([i,vaziatdict[i.vaziat],darsdict[i.dars],unidict[i.uni],collegedict[i.college]])
+                else:
+                    last_list.append([i,vaziatdict[i.vaziat],darsdict_en[i.dars],unidict_en[i.uni],collegedict_en[i.college]])
+            context = {'ostad':os,'elams':last_list}
             return render(request,self.template_name,context)
         else:
             logout2(os)
@@ -1781,15 +2370,29 @@ class VaziatView(generic.TemplateView):
 
 class Vaziat2View(generic.TemplateView):
     template_name = 'uni/vaziat2.html'
+    # template_name = 'uni/vaziat2_en.html'
+
     def get(self, request, ostad_id,elam_id):
         os = Ostad.objects.get(pk = ostad_id)
+        self.template_name = changetemplate(os,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(os,cookie) and request.user.is_authenticated:
-            dictime = {'01':'شنبه 8-10','02':'شنبه 10-12','03':'شنبه 13-15','04':'شنبه 15-17','05':'شنبه 17-19',
-                '11':'یکشنبه 8-10','12':'یکشنبه 10-12','13':'یکشنبه 13-15','14':'یکشنبه 15-17','15':'یکشنبه 17-19',
-                '21':'دوشنبه 8-10','22':' دوشنبه 10-12 ','23':'دوشنبه 13-15','24':'دوشنبه 15-17','25':'دوشنبه 17-19',
-                '31':'سه شنبه 8-10','32':'سه شنبه 10-12','33':'سه شنبه 13-15','34':'سه شنبه 15-17','35':'سه شنبه 17-19',
-                '41':'چهارشنبه 8-10','42':'چهارشنبه 10-12','43':'چهارشنبه 13-15','44':'چهارشنبه 15-17','45':'چهارشنبه  17-19',}
+            if os.lang == 'fa':
+                dictime = {'01':'شنبه 8-10','02':'شنبه 10-12','03':'شنبه 13-15','04':'شنبه 15-17','05':'شنبه 17-19',
+                    '11':'یکشنبه 8-10','12':'یکشنبه 10-12','13':'یکشنبه 13-15','14':'یکشنبه 15-17','15':'یکشنبه 17-19',
+                    '21':'دوشنبه 8-10','22':' دوشنبه 10-12 ','23':'دوشنبه 13-15','24':'دوشنبه 15-17','25':'دوشنبه 17-19',
+                    '31':'سه شنبه 8-10','32':'سه شنبه 10-12','33':'سه شنبه 13-15','34':'سه شنبه 15-17','35':'سه شنبه 17-19',
+                    '41':'چهارشنبه 8-10','42':'چهارشنبه 10-12','43':'چهارشنبه 13-15','44':'چهارشنبه 15-17','45':'چهارشنبه  17-19',}
+            else:        
+            
+                dictime = {'01':'Saturday 8-10','02':'Saturday 10-12','03':'Saturday 13-15','04':'Saturday 15-17','05':'Saturday 17-19',
+                '11':'Sunday 8-10','12':'Sunday 10-12','13':'Sunday 13-15','14':'Sunday 15-17','15':'Sunday 17-19',
+                '21':'Monday 8-10','22':' Monday 10-12 ','23':'Monday 13-15','24':'Monday 15-17','25':'Monday 17-19',
+                '31':'Tuesday 8-10','32':'Tuesday 10-12','33':'Tuesday 13-15','34':'Tuesday 15-17','35':'Tuesday 17-19',
+                '41':'Wednesday 8-10','42':'Wednesday 10-12','43':'Wednesday 13-15','44':'Wednesday 15-17','45':'Wednesday  17-19',}
+            
+            
+            
             elam = Elam.objects.get(pk = elam_id)
             if elam.accept:
                 vahed1 = Vahed.objects.filter(elam_id = elam_id).first()
@@ -1824,14 +2427,25 @@ class Vaziat2View(generic.TemplateView):
                         if i == j:
                             list4.append(dictime[j])    
                 for i in list2:
-                    kj = 'طبقه' +' '+ i.floor +' '+ i.college +' '+ 'کلاس' +' '+ i.number
+                    if os.lang == 'fa':
+                        college2 = collegedict[i.college]
+                        kj = 'طبقه' +' '+ i.floor +' '+ college2 +' '+ 'کلاس' +' '+ i.number
+                    else:
+                        college2 = collegedict_en[i.college]
+                        kj = 'Floor' +' '+ i.floor +' '+ college2 +' '+ 'Class' +' '+ i.number
                     list5.append(kj)
                 for i in range(len(list4)):
                     dic2[list4[i]] = list5[i]
-                context ={'ostad':os,'dic2':dic2,'vahed':vahed1,'shart':0}
+                if os.lang == 'fa':
+                    context ={'ostad':os,'dic2':dic2,'vahed':vahed1,'shart':0,'dars':darsdict[elam.dars],'uni':unidict[elam.uni],'college':collegedict[elam.college]}
+                else:
+                    context ={'ostad':os,'dic2':dic2,'vahed':vahed1,'shart':0,'dars':darsdict_en[elam.dars],'uni':unidict_en[elam.uni],'college':collegedict_en[elam.college]}
                 return render(request,self.template_name,context)
             elif elam.reject:
-                context = {'ostad':os,'shart':1,'elam':elam,'elam':elam}
+                if os.lang == 'fa':
+                    context = {'ostad':os,'shart':1,'elam':elam,'elam':elam,'dars':darsdict[elam.dars],'uni':unidict[elam.uni],'college':collegedict[elam.college]}
+                else:
+                    context = {'ostad':os,'shart':1,'elam':elam,'elam':elam,'dars':darsdict_en[elam.dars],'uni':unidict_en[elam.uni],'college':collegedict_en[elam.college]}
                 return render(request,self.template_name,context)
             elif elam.request == False:
                 
@@ -1845,7 +2459,10 @@ class Vaziat2View(generic.TemplateView):
                     for j in dictime:
                         if i == j:
                             list1.append(dictime[j])
-                context = {'elam':elam,'ostad':os,'shart':2,'list1':list1}
+                if os.lang == 'fa':
+                    context = {'elam':elam,'ostad':os,'shart':2,'list1':list1,'dars':darsdict[elam.dars],'uni':unidict[elam.uni],'college':collegedict[elam.college]}
+                else:
+                    context = {'elam':elam,'ostad':os,'shart':2,'list1':list1,'dars':darsdict_en[elam.dars],'uni':unidict_en[elam.uni],'college':collegedict_en[elam.college]}
                 return render(request,self.template_name,context)
             else:
                 list1 =[]
@@ -1858,7 +2475,10 @@ class Vaziat2View(generic.TemplateView):
                     for j in dictime:
                         if i == j:
                             list1.append(dictime[j])
-                context = {'elam':elam,'ostad':os,'shart':3,'list1':list1}
+                if os.lang == 'fa':
+                    context = {'elam':elam,'ostad':os,'shart':3,'list1':list1,'dars':darsdict[elam.dars],'uni':unidict[elam.uni],'college':collegedict[elam.college]}
+                else:
+                    context = {'elam':elam,'ostad':os,'shart':3,'list1':list1,'dars':darsdict_en[elam.dars],'uni':unidict_en[elam.uni],'college':collegedict_en[elam.college]}
                 return render(request,self.template_name,context)
         else:
             logout2(os)
@@ -1866,6 +2486,7 @@ class Vaziat2View(generic.TemplateView):
         
     def post(self, request, ostad_id,elam_id):
         os = Ostad.objects.get(pk = ostad_id)
+        self.template_name = changetemplate(os,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         elam = Elam.objects.get(pk = elam_id)
         if CheckCookie(os,cookie) and request.user.is_authenticated:
@@ -1875,14 +2496,16 @@ class Vaziat2View(generic.TemplateView):
                     return response
                 elif request.POST.get('change') == 'cancel':
                     elam.request = False
-                    elam.vaziat= 'توسط استاد لغو شده است'
+                    elam.vaziat= '1'
+                    
                     elam.save()
                     response = HttpResponseRedirect(reverse('uni:vaziat',args = [os.id]))
                     return response
                 
                 elif request.POST.get('change') == 'erae':
                     elam.request = True
-                    elam.vaziat= 'در حال بررسی'
+                    
+                    elam.vaziat= '0'
                     elam.save()
                     response = HttpResponseRedirect(reverse('uni:vaziat',args = [os.id]))
                     return response
@@ -1900,12 +2523,18 @@ class Vaziat2View(generic.TemplateView):
 
 class Vaziat3View(generic.TemplateView):
     template_name = 'uni/vaziat3.html'
+    # template_name = 'uni/vaziat3_en.html'
+
     def get(self,request,ostad_id,elam_id):
         os = Ostad.objects.get(pk = ostad_id)
+        self.template_name = changetemplate(os,self.template_name)
         elam = Elam.objects.get(pk = elam_id)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(os,cookie) and request.user.is_authenticated:
-            form = ElamForm(initial = {"username": os.username,'ostad':os,'phone':os.phone,'uni':os.uni,'college':elam.college,'capacity':elam.capacity,'dars':elam.dars,'sex':elam.sex})
+            if os.lang == 'fa':
+                form = ElamForm(initial = {"username": os.username,'ostad':os,'phone':os.phone,'uni':os.uni,'college':elam.college,'capacity':elam.capacity,'dars':elam.dars,'sex':elam.sex})
+            else:
+                form = ElamForm_en(initial = {"username": os.username,'ostad':os,'phone':os.phone,'uni':os.uni,'college':elam.college,'capacity':elam.capacity,'dars':elam.dars,'sex':elam.sex})
             context = {'ostad':os,'form':form}
             return render(request,self.template_name,context)
         else:
@@ -1913,13 +2542,19 @@ class Vaziat3View(generic.TemplateView):
             return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,ostad_id,elam_id):
         os = Ostad.objects.get(pk = ostad_id)
+        self.template_name = changetemplate(os,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(os,cookie) and request.user.is_authenticated:
-            
-            form = ElamForm(request.POST,initial = {"username": os.username,'ostad':os,'phone':os.phone})
+            if os.lang == 'fa':
+                form = ElamForm(request.POST,initial = {"username": os.username,'ostad':os,'phone':os.phone})
+            else:
+                form = ElamForm_en(request.POST,initial = {"username": os.username,'ostad':os,'phone':os.phone})
             if form.is_valid():
                 if form.cleaned_data['college'] == '------------------------------------------------------------------------------' or form.cleaned_data['dars'] == '------------------------------------------------------------------------------':
-                    error_message = 'لطفا فرم را کامل پر کنید'
+                    if os.lang == 'fa':
+                        error_message = 'لطفا فرم را کامل پر کنید'
+                    else:
+                        error_message = 'Please Complete The Form'
                     context = {'ostad':os,'form':form,'error_message':error_message}
                     return render(request,self.template_name,context)
                 
@@ -1927,7 +2562,8 @@ class Vaziat3View(generic.TemplateView):
                 
                
                 elam = Elam.objects.get(pk = elam_id)
-                elam.vaziat = 'در حال بررسی'
+                
+                elam.vaziat = '0'
                 elam.ostad_id = os.id
                 elam.college = form.cleaned_data['college']
                 elam.uni = form.cleaned_data['uni']
@@ -1942,8 +2578,11 @@ class Vaziat3View(generic.TemplateView):
 
 class Vaziat4View(generic.TemplateView):
     template_name = 'uni/vaziat4.html'
+    # template_name = 'uni/vaziat4_en.html'
+
     def get(self,request,ostad_id,elam_id):
         os = Ostad.objects.get(pk = ostad_id)
+        self.template_name = changetemplate(os,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(os,cookie) and request.user.is_authenticated:
@@ -1954,6 +2593,7 @@ class Vaziat4View(generic.TemplateView):
             return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,ostad_id,elam_id):
         os = Ostad.objects.get(pk = ostad_id)
+        self.template_name = changetemplate(os,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(os,cookie) and request.user.is_authenticated:
@@ -1965,7 +2605,10 @@ class Vaziat4View(generic.TemplateView):
                 for i in timess:
                     te = te + i + ' '
                 if te == '':
-                    error_message = 'لطفا یک زمان را انتخاب کنید'
+                    if os.lang == 'fa':
+                        error_message = 'لطفا یک زمان را انتخاب کنید'
+                    else:
+                        error_message = 'Please Choose At Least One Time'
                     context = {'ostad':os,'error_message':error_message}
                     return render(request,self.template_name,context)
                 elam = Elam.objects.get(pk = elam_id)
@@ -1980,7 +2623,10 @@ class Vaziat4View(generic.TemplateView):
                 elam.time = starfunc(elam.time)
                 elam.public_date = dt.datetime.now()
                 elam.save()
-                message = 'تغییرات با موفقیت اعمال شد'
+                if os.lang == 'fa':
+                    message = 'تغییرات با موفقیت اعمال شد'
+                else:
+                    message = 'Changes Applied Successfully'
                 response = HttpResponseRedirect(reverse('uni:messageos',args = [os.id,message]))
                 if elam.time == '':
                     elam.delete()
@@ -1993,21 +2639,42 @@ class Vaziat4View(generic.TemplateView):
 
 class EntekhabView(generic.TemplateView):
     template_name = 'uni/entekhab.html'
+    # template_name = 'uni/entekhab_en.html'
+
     def get(self,request,student_id):
         s = Student.objects.get(pk = student_id)
+        self.template_name = changetemplate(s,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(s,cookie) and request.user.is_authenticated:
             # vaheds = Vahed.objects.filter(college = s.College)
-            dictime = {'01':'شنبه 8-10','02':'شنبه 10-12','03':'شنبه 13-15','04':'شنبه 15-17','05':'شنبه 17-19',
-                '11':'یکشنبه 8-10','12':'یکشنبه 10-12','13':'یکشنبه 13-15','14':'یکشنبه 15-17','15':'یکشنبه 17-19',
-                '21':'دوشنبه 8-10','22':' دوشنبه 10-12 ','23':'دوشنبه 13-15','24':'دوشنبه 15-17','25':'دوشنبه 17-19',
-                '31':'سه شنبه 8-10','32':'سه شنبه 10-12','33':'سه شنبه 13-15','34':'سه شنبه 15-17','35':'سه شنبه 17-19',
-                '41':'چهارشنبه 8-10','42':'چهارشنبه 10-12','43':'چهارشنبه 13-15','44':'چهارشنبه 15-17','45':'چهارشنبه  17-19',}
+            if s.lang == 'fa':
+                sexdict = {'1':'موئنث' , '2':'مذکر','3':'مشترک'}
+
+                dictime = {'01':'شنبه 8-10','02':'شنبه 10-12','03':'شنبه 13-15','04':'شنبه 15-17','05':'شنبه 17-19',
+                    '11':'یکشنبه 8-10','12':'یکشنبه 10-12','13':'یکشنبه 13-15','14':'یکشنبه 15-17','15':'یکشنبه 17-19',
+                    '21':'دوشنبه 8-10','22':' دوشنبه 10-12 ','23':'دوشنبه 13-15','24':'دوشنبه 15-17','25':'دوشنبه 17-19',
+                    '31':'سه شنبه 8-10','32':'سه شنبه 10-12','33':'سه شنبه 13-15','34':'سه شنبه 15-17','35':'سه شنبه 17-19',
+                    '41':'چهارشنبه 8-10','42':'چهارشنبه 10-12','43':'چهارشنبه 13-15','44':'چهارشنبه 15-17','45':'چهارشنبه  17-19',}
+            else:
+                
+                sexdict = {'1':'female','2':'male','3':'Both'}
+                dictime = {'01':'Saturday 8-10','02':'Saturday 10-12','03':'Saturday 13-15','04':'Saturday 15-17','05':'Saturday 17-19',
+                '11':'Sunday 8-10','12':'Sunday 10-12','13':'Sunday 13-15','14':'Sunday 15-17','15':'Sunday 17-19',
+                '21':'Monday 8-10','22':' Monday 10-12 ','23':'Monday 13-15','24':'Monday 15-17','25':'Monday 17-19',
+                '31':'Tuesday 8-10','32':'Tuesday 10-12','33':'Tuesday 13-15','34':'Tuesday 15-17','35':'Tuesday 17-19',
+                '41':'Wednesday 8-10','42':'Wednesday 10-12','43':'Wednesday 13-15','44':'Wednesday 15-17','45':'Wednesday  17-19',}
+            
+            
+            
             vahed1 = Vahed.objects.filter(active = True,college = s.College,uni = s.uni)
             lastlist = []
             
             for y in vahed1:
+                if s.lang == 'fa':
+                    dars2 = darsdict[y.dars]
+                else:
+                    dars2 = darsdict_en[y.dars]
                 dic2 = {}
                 timee = y.time
                 kj = timee.split(' ')
@@ -2039,7 +2706,12 @@ class EntekhabView(generic.TemplateView):
                         if i == j:
                             list4.append(dictime[j])    
                 for i in list2:
-                    kj = 'طبقه' +' '+ i.floor +' '+ i.college +' '+ 'کلاس' +' '+ i.number
+                    if s.lang == 'fa':
+                        college2 = collegedict[i.college]
+                        kj = 'طبقه' +' '+ i.floor +' '+ college2 +' '+ 'کلاس' +' '+ i.number
+                    else:
+                        college2 = collegedict_en[i.college]
+                        kj = 'Floor' +' '+ i.floor +' '+ college2 +' '+ 'Class' +' '+ i.number
                     list5.append(kj)
                 for i in range(len(list4)):
                     dic2[list4[i]] = list5[i]
@@ -2050,7 +2722,7 @@ class EntekhabView(generic.TemplateView):
                 else:
                     exam2 = None
                     exam3 = None
-                lastlist.append([y,dic2,list4,exam2,exam3])
+                lastlist.append([y,dic2,list4,exam2,exam3,sexdict[y.sex],dars2])
             context = {'student':s,'vaheds':lastlist}
             return render(request,self.template_name,context)
         else:
@@ -2059,8 +2731,11 @@ class EntekhabView(generic.TemplateView):
 
 class Entekhab2View(generic.TemplateView):
     template_name = 'uni/entekhab2.html'
+    # template_name = 'uni/entekhab2_en.html'
+
     def get(self,request,student_id):
         s = Student.objects.get(pk = student_id)
+        self.template_name = changetemplate(s,self.template_name)
         
 
         cookie  = str(request.COOKIES.get('access'))
@@ -2074,11 +2749,17 @@ class Entekhab2View(generic.TemplateView):
             for i in list2:
                 list3.append(int(i))
             if int(s.enter_year) in list3:
-                form = EntekhabForm()
+                if s.lang == 'fa':
+                    form = EntekhabForm()
+                else:
+                    form = EntekhabForm_en()
                 context = {'student':s,'form':form}
                 return render(request,self.template_name,context)
             else:
-                message = 'در حال حاضر  مجاز به انتخاب واحد نیستید'
+                if s.lang == 'fa':
+                    message = 'در حال حاضر  مجاز به انتخاب واحد نیستید'
+                else:
+                    message = 'You Are Not Allowed To Select Any Unit At The Moment'
                 return HttpResponseRedirect(reverse('uni:messages',args = [s.id,message]))
             
 
@@ -2087,6 +2768,7 @@ class Entekhab2View(generic.TemplateView):
             return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,student_id):
         s = Student.objects.get(pk = student_id)
+        self.template_name = changetemplate(s,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(s,cookie) and request.user.is_authenticated:
@@ -2099,14 +2781,21 @@ class Entekhab2View(generic.TemplateView):
                 if vahed1:
                    
                     return HttpResponseRedirect(reverse('uni:entekhab3',args = [s.id,vahed1.id]))
+                
                 elif not vahed1:
-                    error_message = 'همچین درسی با این کد و گروه وجود ندارد'
+                    if s.lang == 'fa':
+                        error_message = 'چنین درسی با این کد و گروه وجود ندارد'
+                    else:
+                        error_message = 'No Course Available By This Course Code & Course Group !'
                     context = {'error_message':error_message,'student':s,'form':form}
                     return render(request,self.template_name,context)
 
 
             elif not form.is_valid():
-                error_message = 'لطفا فرم را کامل پر کنید'
+                if s.lang == 'fa':
+                    error_message = 'لطفا فرم را کامل پر کنید'
+                else:
+                    error_message = 'Please Complete The Form'
                 context = {'error_message':error_message,'student':s,'form':form}
                 return render(request,self.template_name,context)
         
@@ -2118,62 +2807,105 @@ class Entekhab2View(generic.TemplateView):
 
 class Entekhab3View(generic.TemplateView):
     template_name = 'uni/entekhab3.html'
+    # template_name = 'uni/entekhab3_en.html'
+
     def get(self,request,student_id,vahed_id):
         s = Student.objects.get(pk = student_id)
+        self.template_name = changetemplate(s,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(s,cookie) and request.user.is_authenticated:
             vahed1 = Vahed.objects.get(pk = vahed_id)
-            
-            context = {'vahed':vahed1,'student':s}
+            if s.lang == 'fa':
+                sexdict = {'1':'موئنث' , '2':'مذکر','3':'مشترک'}
+                dars2 = darsdict[vahed1.dars]
+            else:
+                sexdict = {'1':'female','2':'male','3':'Both'}
+                dars2 = darsdict_en[vahed1.dars]
+
+            context = {'vahed':vahed1,'student':s,'sex':sexdict[vahed1.sex],'dars':dars2}
             return render(request,self.template_name,context)
         else:   
             logout2(s)
             return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,student_id,vahed_id):
         s = Student.objects.get(pk = student_id)
+        self.template_name = changetemplate(s,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(s,cookie) and request.user.is_authenticated:
             vahed1 = Vahed.objects.get(pk = vahed_id)
             if request.POST.get('entekhab') == 'yes':
-                time2 = vahed1.time
-                time3 = time2.split(' ')
-                time4 = []
-                if '' in time3:
-                    time3.remove('')
-                for i in time3:
-                    j = i.split(',')
-                    # s.time += j[1]+' '
-                    time4.append(j[1])
-                if '' in time4:
-                    time4.remove('')
-                if vahed1.capacity2 == 0:
-                    error_message = 'ظرفیت این واحد پر شده است'
+                if vahed1.sex == '3' or vahed1.sex == s.sex:
+                    
+                    time2 = vahed1.time
+                    time3 = time2.split(' ')
+                    time4 = []
+                    if '' in time3:
+                        time3.remove('')
+                    for i in time3:
+                        j = i.split(',')
+                        # s.time += j[1]+' '
+                        time4.append(j[1])
+                    if '' in time4:
+                        time4.remove('')
+                    
+                    if vahed1.capacity2 == 0:
+                        if s.lang == 'fa':
+                            dars2 = darsdict[vahed1.dars]
+                            error_message = 'ظرفیت این واحد پر شده است'
+                        else:
+                            dars2 = darsdict_en[vahed1.dars]
+                            error_message = 'Capacity Is Completed !'
+
+                        context = {'vahed':vahed1,'student':s,'error_message':error_message,'sex':sexdict[vahed1.sex],'dars':dars2}
+                        return render(request,self.template_name,context)
+
+                    for i in time4:
+                        if re.search(fr'\b{i} *\b',s.time) or re.search(fr'\b *{i}\b',s.time):
+                            if s.lang == 'fa':
+                                dars2 = darsdict[vahed1.dars]
+                                error_message = 'این واحد با تایم شما منطبق نیست'
+                            else:
+                                dars2 = darsdict_en[vahed1.dars]
+                                error_message = 'This Course Is Not Available For You'
+
+                            context = {'vahed':vahed1,'student':s,'error_message':error_message,'sex':sexdict[vahed1.sex],'dars':dars2}
+                            return render(request,self.template_name,context)
+                    s.time = starfunc(s.time)
+                    for i in time4:
+                        s.time+= i + ' '
+
+                    s.time = starfunc(s.time)
+                    s.save() 
+                    vahed1.students += str(s.id) + ' '
+                    vahed1.capacity2 =  str(int(vahed1.capacity2) - 1)
+                    vahed1.por = str(int(vahed1.por) + 1)
+                    vahed1.students = starfunc(vahed1.students)
+                    vahed1.save()
+                    s.darses = starfunc(s.darses)
+                    s.darses += str(vahed1.id) + ' '
+                    s.darses = starfunc(s.darses)
+                    s.save()
+                    
+
+                    if s.lang == 'fa':
+                        dars2 = darsdict[vahed1.dars]
+                        message = f'درس {dars2} با موفقیت انتخاب شد'
+                    else:
+                        dars2 = darsdict_en[dars]
+                        message = f'{dars2} Course Has Been Selected Successfully'
+                    return HttpResponseRedirect(reverse('uni:messages',args = [s.id,message]))
+                elif not s.sex == vahed1.sex:
+                    if s.lang == 'fa':
+                        error_message = 'این واحد برای شما قابل ارائه نیست'
+                    else:
+                        error_message = 'This Course Is Not Available For You'
+
                     context = {'vahed':vahed1,'student':s,'error_message':error_message}
                     return render(request,self.template_name,context)
 
-                for i in time4:
-                    if re.search(fr'\b{i} *\b',s.time) or re.search(fr'\b *{i}\b',s.time):
-                        error_message = 'این واحد با تایم شما منطبق نیست'
-                        context = {'vahed':vahed1,'student':s,'error_message':error_message}
-                        return render(request,self.template_name,context)
-
-                for i in time4:
-                    s.time+= i + ' '
-
-                s.time = starfunc(s.time)
-                s.save() 
-                vahed1.students += str(s.id) + ' '
-                vahed1.capacity2 =  str(int(vahed1.capacity2) - 1)
-                vahed1.por = str(int(vahed1.por) + 1)
-                vahed1.students = starfunc(vahed1.students)
-                vahed1.save()
-                s.darses += str(vahed1.id) + ' '
-                s.darses = starfunc(s.darses)
-                s.save()
-                message = f'درس {vahed1.dars} با موفقیت انتخاب شد'
-                return HttpResponseRedirect(reverse('uni:messages',args = [s.id,message]))
+                    
         else:
             logout2(s)
             return HttpResponseRedirect(reverse('uni:home'))
@@ -2182,16 +2914,33 @@ class Entekhab3View(generic.TemplateView):
 
 class MydarsView(generic.TemplateView):
     template_name = 'uni/mydars.html'
+    # template_name = 'uni/mydars_en.html'
 
     def get(self,request,student_id):
         s = Student.objects.get(pk = student_id)
+        self.template_name = changetemplate(s,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(s,cookie) and request.user.is_authenticated:
-            dictime = {'01':'شنبه 8-10','02':'شنبه 10-12','03':'شنبه 13-15','04':'شنبه 15-17','05':'شنبه 17-19',
-                '11':'یکشنبه 8-10','12':'یکشنبه 10-12','13':'یکشنبه 13-15','14':'یکشنبه 15-17','15':'یکشنبه 17-19',
-                '21':'دوشنبه 8-10','22':' دوشنبه 10-12 ','23':'دوشنبه 13-15','24':'دوشنبه 15-17','25':'دوشنبه 17-19',
-                '31':'سه شنبه 8-10','32':'سه شنبه 10-12','33':'سه شنبه 13-15','34':'سه شنبه 15-17','35':'سه شنبه 17-19',
-                '41':'چهارشنبه 8-10','42':'چهارشنبه 10-12','43':'چهارشنبه 13-15','44':'چهارشنبه 15-17','45':'چهارشنبه  17-19',}
+            if s.lang == 'fa':
+                sexdict = {'1':'موئنث' , '2':'مذکر','3':'مشترک'}
+                
+                
+
+                dictime = {'01':'شنبه 8-10','02':'شنبه 10-12','03':'شنبه 13-15','04':'شنبه 15-17','05':'شنبه 17-19',
+                    '11':'یکشنبه 8-10','12':'یکشنبه 10-12','13':'یکشنبه 13-15','14':'یکشنبه 15-17','15':'یکشنبه 17-19',
+                    '21':'دوشنبه 8-10','22':' دوشنبه 10-12 ','23':'دوشنبه 13-15','24':'دوشنبه 15-17','25':'دوشنبه 17-19',
+                    '31':'سه شنبه 8-10','32':'سه شنبه 10-12','33':'سه شنبه 13-15','34':'سه شنبه 15-17','35':'سه شنبه 17-19',
+                    '41':'چهارشنبه 8-10','42':'چهارشنبه 10-12','43':'چهارشنبه 13-15','44':'چهارشنبه 15-17','45':'چهارشنبه  17-19',}
+            else:        
+                
+                sexdict = {'1':'female','2':'male','3':'Both'}
+                dictime = {'01':'Saturday 8-10','02':'Saturday 10-12','03':'Saturday 13-15','04':'Saturday 15-17','05':'Saturday 17-19',
+                '11':'Sunday 8-10','12':'Sunday 10-12','13':'Sunday 13-15','14':'Sunday 15-17','15':'Sunday 17-19',
+                '21':'Monday 8-10','22':' Monday 10-12 ','23':'Monday 13-15','24':'Monday 15-17','25':'Monday 17-19',
+                '31':'Tuesday 8-10','32':'Tuesday 10-12','33':'Tuesday 13-15','34':'Tuesday 15-17','35':'Tuesday 17-19',
+                '41':'Wednesday 8-10','42':'Wednesday 10-12','43':'Wednesday 13-15','44':'Wednesday 15-17','45':'Wednesday  17-19',}
+       
+            
             # vahed2 = Vahed.objects.filter(active = True,college = s.College,uni = s.uni)
             vahed1 = []
             # c = s.id
@@ -2216,6 +2965,10 @@ class MydarsView(generic.TemplateView):
 
             lastlist = []
             for y in vahed1:
+                if s.lang == 'fa':
+                    dars2 = darsdict[y.dars]
+                else:
+                    dars2 = darsdict_en[y.dars]
                 dic2 = {}
                 timee = y.time
                 kj = timee.split(' ')
@@ -2247,7 +3000,12 @@ class MydarsView(generic.TemplateView):
                         if i == j:
                             list4.append(dictime[j])    
                 for i in list2:
-                    kj = 'طبقه' +' '+ i.floor +' '+ i.college +' '+ 'کلاس' +' '+ i.number
+                    if s.lang == 'fa':
+                        college2 = collegedict[i.college]
+                        kj = 'طبقه' +' '+ i.floor +' '+ college2 +' '+ 'کلاس' +' '+ i.number
+                    else:
+                        college2 = collegedict_en[i.college]
+                        kj = 'Floor' +' '+ i.floor +' '+ college2 +' '+ 'Class' +' '+ i.number
                     list5.append(kj)
                 for i in range(len(list4)):
                     dic2[list4[i]] = list5[i]
@@ -2266,7 +3024,7 @@ class MydarsView(generic.TemplateView):
                 except:
                     darkhast2 = 0
                 
-                lastlist.append([y,dic2,list4,exam2,exam3,darkhast1])
+                lastlist.append([y,dic2,list4,exam2,exam3,darkhast1,sexdict[y.sex],dars2])
             
             context = {'student':s,'vaheds':lastlist}
             return render(request,self.template_name,context)
@@ -2276,6 +3034,7 @@ class MydarsView(generic.TemplateView):
 
     def post(self,request,student_id):
         s = Student.objects.get(pk = student_id)
+        self.template_name = changetemplate(s,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(s,cookie) and request.user.is_authenticated:
             if request.method == 'POST':
@@ -2293,8 +3052,12 @@ class MydarsView(generic.TemplateView):
 
 class DarkhastView(generic.TemplateView):
     template_name = 'uni/darkhast.html'
+    # template_name = 'uni/darkhast_en.html'
+
+
     def get(self,request,student_id,vahed_id):
         s = Student.objects.get(pk = student_id)
+        self.template_name = changetemplate(s,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(s,cookie) and request.user.is_authenticated:
             vahed1 = Vahed.objects.get(pk = vahed_id)
@@ -2305,15 +3068,25 @@ class DarkhastView(generic.TemplateView):
             return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,student_id,vahed_id):
         s = Student.objects.get(pk = student_id)
+        self.template_name = changetemplate(s,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(s,cookie) and request.user.is_authenticated:
+            vahed1 = Vahed.objects.get(pk = vahed_id)
             if request.method == 'POST':
                 if request.POST.get('erae') == 'yes':
                     text2 = request.POST.get('darkhast')
                     e = Darkhast(vahed_id = vahed_id,student_id = s.id,text2 = text2,uni = s.uni,college = s.College )
                     e.save()
                     vahed1 = Vahed.objects.get(pk = vahed_id)
-                    message = f'درخواست حذف برای درس {vahed1.dars} به ادمین دانشکده {s.College} ارسال شد'
+                    if s.lang == 'fa':
+                        dars2 = darsdict[vahed1.dars]
+                        college2 = collegedict[s.College]
+                        message = f'درخواست حذف برای درس {dars2} به ادمین دانشکده {college2} ارسال شد'
+                    else:
+                        dars2 = darsdict_en[vahed1.dars]
+                        college2 = collegedict_en[s.College]
+
+                        message = f'Request For Deleting {dars2} Course Has Been Sent to {college2} College Admin'
                     return HttpResponseRedirect(reverse('uni:messages',args = [s.id,message]))
         else:
             logout2(s)
@@ -2328,19 +3101,32 @@ class DarkhastView(generic.TemplateView):
 
 class Vahed2View(generic.TemplateView):
     template_name = 'uni/vahed2.html'
+    # template_name = 'uni/vahed2_en.html'
 
     def get(self,request,admin_id,student_id):
         a = Admin2.objects.get(pk = admin_id)
+        self.template_name = changetemplate(a,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(a,cookie) and request.user.is_authenticated:
             s = Student.objects.get(pk = student_id)
-            dictime = {'01':'شنبه 8-10','02':'شنبه 10-12','03':'شنبه 13-15','04':'شنبه 15-17','05':'شنبه 17-19',
-                '11':'یکشنبه 8-10','12':'یکشنبه 10-12','13':'یکشنبه 13-15','14':'یکشنبه 15-17','15':'یکشنبه 17-19',
-                '21':'دوشنبه 8-10','22':' دوشنبه 10-12 ','23':'دوشنبه 13-15','24':'دوشنبه 15-17','25':'دوشنبه 17-19',
-                '31':'سه شنبه 8-10','32':'سه شنبه 10-12','33':'سه شنبه 13-15','34':'سه شنبه 15-17','35':'سه شنبه 17-19',
-                '41':'چهارشنبه 8-10','42':'چهارشنبه 10-12','43':'چهارشنبه 13-15','44':'چهارشنبه 15-17','45':'چهارشنبه  17-19',}
+            if a.lang == 'fa':
+
+                dictime = {'01':'شنبه 8-10','02':'شنبه 10-12','03':'شنبه 13-15','04':'شنبه 15-17','05':'شنبه 17-19',
+                    '11':'یکشنبه 8-10','12':'یکشنبه 10-12','13':'یکشنبه 13-15','14':'یکشنبه 15-17','15':'یکشنبه 17-19',
+                    '21':'دوشنبه 8-10','22':' دوشنبه 10-12 ','23':'دوشنبه 13-15','24':'دوشنبه 15-17','25':'دوشنبه 17-19',
+                    '31':'سه شنبه 8-10','32':'سه شنبه 10-12','33':'سه شنبه 13-15','34':'سه شنبه 15-17','35':'سه شنبه 17-19',
+                    '41':'چهارشنبه 8-10','42':'چهارشنبه 10-12','43':'چهارشنبه 13-15','44':'چهارشنبه 15-17','45':'چهارشنبه  17-19',}
+            else:
             
+                dictime = {'01':'Saturday 8-10','02':'Saturday 10-12','03':'Saturday 13-15','04':'Saturday 15-17','05':'Saturday 17-19',
+                '11':'Sunday 8-10','12':'Sunday 10-12','13':'Sunday 13-15','14':'Sunday 15-17','15':'Sunday 17-19',
+                '21':'Monday 8-10','22':' Monday 10-12 ','23':'Monday 13-15','24':'Monday 15-17','25':'Monday 17-19',
+                '31':'Tuesday 8-10','32':'Tuesday 10-12','33':'Tuesday 13-15','34':'Tuesday 15-17','35':'Tuesday 17-19',
+                '41':'Wednesday 8-10','42':'Wednesday 10-12','43':'Wednesday 13-15','44':'Wednesday 15-17','45':'Wednesday  17-19',}
+       
+
+
             vahed1 = []
             
             list6 = s.darses.split(' ')
@@ -2361,6 +3147,12 @@ class Vahed2View(generic.TemplateView):
 
             lastlist = []
             for y in vahed1:
+                if a.lang == 'fa':
+                    sex = sexdict[y.sex]
+                    dars2 = darsdict[y.dars]
+                else:
+                    sex = sexdict_en[y.sex]
+                    dars2 = darsdict_en[y.dars]
                 dic2 = {}
                 timee = y.time
                 kj = timee.split(' ')
@@ -2392,7 +3184,16 @@ class Vahed2View(generic.TemplateView):
                         if i == j:
                             list4.append(dictime[j])    
                 for i in list2:
-                    kj = 'طبقه' +' '+ i.floor +' '+ i.college +' '+ 'کلاس' +' '+ i.number
+                    if a.lang == 'fa':
+                        
+                        college2 = collegedict[i.college]
+
+                        kj = 'طبقه' +' '+ i.floor +' '+ college2 +' '+ 'کلاس' +' '+ i.number
+                    else:
+                        
+                        college2 = collegedict_en[i.college]
+
+                        kj = 'Floor' +' '+ i.floor +' '+ college2 +' '+ 'Class' +' '+ i.number
                     list5.append(kj)
                 for i in range(len(list4)):
                     dic2[list4[i]] = list5[i]
@@ -2403,7 +3204,8 @@ class Vahed2View(generic.TemplateView):
                 else:
                     exam2 = None
                     exam3 = None
-                lastlist.append([y,dic2,list4,exam2,exam3])
+                
+                lastlist.append([y,dic2,list4,exam2,exam3,dars2,sex])
             
             context = {'student':s,'admin':a,'vaheds':lastlist}
             return render(request,self.template_name,context)
@@ -2414,20 +3216,41 @@ class Vahed2View(generic.TemplateView):
 
 class Mydars2View(generic.TemplateView):
     template_name = 'uni/mydars2.html'
+    # template_name = 'uni/mydars2_en.html'
+
     def get(self,request,ostad_id):
         os = Ostad.objects.get(pk = ostad_id)
+        self.template_name = changetemplate(os,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(os,cookie) and request.user.is_authenticated:
-            dictime = {'01':'شنبه 8-10','02':'شنبه 10-12','03':'شنبه 13-15','04':'شنبه 15-17','05':'شنبه 17-19',
-                '11':'یکشنبه 8-10','12':'یکشنبه 10-12','13':'یکشنبه 13-15','14':'یکشنبه 15-17','15':'یکشنبه 17-19',
-                '21':'دوشنبه 8-10','22':' دوشنبه 10-12 ','23':'دوشنبه 13-15','24':'دوشنبه 15-17','25':'دوشنبه 17-19',
-                '31':'سه شنبه 8-10','32':'سه شنبه 10-12','33':'سه شنبه 13-15','34':'سه شنبه 15-17','35':'سه شنبه 17-19',
-                '41':'چهارشنبه 8-10','42':'چهارشنبه 10-12','43':'چهارشنبه 13-15','44':'چهارشنبه 15-17','45':'چهارشنبه  17-19',}
+
+            if os.lang == 'fa':
+                sexdict = {'1':'موئنث' , '2':'مذکر','3':'مشترک'}
+
+                dictime = {'01':'شنبه 8-10','02':'شنبه 10-12','03':'شنبه 13-15','04':'شنبه 15-17','05':'شنبه 17-19',
+                    '11':'یکشنبه 8-10','12':'یکشنبه 10-12','13':'یکشنبه 13-15','14':'یکشنبه 15-17','15':'یکشنبه 17-19',
+                    '21':'دوشنبه 8-10','22':' دوشنبه 10-12 ','23':'دوشنبه 13-15','24':'دوشنبه 15-17','25':'دوشنبه 17-19',
+                    '31':'سه شنبه 8-10','32':'سه شنبه 10-12','33':'سه شنبه 13-15','34':'سه شنبه 15-17','35':'سه شنبه 17-19',
+                    '41':'چهارشنبه 8-10','42':'چهارشنبه 10-12','43':'چهارشنبه 13-15','44':'چهارشنبه 15-17','45':'چهارشنبه  17-19',}
+            else:
+                
+                sexdict = {'1':'female','2':'male','3':'Both'}
+                dictime = {'01':'Saturday 8-10','02':'Saturday 10-12','03':'Saturday 13-15','04':'Saturday 15-17','05':'Saturday 17-19',
+                '11':'Sunday 8-10','12':'Sunday 10-12','13':'Sunday 13-15','14':'Sunday 15-17','15':'Sunday 17-19',
+                '21':'Monday 8-10','22':' Monday 10-12 ','23':'Monday 13-15','24':'Monday 15-17','25':'Monday 17-19',
+                '31':'Tuesday 8-10','32':'Tuesday 10-12','33':'Tuesday 13-15','34':'Tuesday 15-17','35':'Tuesday 17-19',
+                '41':'Wednesday 8-10','42':'Wednesday 10-12','43':'Wednesday 13-15','44':'Wednesday 15-17','45':'Wednesday  17-19',}
+       
+            
             vahed1 = Vahed.objects.filter(active = True,ostad_id = os.id,laghv = False)
             lastlist = []
             
             for y in vahed1:
+                if os.lang == 'fa':
+                    dars2 = darsdict[y.dars]
+                else:
+                    dars2 = darsdict_en[y.dars]
                 dic2 = {}
                 timee = y.time
                 kj = timee.split(' ')
@@ -2459,7 +3282,14 @@ class Mydars2View(generic.TemplateView):
                         if i == j:
                             list4.append(dictime[j])    
                 for i in list2:
-                    kj = 'طبقه' +' '+ i.floor +' '+ i.college +' '+ 'کلاس' +' '+ i.number
+                    if os.lang == 'fa':
+                        college2 = collegedict[i.college]
+
+                        kj = 'طبقه' +' '+ i.floor +' '+ college2 +' '+ 'کلاس' +' '+ i.number
+                    else:
+                        college2 = collegedict_en[i.college]
+
+                        kj = 'Floor' +' '+ i.floor +' '+ college2 +' '+ 'Class' +' '+ i.number
                     list5.append(kj)
                 for i in range(len(list4)):
                     dic2[list4[i]] = list5[i]
@@ -2470,7 +3300,8 @@ class Mydars2View(generic.TemplateView):
                 else:
                     exam2 = None
                     exam3 = None
-                lastlist.append([y,dic2,list4,exam2,exam3])
+                sex2 = sexdict[y.sex]
+                lastlist.append([y,dic2,list4,exam2,exam3,sex2,dars2])
                  
             context = {'ostad':os,'lastlist':lastlist}
             return render(request,self.template_name,context)
@@ -2481,8 +3312,11 @@ class Mydars2View(generic.TemplateView):
 
 class NomreView(generic.TemplateView):
     template_name = 'uni/nomre.html'
+    # template_name = 'uni/nomre_en.html'
+
     def get(self,request,ostad_id,vahed_id):
         os = Ostad.objects.get(pk = ostad_id)
+        self.template_name = changetemplate(os,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(os,cookie) and request.user.is_authenticated:
@@ -2521,6 +3355,7 @@ class NomreView(generic.TemplateView):
 
     def post(self,request,ostad_id,vahed_id):
         os = Ostad.objects.get(pk = ostad_id)
+        self.template_name = changetemplate(os,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(os,cookie) and request.user.is_authenticated:
@@ -2553,7 +3388,10 @@ class NomreView(generic.TemplateView):
                     try:
                         
                         if int(nomre1) > 20 or int(nomre1) < 0:
-                            error_message = 'لطفا نمره هارا بین 0 تا 20 وارد کنید.'
+                            if os.lang == 'fa':
+                                error_message = 'لطفا نمره هارا بین 0 تا 20 وارد کنید.'
+                            else:
+                                error_message = 'Please Enter The Score Between 0 & 20'
 
                             context = {'ostad':os,'error_message':error_message,'students':list4,'nomre':vahed1.nomre2,'final2':1}
 
@@ -2575,8 +3413,10 @@ class NomreView(generic.TemplateView):
                         s.save()
                         vahed1.save()
                     except ValueError:
-                        
-                        error_message = 'لطفا نمره هارا فقط با عدد وارد کنید.'
+                        if os.lang == 'fa':
+                            error_message = 'لطفا نمره هارا فقط با عدد وارد کنید.'
+                        else:
+                            error_message = 'The Score Must Be Integer'
 
                         context = {'ostad':os,'error_message':error_message,'students':list4,'nomre':vahed1.nomre2,'final2':1}
 
@@ -2590,7 +3430,10 @@ class NomreView(generic.TemplateView):
                 nomre_vahed = starfunc(nomre_vahed)
                 vahed1.nomre = nomre_vahed
                 vahed1.save()
-                message = 'نمرات با موفقیت ثبت شد'
+                if os.lang == 'fa':
+                    message = 'نمرات با موفقیت ثبت شد'
+                else:
+                    message = 'Scores Has Been Confirmed Successfully'
                 response = HttpResponseRedirect(reverse('uni:messageos',args = [os.id,message]))
                 return response
         else:
@@ -2602,8 +3445,11 @@ class NomreView(generic.TemplateView):
                     
 class KarnameView(generic.TemplateView):
     template_name = 'uni/karname.html'
+    # template_name = 'uni/karname_en.html'
+
     def get(self,request,student_id):
         s = Student.objects.get(pk = student_id)
+        self.template_name = changetemplate(s,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(s,cookie) and request.user.is_authenticated:
@@ -2621,22 +3467,37 @@ class KarnameView(generic.TemplateView):
                 exam2 = JalaliDateTime(vahed1.exam).strftime("%Y/%m/%d")
                 exam3 = JalaliDateTime(vahed1.exam).strftime("%H:%M")
                 if float(list2[1]) >= 10:
-                    vaziat = 'قبول'
+                    if s.lang == 'fa':
+                        vaziat = 'قبول'
+                    else:
+                        vaziat = 'Accepted'
                     color2 = 'green'
                 elif float(list2[1]) < 10:
-                    vaziat = 'مردود'
+                    if s.lang == 'fa':
+                        vaziat = 'مردود'
+                    else:
+                        vaziat = 'Rejected'
                     color2 = 'red'
                 if vahed1.final == True:
-                    vaziat2 = 'نهایی'
+                    if s.lang == 'fa':
+                        vaziat2 = 'نهایی'
+                    else:
+                        vaziat2 = 'Final'
                 else:
-                    vaziat2 = 'موقت'
+                    if s.lang == 'fa':
+                        vaziat2 = 'موقت'
+                    else:
+                        vaziat2 = 'Temporary'
                 e = Eteraz.objects.filter(uni = s.uni,college = s.College,student_id = s.id,ostad_id = vahed1.ostad_id,vahed_id = vahed1.id).first()
                 if e:
                     eter = 1
                 elif not e:
                     eter = 0
-
-                final_list.append([vahed1,list2[1],exam2,exam3,vaziat,color2,vaziat2,eter])
+                if s.lang == 'fa':
+                    dars2 = darsdict[vahed1.dars]
+                else:
+                    dars2 = darsdict_en[vahed1.dars]
+                final_list.append([vahed1,list2[1],exam2,exam3,vaziat,color2,vaziat2,eter,dars2])
             summ = 0
             summ2 = 0
             for i in final_list:
@@ -2664,8 +3525,11 @@ class KarnameView(generic.TemplateView):
 
 class Karname2View(generic.TemplateView):
     template_name = 'uni/karname2.html'
+    # template_name = 'uni/karname2_en.html'
+
     def get(self,request,admin_id,student_id):
         a = Admin2.objects.get(pk = admin_id)
+        self.template_name = changetemplate(a,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         s = Student.objects.get(pk = student_id)
         if CheckCookie(a,cookie) and request.user.is_authenticated:
@@ -2689,13 +3553,22 @@ class Karname2View(generic.TemplateView):
                 exam2 = JalaliDateTime(vahed1.exam).strftime("%Y/%m/%d")
                 exam3 = JalaliDateTime(vahed1.exam).strftime("%H:%M")
                 if float(list2[1]) >= 10:
-                    vaziat = 'قبول'
+                    if a.lang == 'fa':
+                        vaziat = 'قبول'
+                    else:
+                        vaziat = 'Accepted'
                     color2 = 'green'
                 elif float(list2[1]) < 10:
-                    vaziat = 'مردود'
+                    if a.lang == 'fa':
+                        vaziat = 'مردود'
+                    else:
+                        vaziat = 'Rejected'
                     color2 = 'red'
-
-                final_list.append([vahed1,list2[1],exam2,exam3,vaziat,color2])
+                if a.lang == 'fa':
+                    dars2 = darsdict[vahed1.dars]
+                else:
+                    dars2 = darsdict_en[vahed1.dars]
+                final_list.append([vahed1,list2[1],exam2,exam3,vaziat,color2,dars2])
             summ = 0
             summ2 = 0
             for i in final_list:
@@ -2723,8 +3596,11 @@ class Karname2View(generic.TemplateView):
 
 class Darkhast2View(generic.TemplateView):
     template_name = 'uni/darkhast2.html'
+    # template_name = 'uni/darkhast2_en.html'
+
     def get(self,request,admin_id):
         a = Admin2.objects.get(pk = admin_id)
+        self.template_name = changetemplate(a,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(a,cookie) and request.user.is_authenticated:
             darkhasts = Darkhast.objects.filter(uni = a.uni,college = a.College,accept = False,reject = False)
@@ -2732,8 +3608,11 @@ class Darkhast2View(generic.TemplateView):
             for i in darkhasts:
                 vahed1 = Vahed.objects.get(pk = i.vahed_id)
                 s = Student.objects.get(pk = i.student_id)
-
-                lastlist.append([i,s,vahed1])
+                if a.lang == 'fa':
+                    dars2 = darsdict[vahed1.dars]
+                else:
+                    dars2 = darsdict_en[vahed1.dars]
+                lastlist.append([i,s,vahed1,dars2])
             context = {'admin':a,'darkhasts':lastlist}
             return render(request,self.template_name,context)
         else:
@@ -2743,14 +3622,20 @@ class Darkhast2View(generic.TemplateView):
 
 class Darkhast3View(generic.TemplateView):
     template_name = 'uni/darkhast3.html'
+    # template_name = 'uni/darkhast3_en.html'
+
     def get(self,request,admin_id,darkhast_id):
         a = Admin2.objects.get(pk = admin_id)
+        self.template_name = changetemplate(a,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(a,cookie) and request.user.is_authenticated:
             darkhast1 = Darkhast.objects.get(pk = darkhast_id)
             s = Student.objects.get(pk = darkhast1.student_id)
             vahed1 = Vahed.objects.get(pk = darkhast1.vahed_id)
-            dars = vahed1.dars
+            if s.lang == 'fa':
+                dars = darsdict[vahed1.dars]
+            else:
+                dars = darsdict_en[vahed1.dars]
             context = {'darkhast':darkhast1,'admin':a,'student':s,'dars':dars}
             return render(request,self.template_name,context)
         else:
@@ -2758,6 +3643,7 @@ class Darkhast3View(generic.TemplateView):
             return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,admin_id,darkhast_id):
         a = Admin2.objects.get(pk = admin_id)
+        self.template_name = changetemplate(a,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(a,cookie) and request.user.is_authenticated:
             darkhast1 = Darkhast.objects.get(pk = darkhast_id)
@@ -2791,7 +3677,9 @@ class Darkhast3View(generic.TemplateView):
                         time3.append(j[1])
                     if '' in time3:
                         time3.remove('')
+
                     for i in time3:
+                        s.time = starfunc(s.time)
                         s.time = re.sub(fr'\b{i} *\b','',s.time)
                         s.time = re.sub(fr'\b *{i}\b','',s.time)
                     
@@ -2806,14 +3694,21 @@ class Darkhast3View(generic.TemplateView):
                     vahed1.nomre = starfunc(vahed1.nomre)
 
                     vahed1.save()
-                    # if vahed_code:
-                    #     raise ValueError
-                    message = f'درس {vahed1.dars} برای دانشجو {s.name} {s.last_name} با موفقیت حذف شد'
+                    if a.lang == 'fa':
+                        message = f'درس {vahed1.dars} برای دانشجو {s.name} {s.last_name} با موفقیت حذف شد'
+                    else:
+                        message = f'Course {vahed1.dars} Has Been Deleted Successfully For {s.name} {s.last_name}'
+
                     return HttpResponseRedirect(reverse('uni:messagea',args = [a.id,message]))
                 elif request.POST.get('darkhast3') == 'no':
+                    s = Student.objects.get(pk = darkhast1.student_id)
                     darkhast1.reject = True
                     darkhast1.save()
-                    message = f'درخواست حذف توسط دانشجو {s.name} {s.last_name} با موفقیت رد شد'
+                    if a.lang == 'fa':
+                        message = f'درخواست حذف توسط دانشجو {s.name} {s.last_name} با موفقیت رد شد'
+                    else:
+                        message = f'Request of Deleting By {s.name} {s.last_name} Has Been Rejected Successfully'
+
                     return HttpResponseRedirect(reverse('uni:messagea',args = [a.id,message]))
                 
                 
@@ -2827,8 +3722,11 @@ class Darkhast3View(generic.TemplateView):
     
 class Darkhast4View(generic.TemplateView):
     template_name = 'uni/darkhast4.html'
+    # template_name = 'uni/darkhast4_en.html'
+
     def get(self,request,student_id):
         s = Student.objects.get(pk = student_id)
+        self.template_name = changetemplate(s,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(s,cookie) and request.user.is_authenticated:
             darkhasts = Darkhast.objects.filter(student_id = s.id)
@@ -2836,15 +3734,28 @@ class Darkhast4View(generic.TemplateView):
             for i in darkhasts:
                 vahed1 = Vahed.objects.get(pk = i.vahed_id)
                 if i.accept:
-                    vaziat = 'تایید شده است'
+                    if s.lang == 'fa':
+                        vaziat = 'تایید شده است'
+                    else:
+                        vaziat = 'Has Been Accepted'
                     color2 = 'green'
                 elif i.reject:
-                    vaziat = 'رد شده است'
+                    if s.lang == 'fa':
+                        vaziat = 'رد شده است'
+                    else:
+                        vaziat = 'Has Been Rejected'
                     color2 = 'red'
                 else:
-                    vaziat = 'در حال بررسی'    
+                    if s.lang == 'fa':
+                        vaziat = 'در حال بررسی'    
+                    else:
+                        vaziat = 'Pending'  
                     color2 = 'black'
-                lastlist.append([i,vahed1,vaziat,color2])
+                if s.lang == 'fa':
+                    dars2 = darsdict[vahed1.dars]
+                else:
+                    dars2 = darsdict_en[vahed1.dars]
+                lastlist.append([i,vahed1,vaziat,color2,dars2])
             
             context = {'student':s,'darkhasts':lastlist}
             return render(request,self.template_name,context)
@@ -2855,8 +3766,11 @@ class Darkhast4View(generic.TemplateView):
 
 class EterazView(generic.TemplateView):
     template_name = 'uni/eteraz.html'
+    # template_name = 'uni/eteraz_en.html'
+
     def get(self,request,student_id,vahed_id):
         s = Student.objects.get(pk = student_id)
+        self.template_name = changetemplate(s,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(s,cookie) and request.user.is_authenticated:    
             vahed1 = Vahed.objects.get(pk = vahed_id)
@@ -2870,13 +3784,20 @@ class EterazView(generic.TemplateView):
                 if int(list2[0]) == vahed1.id:
                     nomre1 = list2[1]
                     break
-            context = {'student':s,'vahed':vahed1,'nomre':nomre1}
+            if s.lang == 'fa':
+                dars2 = darsdict[vahed1.dars]
+            else:
+                dars2 = darsdict_en[vahed1.dars]
+
+            
+            context = {'student':s,'vahed':vahed1,'nomre':nomre1,'dars':dars2}
             return render(request,self.template_name,context)
         else:
             logout2(s)
             return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,student_id,vahed_id):
         s = Student.objects.get(pk = student_id)
+        self.template_name = changetemplate(s,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(s,cookie) and request.user.is_authenticated:
             
@@ -2890,7 +3811,10 @@ class EterazView(generic.TemplateView):
                     text2 = request.POST.get('darkhast')
                     e.text2 = text2
                     e.save()
-                    message = 'اعتراض شما با موفقیت ثبت شد'
+                    if s.lang == 'fa':
+                        message = 'اعتراض شما با موفقیت ثبت شد'
+                    else:
+                        message = 'Your Protest Has Been Confirmed Successfully'
                 return HttpResponseRedirect(reverse('uni:messages',args = [s.id,message]))
         else:
             logout2(s)
@@ -2901,8 +3825,11 @@ class EterazView(generic.TemplateView):
 
 class Eteraz2View(generic.TemplateView):
     template_name = 'uni/eteraz2.html'
+    # template_name = 'uni/eteraz2_en.html'
+
     def get(self,request,student_id,vahed_id):
         s = Student.objects.get(pk = student_id)
+        self.template_name = changetemplate(s,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(s,cookie) and request.user.is_authenticated:    
             vahed1 = Vahed.objects.get(pk = vahed_id)
@@ -2918,13 +3845,22 @@ class Eteraz2View(generic.TemplateView):
                     break
             e = Eteraz.objects.filter(ostad_id = vahed1.ostad_id,vahed_id = vahed1.id,student_id = s.id).first()
             if e.accept == True:
-                vaziat = 'تایید شده'
+                if s.lang == 'fa':
+                    vaziat = 'تایید شده'
+                else:
+                    vaziat = 'Has Been Accepted'
                 color2 = 'green'
             elif e.reject == True:
-                vaziat = 'رد شده است'
+                if s.lang == 'fa':
+                    vaziat = 'رد شده است'
+                else:
+                    vaziat = 'Has Been Rejected'
                 color2 = 'red'
             else:
-                vaziat = 'در حال بررسی'
+                if s.lang == 'fa':
+                    vaziat = 'در حال بررسی'
+                else:
+                    vaziat = 'Pending'
                 color2 = 'black'
             context = {'student':s,'vahed':vahed1,'nomre':nomre1,'eteraz':e,'vaziat':vaziat,'color2':color2}
             return render(request,self.template_name,context)
@@ -2934,8 +3870,11 @@ class Eteraz2View(generic.TemplateView):
 
 class Eteraz3View(generic.TemplateView):
     template_name = 'uni/eteraz3.html'
+    # template_name = 'uni/eteraz3_en.html'
+
     def get(self,request,ostad_id):
         os = Ostad.objects.get(pk = ostad_id)
+        self.template_name = changetemplate(os,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(os,cookie) and request.user.is_authenticated:
             e = Eteraz.objects.filter(ostad_id = os.id)
@@ -2955,16 +3894,28 @@ class Eteraz3View(generic.TemplateView):
                         break
 
                 if i.accept == True:
-                    vaziat = 'تایید شده'
+                    if os.lang == 'fa':
+                        vaziat = 'تایید شده'
+                    else:
+                        vaziat = 'Has Been Accepted'
                     color2 = 'green'
                 elif i.reject == True:
-                    vaziat = 'رد شده است'
+                    if os.lang == 'fa':
+                        vaziat = 'رد شده است'
+                    else:
+                        vaziat = 'Has Been Rejected'
                     color2 = 'red'
                 else:
-                    vaziat = 'در حال بررسی'
+                    if os.lang == 'fa':
+                        vaziat = 'در حال بررسی'
+                    else:
+                        vaziat = 'Pending'
                     color2 = 'black'
-                
-                final_list.append([s,vahed1,nomre1,vaziat,color2,i])
+                if os.lang == 'fa':
+                    dars2 = darsdict[vahed1.dars]
+                else :
+                    dars2 = darsdict_en[vahed1.dars]
+                final_list.append([s,vahed1,nomre1,vaziat,color2,i,dars2])
             context = {'ostad':os,'nomres':final_list}
             return render(request,self.template_name,context)
         else:
@@ -2974,8 +3925,11 @@ class Eteraz3View(generic.TemplateView):
 
 class Eteraz4View(generic.TemplateView):
     template_name = 'uni/eteraz4.html'
+    # template_name = 'uni/eteraz4_en.html'
+
     def get(self,request,ostad_id,eteraz_id):
         os = Ostad.objects.get(pk = ostad_id)
+        self.template_name = changetemplate(os,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(os,cookie) and request.user.is_authenticated: 
             e = Eteraz.objects.get(pk = eteraz_id)   
@@ -2993,15 +3947,28 @@ class Eteraz4View(generic.TemplateView):
                     break
             
             if e.accept == True:
-                vaziat = 'تایید شده'
+                if os.lang == 'fa':
+                    vaziat = 'تایید شده'
+                else:
+                    vaziat = 'Has Been Accepted'
                 color2 = 'green'
             elif e.reject == True:
-                vaziat = 'رد شده است'
+                if os.lang == 'fa':
+                    vaziat = 'رد شده است'
+                else:
+                    vaziat = 'Has Been Rejected'
                 color2 = 'red'
             else:
-                vaziat = 'در حال بررسی'
+                if os.lang == 'fa':
+                    vaziat = 'در حال بررسی'
+                else:
+                    vaziat = 'Pending'
                 color2 = 'black'
-            context = {'ostad':os,'vahed':vahed1,'nomre':nomre1,'eteraz':e,'vaziat':vaziat,'color2':color2,'student':s}
+            if os.lang == 'fa':
+                dars2 = darsdict[vahed1.dars]
+            else:
+                dars2 = darsdict_en[vahed1.dars]
+            context = {'ostad':os,'vahed':vahed1,'nomre':nomre1,'eteraz':e,'vaziat':vaziat,'color2':color2,'student':s,'dars':dars2}
             return render(request,self.template_name,context)
         else:
             logout2(os)
@@ -3012,6 +3979,7 @@ class Eteraz4View(generic.TemplateView):
 
     def post(self,request,ostad_id,eteraz_id):
         os = Ostad.objects.get(pk = ostad_id)
+        self.template_name = changetemplate(os,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(os,cookie) and request.user.is_authenticated: 
             e = Eteraz.objects.get(pk = eteraz_id)  
@@ -3023,8 +3991,11 @@ class Eteraz4View(generic.TemplateView):
                         e.accept = False
                         e.text3 = request.POST.get('javab')
                         e.save()
-                        
-                        message = f'پاسخ شما برای دانشجو {s.name} {s.last_name} ثبت شد'
+                        if os.lang == 'fa':
+                            message = f'پاسخ شما برای دانشجو {s.name} {s.last_name} ثبت شد'
+                        else:
+                            message = f'Your Answer For {s.name} {s.last_name} Has Been Confirmed Successfully'
+
                         response = HttpResponseRedirect(reverse('uni:messageos',args = [os.id,message]))
                         return response
                     elif request.POST.get('eteraz2') =='taeed':
@@ -3051,15 +4022,28 @@ class Eteraz4View(generic.TemplateView):
                                 break
                         
                         if e.accept == True:
-                            vaziat = 'تایید شده'
+                            if os.lang == 'fa':
+                                vaziat = 'تایید شده'
+                            else:
+                                vaziat = 'Has Been Accepted'
                             color2 = 'green'
                         elif e.reject == True:
-                            vaziat = 'رد شده است'
+                            if os.lang == 'fa':
+                                vaziat = 'رد شده است'
+                            else:
+                                vaziat = 'Has Been Rejected'
                             color2 = 'red'
                         else:
-                            vaziat = 'در حال بررسی'
+                            if os.lang == 'fa':
+                                vaziat = 'در حال بررسی'
+                            else:
+                                vaziat = 'Has Been Pending'
                             color2 = 'black'
-                        error_message = 'لطفااعتراض را رد یا تایید کنید'
+                        if os.lang == 'fa':
+                            error_message = 'لطفااعتراض را رد یا تایید کنید'
+                        else:
+                            error_message = 'Please Accept or Reject The Protest'
+
                         context = {'ostad':os,'vahed':vahed1,'nomre':nomre1,'eteraz':e,'vaziat':vaziat,'color2':color2,'student':s,'error_message':error_message }
                         return render(request,self.template_name,context)
         else:
@@ -3070,8 +4054,11 @@ class Eteraz4View(generic.TemplateView):
                     
 class Eteraz5View(generic.TemplateView):
     template_name = 'uni/eteraz5.html'
+    # template_name = 'uni/eteraz5_en.html'
+
     def get(self,request,ostad_id,eteraz_id):
         os = Ostad.objects.get(pk = ostad_id)
+        self.template_name = changetemplate(os,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(os,cookie) and request.user.is_authenticated: 
             context = {'ostad':os}
@@ -3081,6 +4068,7 @@ class Eteraz5View(generic.TemplateView):
             return HttpResponseRedirect(reverse('uni:home'))
     def post(self,request,ostad_id,eteraz_id):
         os = Ostad.objects.get(pk = ostad_id)
+        self.template_name = changetemplate(os,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(os,cookie) and request.user.is_authenticated:
             e = Eteraz.objects.get(pk = eteraz_id)  
@@ -3096,8 +4084,12 @@ class Eteraz5View(generic.TemplateView):
                 s.nomre = re.sub(fr'\b{c2},\d+\b',f' {c2},{nomre1} ',s.nomre)
                 s.nomre = starfunc(s.nomre)
                 s.save()
-                message = f'نمره جدید دانشجو ثبت شد'
+                if os.lang == 'fa':
+                    message = f'نمره جدید دانشجو ثبت شد'
+                else:
+                    message = f"Student's New Score Confirmed"
                 response = HttpResponseRedirect(reverse('uni:messageos',args = [os.id,message]))
+                return response
         else:
             logout2(os)
             return HttpResponseRedirect(reverse('uni:home'))
@@ -3107,8 +4099,11 @@ class Eteraz5View(generic.TemplateView):
 
 class MessageboxsView(generic.TemplateView):
     template_name = 'uni/messages.html'
+    # template_name = 'uni/messages_en.html'
+
     def get(self,request,student_id,message):
         s = Student.objects.get(pk = student_id)
+        self.template_name = changetemplate(s,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(s,cookie) and request.user.is_authenticated:
             context = {'student':s,'message':message}
@@ -3119,8 +4114,11 @@ class MessageboxsView(generic.TemplateView):
 
 class MessageboxaView(generic.TemplateView):
     template_name = 'uni/messagea.html'
+    # template_name = 'uni/messagea_en.html'
+
     def get(self,request,admin_id,message):
         a = Admin2.objects.get(pk = admin_id)
+        self.template_name = changetemplate(a,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(a,cookie) and request.user.is_authenticated:
             context = {'admin':a,'message':message}
@@ -3131,8 +4129,11 @@ class MessageboxaView(generic.TemplateView):
 
 class MessageboxosView(generic.TemplateView):
     template_name = 'uni/messageos.html'
+    # template_name = 'uni/messageos_en.html'
+
     def get(self,request,ostad_id,message):
         os = Ostad.objects.get(pk = ostad_id)
+        self.template_name = changetemplate(os,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(os,cookie) and request.user.is_authenticated:
             context = {'ostad':os,'message':message}
@@ -3146,8 +4147,11 @@ class MessageboxosView(generic.TemplateView):
 
 class MessageboxledView(generic.TemplateView):
     template_name = 'uni/messageled.html'
+    # template_name = 'uni/messageled_en.html'
+
     def get(self,request,leader_id,message):
         led = Leader.objects.get(pk = leader_id)
+        self.template_name = changetemplate(led,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(led,cookie) and request.user.is_authenticated:
             context = {'leader':led,'message':message}
@@ -3160,8 +4164,11 @@ class MessageboxledView(generic.TemplateView):
 
 class MessageboxbsView(generic.TemplateView):
     template_name = 'uni/messagebs.html'
+    # template_name = 'uni/messagebs_en.html'
+
     def get(self,request,boss_id,message):
         bs = Boss.objects.get(pk = boss_id)
+        self.template_name = changetemplate(bs,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(bs,cookie) and request.user.is_authenticated:
             context = {'boss':bs,'message':message}
@@ -3179,13 +4186,19 @@ class MessageboxbsView(generic.TemplateView):
 class CreatebossView(generic.TemplateView):
     
     template_name = 'uni/createboss.html'
+    # template_name = 'uni/createboss_en.html'
     
     
     def get(self,request ,leader_id):
         led = Leader.objects.get(pk = leader_id)
+        self.template_name = changetemplate(led,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(led,cookie) and request.user.is_authenticated:
-            form = sabtform3()
+            if led.lang == 'fa':
+                form = sabtform3()
+            else:
+                form = sabtform3_en()
+                
             context = {'form':form,'leader':led}
             return render(request ,self.template_name,context)
         else:
@@ -3195,24 +4208,46 @@ class CreatebossView(generic.TemplateView):
     
     def post(self,request,leader_id):
         led = Leader.objects.get(pk = leader_id)
+        self.template_name = changetemplate(led,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
-        form = sabtform3(request.POST)
+        if led.lang == 'fa':
+            form = sabtform3(request.POST)
+        else:
+            form = sabtform3_en(request.POST)
+
         if CheckCookie(led,cookie) and request.user.is_authenticated:
             if form.is_valid():
                 
                 y = oracle10.hash(form.cleaned_data['password'],user = form.cleaned_data['username'])
                 z = form.cleaned_data['username']
+                ac = Account.objects.filter(username = z).first()
+                if ac:
+                    
+                    if led.lang == 'fa':
+                        error_message = 'این کد کاربری در حال حاضر موجود میباشد'
+                    else:
+                        error_message = 'This user code is in use'
+                    context = {'form':form,'leader':led,'error_message':error_message}
+                    return render(request ,self.template_name,context)
+
                 
                 for key in form.fields:
                     if form.cleaned_data[key] == '':
-                
-                        error_message = 'لطفا فرم را کامل پر کنید'
+                        if led.lang == 'fa':
+                            error_message = 'لطفا فرم را کامل پر کنید'
+                        else:
+                            error_message = 'Please Complete The Form'
+
                         context = {'form':form,'leader':led,'error_message':error_message}
                         return render(request ,self.template_name,context)
                 
                 uni2 = form.cleaned_data['uni']
                 if Boss.objects.filter(uni = uni2).first():
-                    error_message = 'ادمین دانشگاه وجود دارد'
+                    if led.lang == 'fa':
+                        error_message = 'ادمین دانشگاه وجود دارد'
+                    else:
+                        error_message = 'University Admin Exists'
+                    
                     context = {'form':form,'leader':led,'error_message':error_message}
                     return render(request ,self.template_name,context)
 
@@ -3226,10 +4261,17 @@ class CreatebossView(generic.TemplateView):
                 bs.password = y
                
                 bs.save()
-                message = 'ادمین با موفقیت ثبت شد'
+                if led.lang == 'fa':
+                    message = 'ادمین با موفقیت ثبت شد'
+                else:
+                    message = 'Admin Added Successfully'
+
                 return HttpResponseRedirect(reverse('uni:messageled',args = [led.id,message]))
             if form.is_valid() == False:
-                error_message = f'لطفا فرم را کامل پر کنید'
+                if led.lang == 'fa':
+                    error_message = f'لطفا فرم را کامل پر کنید'
+                else:
+                    error_message = 'Please Complete The Form'
                 context = {'form':form,'leader':led,'error_message':error_message}
                 return render(request ,self.template_name,context)
         else:
@@ -3248,13 +4290,18 @@ class CreatebossView(generic.TemplateView):
 class CreateadminView(generic.TemplateView):
     
     template_name = 'uni/createadmin.html'
+    # template_name = 'uni/createadmin_en.html'
     
     
     def get(self,request ,boss_id):
         bs = Boss.objects.get(pk = boss_id)
+        self.template_name = changetemplate(bs,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(bs,cookie) and request.user.is_authenticated:
-            form = sabtform4()
+            if bs.lang == 'fa':
+                form = sabtform4()
+            else:
+                form = sabtform4_en()
             context = {'form':form,'boss':bs}
             return render(request ,self.template_name,context)
         else:
@@ -3264,25 +4311,47 @@ class CreateadminView(generic.TemplateView):
     
     def post(self,request,boss_id):
         bs = Boss.objects.get(pk = boss_id)
+        self.template_name = changetemplate(bs,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
-        form = sabtform4(request.POST)
+        if bs.lang == 'fa':
+            form = sabtform4(request.POST)
+        else:
+            form = sabtform4_en(request.POST)
         if CheckCookie(bs,cookie) and request.user.is_authenticated:
             if form.is_valid():
                 
                 y = oracle10.hash(form.cleaned_data['password'],user = form.cleaned_data['username'])
                 z = form.cleaned_data['username']
+                ac = Account.objects.filter(username = z).first()
+                if ac:
+                    
+                    if bs.lang == 'fa':
+                        error_message = 'این کد کاربری در حال حاضر موجود میباشد'
+                    else:
+                        error_message = 'This user code is in use'
+                    context = {'form':form,'boss':bs,'error_message':error_message}
+                    return render(request ,self.template_name,context)
+
+                
                 
                 for key in form.fields:
                     if form.cleaned_data[key] == '':
-                
-                        error_message = 'لطفا فرم را کامل پر کنید'
+                        if bs.lang == 'fa':
+                            error_message = 'لطفا فرم را کامل پر کنید'
+                        else:
+                            error_message = 'Please Complete The Form'
+
                         context = {'form':form,'boss':bs,'error_message':error_message}
                         return render(request ,self.template_name,context)
                 
                 uni2 = bs.uni
                 college2 = form.cleaned_data['College']
                 if Admin2.objects.filter(uni = uni2,College = college2).first():
-                    error_message = 'ادمین دانشکده وجود دارد'
+                    if bs.lang == 'fa':
+                        error_message = 'ادمین دانشکده وجود دارد'
+                    else:
+                        error_message = 'College Admin Exists'
+
                     context = {'form':form,'boss':bs,'error_message':error_message}
                     return render(request ,self.template_name,context)
 
@@ -3296,10 +4365,16 @@ class CreateadminView(generic.TemplateView):
                 a.password = y
                 a.uni = bs.uni
                 a.save()
-                message = 'ادمین با موفقیت ثبت شد'
+                if bs.lang == 'fa':
+                    message = 'ادمین با موفقیت ثبت شد'
+                else:
+                    message = 'Admin Added Successfully'
                 return HttpResponseRedirect(reverse('uni:messagebs',args = [bs.id,message]))
             if form.is_valid() == False:
-                error_message = f'لطفا فرم را کامل پر کنید'
+                if bs.lang == 'fa':
+                    error_message = f'لطفا فرم را کامل پر کنید'
+                else:
+                    error_message = f'Please Complete The Form'
                 context = {'form':form,'boss':bs,'error_message':error_message}
                 return render(request ,self.template_name,context)
         else:
@@ -3311,10 +4386,12 @@ class CreateadminView(generic.TemplateView):
     
 class StudentsbsView(generic.TemplateView):
     template_name = 'uni/studentsbs.html'
+    # template_name = 'uni/studentsbs_en.html'
     
    
     def get(self,request,boss_id):
         bs = Boss.objects.get(pk = boss_id)
+        self.template_name = changetemplate(bs,self.template_name)
         Students = Student.objects.filter(uni = bs.uni)
         
         cookie  = str(request.COOKIES.get('access'))
@@ -3328,6 +4405,7 @@ class StudentsbsView(generic.TemplateView):
         
     def post(self,request,boss_id):
         bs = Boss.objects.get(pk = boss_id)
+        self.template_name = changetemplate(bs,self.template_name)
         Students = Student.objects.filter(uni = bs.uni)
         
         cookie  = str(request.COOKIES.get('access'))
@@ -3356,17 +4434,22 @@ class StudentsbsView(generic.TemplateView):
 
 class StudentbsView(generic.TemplateView):
     template_name = 'uni/studentbs.html'
+    # template_name = 'uni/studentbs_en.html'
     
     
     def get(self,request,boss_id,student_id):
         s = Student.objects.get(pk = student_id)
         bs = Boss.objects.get(pk = boss_id)
+        self.template_name = changetemplate(bs,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(bs,cookie) and request.user.is_authenticated:
             global gb
             if gb == 1:
-                messages.success(request, '.پسوورد با موفقیت تغییر کرد ')
+                if bs.lang == 'fa':
+                    messages.success(request, '.پسوورد با موفقیت تغییر کرد ')
+                else:
+                    messages.success(request, 'Password Has Been Changed Successfully')
                 gb = 0
             context = {'boss':bs,'student':s}
             return render(request,self.template_name,context)
@@ -3380,14 +4463,25 @@ class StudentbsView(generic.TemplateView):
 class AboutSbsView(generic.TemplateView):#student info page in ostad
     
     template_name = 'uni/aboutSbs.html'
-    
+    # template_name = 'uni/aboutSbs_en.html'
+
     def get(self,request,boss_id,student_id):
         
         bs = Boss.objects.get(pk = boss_id)
         s = Student.objects.get(pk = student_id)
+        self.template_name = changetemplate(bs,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(bs,cookie) and request.user.is_authenticated:
-            context = {'student':s,'boss':bs}
+            if bs.lang == 'fa':
+                uni2 = unidict[s.uni]
+                college2 = collegedict[s.College]
+                field2 = fielddict[s.field]
+            else:
+                uni2 = unidict_en[s.uni]
+                college2 = collegedict_en[s.College]
+                field2 = fielddict_en[s.field]
+
+            context = {'student':s,'boss':bs,'uni':uni2,'college':college2,'field':field2}
             return render(request,self.template_name,context)
         else:
             logout2(bs)
@@ -3401,18 +4495,36 @@ class AboutSbsView(generic.TemplateView):#student info page in ostad
 
 class VahedbsView(generic.TemplateView):
     template_name = 'uni/vahedbs.html'
+    # template_name = 'uni/vahedbs_en.html'
 
     def get(self,request,boss_id,student_id):
         bs = Boss.objects.get(pk = boss_id)
+        self.template_name = changetemplate(bs,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(bs,cookie) and request.user.is_authenticated:
             s = Student.objects.get(pk = student_id)
-            dictime = {'01':'شنبه 8-10','02':'شنبه 10-12','03':'شنبه 13-15','04':'شنبه 15-17','05':'شنبه 17-19',
-                '11':'یکشنبه 8-10','12':'یکشنبه 10-12','13':'یکشنبه 13-15','14':'یکشنبه 15-17','15':'یکشنبه 17-19',
-                '21':'دوشنبه 8-10','22':' دوشنبه 10-12 ','23':'دوشنبه 13-15','24':'دوشنبه 15-17','25':'دوشنبه 17-19',
-                '31':'سه شنبه 8-10','32':'سه شنبه 10-12','33':'سه شنبه 13-15','34':'سه شنبه 15-17','35':'سه شنبه 17-19',
-                '41':'چهارشنبه 8-10','42':'چهارشنبه 10-12','43':'چهارشنبه 13-15','44':'چهارشنبه 15-17','45':'چهارشنبه  17-19',}
+            if bs.lang == 'fa':
+                
+                sexdict = {'1':'موئنث' , '2':'مذکر','3':'مشترک'}
+
+                dictime = {'01':'شنبه 8-10','02':'شنبه 10-12','03':'شنبه 13-15','04':'شنبه 15-17','05':'شنبه 17-19',
+                    '11':'یکشنبه 8-10','12':'یکشنبه 10-12','13':'یکشنبه 13-15','14':'یکشنبه 15-17','15':'یکشنبه 17-19',
+                    '21':'دوشنبه 8-10','22':' دوشنبه 10-12 ','23':'دوشنبه 13-15','24':'دوشنبه 15-17','25':'دوشنبه 17-19',
+                    '31':'سه شنبه 8-10','32':'سه شنبه 10-12','33':'سه شنبه 13-15','34':'سه شنبه 15-17','35':'سه شنبه 17-19',
+                    '41':'چهارشنبه 8-10','42':'چهارشنبه 10-12','43':'چهارشنبه 13-15','44':'چهارشنبه 15-17','45':'چهارشنبه  17-19',}
+            else:
+                
+
+                sexdict = {'1':'female','2':'male','3':'Both'}
+                dictime = {'01':'Saturday 8-10','02':'Saturday 10-12','03':'Saturday 13-15','04':'Saturday 15-17','05':'Saturday 17-19',
+                '11':'Sunday 8-10','12':'Sunday 10-12','13':'Sunday 13-15','14':'Sunday 15-17','15':'Sunday 17-19',
+                '21':'Monday 8-10','22':' Monday 10-12 ','23':'Monday 13-15','24':'Monday 15-17','25':'Monday 17-19',
+                '31':'Tuesday 8-10','32':'Tuesday 10-12','33':'Tuesday 13-15','34':'Tuesday 15-17','35':'Tuesday 17-19',
+                '41':'Wednesday 8-10','42':'Wednesday 10-12','43':'Wednesday 13-15','44':'Wednesday 15-17','45':'Wednesday  17-19',}
+           
+            
+            
             
             vahed1 = []
             
@@ -3434,6 +4546,11 @@ class VahedbsView(generic.TemplateView):
 
             lastlist = []
             for y in vahed1:
+                
+                if bs.lang == 'fa':
+                    dars2 = darsdict[y.dars]
+                else:
+                    dars2 = darsdict_en[y.dars]
                 dic2 = {}
                 timee = y.time
                 kj = timee.split(' ')
@@ -3465,7 +4582,14 @@ class VahedbsView(generic.TemplateView):
                         if i == j:
                             list4.append(dictime[j])    
                 for i in list2:
-                    kj = 'طبقه' +' '+ i.floor +' '+ i.college +' '+ 'کلاس' +' '+ i.number
+                    if bs.lang == 'fa':
+                        college2 = collegedict[i.college]
+
+                        kj = 'طبقه' +' '+ i.floor +' '+ college2 +' '+ 'کلاس' +' '+ i.number
+                    else:
+                        college2 = collegedict_en[i.college]
+
+                        kj = 'Floor' +' '+ i.floor +' '+ college2 +' '+ 'Class' +' '+ i.number
                     list5.append(kj)
                 for i in range(len(list4)):
                     dic2[list4[i]] = list5[i]
@@ -3476,7 +4600,7 @@ class VahedbsView(generic.TemplateView):
                 else:
                     exam2 = None
                     exam3 = None
-                lastlist.append([y,dic2,list4,exam2,exam3])
+                lastlist.append([y,dic2,list4,exam2,exam3,sexdict[y.sex],dars2])
             
             context = {'student':s,'boss':bs,'vaheds':lastlist}
             return render(request,self.template_name,context)
@@ -3497,8 +4621,11 @@ class VahedbsView(generic.TemplateView):
 
 class KarnamebsView(generic.TemplateView):
     template_name = 'uni/karnamebs.html'
+    # template_name = 'uni/karnamebs_en.html'
+
     def get(self,request,boss_id,student_id):
         bs = Boss.objects.get(pk = boss_id)
+        self.template_name = changetemplate(bs,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         s = Student.objects.get(pk = student_id)
         if CheckCookie(bs,cookie) and request.user.is_authenticated:
@@ -3518,13 +4645,23 @@ class KarnamebsView(generic.TemplateView):
                 exam2 = JalaliDateTime(vahed1.exam).strftime("%Y/%m/%d")
                 exam3 = JalaliDateTime(vahed1.exam).strftime("%H:%M")
                 if float(list2[1]) >= 10:
-                    vaziat = 'قبول'
+                    if bs.lang == 'fa':
+                        vaziat = 'قبول'
+                    else:
+                        vaziat = 'Accepted'
                     color2 = 'green'
                 elif float(list2[1]) < 10:
-                    vaziat = 'مردود'
+                    if bs.lang == 'fa':
+                        vaziat = 'مردود'
+                    else:
+                        vaziat = 'Rejected'
                     color2 = 'red'
+                if bs.lang == 'fa':
+                    dars2 = darsdict[vahed1.dars]
+                else:
+                    dars2 = darsdict_en[vahed1.dars]
 
-                final_list.append([vahed1,list2[1],exam2,exam3,vaziat,color2])
+                final_list.append([vahed1,list2[1],exam2,exam3,vaziat,color2,dars2])
             summ = 0
             summ2 = 0
             for i in final_list:
@@ -3553,10 +4690,12 @@ class KarnamebsView(generic.TemplateView):
 
 class AdminsbsView(generic.TemplateView):
     template_name = 'uni/adminsbs.html'
+    # template_name = 'uni/adminsbs_en.html'
     
    
     def get(self,request,boss_id):
         bs = Boss.objects.get(pk = boss_id)
+        self.template_name = changetemplate(bs,self.template_name)
         admins = Admin2.objects.filter(uni = bs.uni)
         
         cookie  = str(request.COOKIES.get('access'))
@@ -3570,6 +4709,7 @@ class AdminsbsView(generic.TemplateView):
         
     def post(self,request,boss_id):
         bs = Boss.objects.get(pk = boss_id)
+        self.template_name = changetemplate(bs,self.template_name)
         Students = Student.objects.filter(uni = bs.uni)
         
         cookie  = str(request.COOKIES.get('access'))
@@ -3597,19 +4737,28 @@ class AdminsbsView(generic.TemplateView):
 
 class AdminbsView(generic.TemplateView):
     template_name = 'uni/adminbs.html'
+    # template_name = 'uni/adminbs_en.html'
     
     
     def get(self,request,boss_id,admin_id):
         a = Admin2.objects.get(pk = admin_id)
         bs = Boss.objects.get(pk = boss_id)
+        self.template_name = changetemplate(bs,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
 
         if CheckCookie(bs,cookie) and request.user.is_authenticated:
             global gb
             if gb == 1:
-                messages.success(request, '.پسوورد با موفقیت تغییر کرد ')
+                if bs.lang == 'fa':
+                    messages.success(request, '.پسوورد با موفقیت تغییر کرد ')
+                else:
+                    messages.success(request, 'Password Has Been Changed Successfully')
                 gb = 0
-            context = {'boss':bs,'admin':a}
+            if bs.lang == 'fa':
+                college2 = collegedict[a.College]
+            else:
+                college2 = collegedict_en[a.College]
+            context = {'boss':bs,'admin':a,'college':college2}
             return render(request,self.template_name,context)
         else:
             logout2(bs)
@@ -3618,20 +4767,45 @@ class AdminbsView(generic.TemplateView):
 
 class Vahedbs2View(generic.TemplateView):
     template_name = 'uni/vahedbs2.html'
+    # template_name = 'uni/vahedbs2_en.html'
+
     def get(self,request,boss_id,admin_id):
         bs = Boss.objects.get(pk = boss_id)
         a = Admin2.objects.get(pk = admin_id)
+        self.template_name = changetemplate(bs,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(bs,cookie) and request.user.is_authenticated:
-            dictime = {'01':'شنبه 8-10','02':'شنبه 10-12','03':'شنبه 13-15','04':'شنبه 15-17','05':'شنبه 17-19',
-                '11':'یکشنبه 8-10','12':'یکشنبه 10-12','13':'یکشنبه 13-15','14':'یکشنبه 15-17','15':'یکشنبه 17-19',
-                '21':'دوشنبه 8-10','22':' دوشنبه 10-12 ','23':'دوشنبه 13-15','24':'دوشنبه 15-17','25':'دوشنبه 17-19',
-                '31':'سه شنبه 8-10','32':'سه شنبه 10-12','33':'سه شنبه 13-15','34':'سه شنبه 15-17','35':'سه شنبه 17-19',
-                '41':'چهارشنبه 8-10','42':'چهارشنبه 10-12','43':'چهارشنبه 13-15','44':'چهارشنبه 15-17','45':'چهارشنبه  17-19',}
+            if bs.lang == 'fa':
+                
+                sexdict = {'1':'موئنث' , '2':'مذکر','3':'مشترک'}
+
+                dictime = {'01':'شنبه 8-10','02':'شنبه 10-12','03':'شنبه 13-15','04':'شنبه 15-17','05':'شنبه 17-19',
+                    '11':'یکشنبه 8-10','12':'یکشنبه 10-12','13':'یکشنبه 13-15','14':'یکشنبه 15-17','15':'یکشنبه 17-19',
+                    '21':'دوشنبه 8-10','22':' دوشنبه 10-12 ','23':'دوشنبه 13-15','24':'دوشنبه 15-17','25':'دوشنبه 17-19',
+                    '31':'سه شنبه 8-10','32':'سه شنبه 10-12','33':'سه شنبه 13-15','34':'سه شنبه 15-17','35':'سه شنبه 17-19',
+                    '41':'چهارشنبه 8-10','42':'چهارشنبه 10-12','43':'چهارشنبه 13-15','44':'چهارشنبه 15-17','45':'چهارشنبه  17-19',}
+            else:
+                
+
+                sexdict = {'1':'female','2':'male','3':'Both'}
+                dictime = {'01':'Saturday 8-10','02':'Saturday 10-12','03':'Saturday 13-15','04':'Saturday 15-17','05':'Saturday 17-19',
+                '11':'Sunday 8-10','12':'Sunday 10-12','13':'Sunday 13-15','14':'Sunday 15-17','15':'Sunday 17-19',
+                '21':'Monday 8-10','22':' Monday 10-12 ','23':'Monday 13-15','24':'Monday 15-17','25':'Monday 17-19',
+                '31':'Tuesday 8-10','32':'Tuesday 10-12','33':'Tuesday 13-15','34':'Tuesday 15-17','35':'Tuesday 17-19',
+                '41':'Wednesday 8-10','42':'Wednesday 10-12','43':'Wednesday 13-15','44':'Wednesday 15-17','45':'Wednesday  17-19',}
+           
+            
+            
             vahed1 = Vahed.objects.filter(active = True,uni = bs.uni,college = a.College)
             lastlist = []
             
             for y in vahed1:
+                if bs.lang == 'fa':
+                    dars2 = darsdict[y.dars]
+                else:
+                    dars2 = darsdict_en[y.dars]
+
+                
                 dic2 = {}
                 timee = y.time
                 kj = timee.split(' ')
@@ -3663,7 +4837,12 @@ class Vahedbs2View(generic.TemplateView):
                         if i == j:
                             list4.append(dictime[j])    
                 for i in list2:
-                    kj = 'طبقه' +' '+ i.floor +' '+ i.college +' '+ 'کلاس' +' '+ i.number
+                    if bs.lang == 'fa':
+                        college2 = collegedict[i.college]
+                        kj = 'طبقه' +' '+ i.floor +' '+ college2 +' '+ 'کلاس' +' '+ i.number
+                    else:
+                        college2 = collegedict[i.college]
+                        kj = 'Floor' +' '+ i.floor +' '+ college2 +' '+ 'Class' +' '+ i.number
                     list5.append(kj)
                 for i in range(len(list4)):
                     dic2[list4[i]] = list5[i]
@@ -3674,7 +4853,7 @@ class Vahedbs2View(generic.TemplateView):
                 else:
                     exam2 = None
                     exam3 = None
-                lastlist.append([y,dic2,list4,exam2,exam3])
+                lastlist.append([y,dic2,list4,exam2,exam3,sexdict[y.sex],dars2])
                  
             context = {'admin':a,'lastlist':lastlist,'boss':bs}
             return render(request,self.template_name,context)
@@ -3684,8 +4863,11 @@ class Vahedbs2View(generic.TemplateView):
 
 class EjazeView(generic.TemplateView):
     template_name = 'uni/ejaze.html'
+    # template_name = 'uni/ejaze_en.html'
+
     def get(self,request,admin_id):
         a = Admin2.objects.get(pk = admin_id)
+        self.template_name = changetemplate(a,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(a,cookie) and request.user.is_authenticated:
             a.ejaze = starfunc(a.ejaze)
@@ -3709,6 +4891,7 @@ class EjazeView(generic.TemplateView):
     
     def post(self,request,admin_id):
         a = Admin2.objects.get(pk = admin_id)
+        self.template_name = changetemplate(a,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(a,cookie) and request.user.is_authenticated:
             if request.method == 'POST':
@@ -3719,7 +4902,11 @@ class EjazeView(generic.TemplateView):
                 a.ejaze = str2    
                 a.ejaze = starfunc(a.ejaze)
                 a.save()
-                message = 'دسترسی انتخاب واحد ثبت شد'
+                if a.lang == 'fa':
+                    message = 'دسترسی انتخاب واحد ثبت شد'
+                else:
+                    message = 'Unit Selection Access Registered'
+                
                 return HttpResponseRedirect(reverse('uni:messagea',args = [a.id,message]))
         else:
             logout2(a)
@@ -3729,12 +4916,17 @@ class EjazeView(generic.TemplateView):
 
 class ChangePassbsView(generic.TemplateView):#change password by student
     template_name = 'uni/changepassbs.html'
+    # template_name = 'uni/changepassbs_en.html'
     
     def get(self,request,boss_id):
         bs = Boss.objects.get(pk = boss_id)
+        self.template_name = changetemplate(bs,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(bs,cookie) and request.user.is_authenticated:
-            form = ChangePass()
+            if bs.lang == 'fa':
+                form = ChangePass()
+            else:
+                form = ChangePass_en()
             context = {'boss':bs,'form':form,}
             return render(request,self.template_name,context)
         else:
@@ -3743,9 +4935,13 @@ class ChangePassbsView(generic.TemplateView):#change password by student
     def post(self,request,boss_id):
         
         bs = Boss.objects.get(pk = boss_id)
+        self.template_name = changetemplate(bs,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(bs,cookie) and request.user.is_authenticated:
-            form = ChangePass(request.POST)
+            if bs.lang == 'fa':
+                form = ChangePass(request.POST)
+            else:
+                form = ChangePass_en(request.POST)
             if form.is_valid():
                 user = request.user
                 if oracle10.hash(form.cleaned_data['pass1'],user = bs.username) == bs.password:
@@ -3759,15 +4955,25 @@ class ChangePassbsView(generic.TemplateView):#change password by student
                         logout2(bs)
                         return HttpResponseRedirect(reverse('uni:home'))
                     else:
-                        error_message = 'تکرار پسوورد جدید همخوانی ندارد.'
+                        if bs.lang == 'fa':
+                            error_message = 'تکرار پسوورد جدید همخوانی ندارد.'
+                        else:
+                            error_message = 'New Passwords Must Be Same.'
+                        
                         context = {'boss':bs,'form':form,'error_message':error_message}
                         return render(request,self.template_name,context)
                 else:
-                    error_message = f'پسوورد قدیمی نادرست است. '
+                    if bs.lang == 'bs':
+                        error_message = f'پسوورد قدیمی نادرست است. '
+                    else:
+                        error_message = f'Your Old Password Is Not True'
                     context = {'boss':bs,'form':form,'error_message':error_message}
                     return render(request,self.template_name,context)
             else:
-                error_message = 'لطفا فرم را کامل پر کنید.'
+                if bs.lang == 'fa':
+                    error_message = 'لطفا فرم را کامل پر کنید.'
+                else:
+                    error_message = 'Please Complete The Form'
                 context = {'form':form,'boss':bs,'error_message':error_message}
                 return render(request,self.template_name,context)   
         else:
@@ -3779,12 +4985,18 @@ class ChangePassbsView(generic.TemplateView):#change password by student
 
 class ChangePassledView(generic.TemplateView):#change password by student
     template_name = 'uni/changepassled.html'
+    # template_name = 'uni/changepassled.html'
     
     def get(self,request,leader_id):
         led = Leader.objects.get(pk = leader_id)
+        self.template_name = changetemplate(led,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(led,cookie) and request.user.is_authenticated:
-            form = ChangePass()
+            if led.lang == 'fa':
+                form = ChangePass()
+            else:
+                form = ChangePass_en()
+
             context = {'leader':led,'form':form,}
             return render(request,self.template_name,context)
         else:
@@ -3793,9 +5005,13 @@ class ChangePassledView(generic.TemplateView):#change password by student
     def post(self,request,leader_id):
         
         led = Leader.objects.get(pk = leader_id)
+        self.template_name = changetemplate(led,self.template_name)
         cookie  = str(request.COOKIES.get('access'))
         if CheckCookie(led,cookie) and request.user.is_authenticated:
-            form = ChangePass(request.POST)
+            if led.lang == 'fa':
+                form = ChangePass(request.POST)
+            else:
+                form = ChangePass_en(request.POST)
             if form.is_valid():
                 user = request.user
                 if oracle10.hash(form.cleaned_data['pass1'],user = led.username) == led.password:
@@ -3809,17 +5025,236 @@ class ChangePassledView(generic.TemplateView):#change password by student
                         logout2(led)
                         return HttpResponseRedirect(reverse('uni:home'))
                     else:
-                        error_message = 'تکرار پسوورد جدید همخوانی ندارد.'
+                        if led.lang == 'fa':
+                            error_message = 'تکرار پسوورد جدید همخوانی ندارد.'
+                        else:
+                            error_message = 'New Passwords Must Be Same.'
                         context = {'leader':led,'form':form,'error_message':error_message}
                         return render(request,self.template_name,context)
                 else:
-                    error_message = f'پسوورد قدیمی نادرست است. '
+                    if led.lang == 'fa':
+                        error_message = f'پسوورد قدیمی نادرست است. '
+                    else:
+                        error_message = f'Your Old Password Is Not True'
                     context = {'leader':led,'form':form,'error_message':error_message}
                     return render(request,self.template_name,context)
             else:
-                error_message = 'لطفا فرم را کامل پر کنید.'
+                if led.lang == 'fa':
+                    error_message = 'لطفا فرم را کامل پر کنید.'
+                else:
+                    error_message = 'Please Complete The Form'
+
                 context = {'form':form,'leader':led,'error_message':error_message}
                 return render(request,self.template_name,context)   
         else:
             logout2(led)
-            return HttpResponseRedirect(reverse('uni:home'))  
+            return HttpResponseRedirect(reverse('uni:home'))
+
+
+class ForgetpassView(generic.TemplateView):
+    template_name = 'uni/forget.html'
+    def get(self,request,lang):
+        if lang == 'fa':
+            pass
+        else:
+            self.template_name = 'uni/forget_en.html'
+
+        
+        return render(request,self.template_name,{'lang':lang})
+    def post(self,request,lang):
+        
+        if request.method == 'POST':
+            username = request.POST.get('forget')
+            try:
+                aco2 = Account.objects.filter(username = username).first()
+            except FieldError:
+                if lang == 'fa':
+                    error_message = 'همچین اکانتی وجود ندارد'
+                else:
+                    error_message = 'Wrong Username' 
+                return render(request,self.template_name,{'error_message':error_message,'lang':lang})
+            if aco2:
+                if aco2.is_student:
+                    s = Student.objects.filter(username = username).first()
+                    f = Forget.objects.filter(username = username,check = False,s = True).first()
+                    if f:
+                        if lang == 'fa':
+                            error_message = 'پیام شما قبلا فرستاده شده است'
+                        else:
+                            error_message = 'Your message has already been sent' 
+                        return render(request,self.template_name,{'error_message':error_message,'lang':lang})
+                    f = Forget(username = username,uni = s.uni,college = s.College,s = True,public_date = dt.datetime.now())
+                    f.save()
+                elif aco2.is_admin2:
+                    if lang == 'fa':
+                        error_message = 'همچین اکانتی وجود ندارد'
+                    else:
+                        error_message = 'Wrong Username' 
+                    return render(request,self.template_name,{'error_message':error_message,'lang':lang})
+                    
+                elif aco2.is_boss:
+                    if lang == 'fa':
+                        error_message = 'همچین اکانتی وجود ندارد'
+                    else:
+                        error_message = 'Wrong Username' 
+                    return render(request,self.template_name,{'error_message':error_message,'lang':lang})
+                elif aco2.is_ostad:
+                    os = Ostad.objects.filter(username = username).first()
+                    f = Forget.objects.filter(username = username,check = False,os = True).first()
+                    if f:
+                        if lang == 'fa':
+                            error_message = 'پیام شما قبلا فرستاده شده است'
+                        else:
+                            error_message = 'Your message has already been sent' 
+                        return render(request,self.template_name,{'error_message':error_message,'lang':lang})
+                    f = Forget(username = username,uni = os.uni,os = True,public_date = dt.datetime.now())
+                    f.save()
+                else:
+                    if lang == 'fa':
+                        error_message = 'همچین اکانتی وجود ندارد'
+                    else:
+                        error_message = 'Wrong Username' 
+                    return render(request,self.template_name,{'error_message':error_message,'lang':lang})
+                if aco2.lang == 'fa':
+                    message = 'پیام شما ثبت شد'
+                else:
+                    message = 'your message sent'
+                return HttpResponseRedirect(reverse('uni:messagef',args = [message , lang]))
+                
+                
+            else:
+                if lang == 'fa':
+                    error_message = 'همچین اکانتی وجود ندارد'
+                else:
+                    error_message = 'Wrong Username' 
+                return render(request,self.template_name,{'error_message':error_message,'lang':lang})
+
+
+class MessageboxfView(generic.TemplateView):
+    template_name = 'uni/messagef.html'
+    # template_name = 'uni/messagesf_en.html'
+
+    def get(self,request,message,lang):
+        hostname = socket.gethostname()
+        ip_address = socket.gethostbyname(hostname)
+        aco = Account.objects.filter(ip_address = ip_address).first()
+        self.template_name = changetemplate(aco,self.template_name)
+        context = {'message':message,'lang':lang}
+        return render(request,self.template_name,context)
+
+class Forgetpass2View(generic.TemplateView):
+    template_name = 'uni/forget2.html'
+    def get(self,request,admin_id):
+        a = Admin2.objects.get(pk = admin_id)
+        self.template_name = changetemplate(a,self.template_name)
+        cookie  = str(request.COOKIES.get('access'))
+        if CheckCookie(a,cookie) and request.user.is_authenticated:
+
+            fs1 = Forget.objects.filter(uni = a.uni,college = a.College)
+            fs2 = Forget.objects.filter(uni = a.uni,os = True)
+            fs = []
+            for i in fs1:
+                fs.append(i)
+            for i in fs2:
+                fs.append(i)
+            lastlist = []
+            for i in fs:
+                if i.s:
+                    user = Student.objects.filter(uni = a.uni,College = a.College,username = i.username).first()
+                elif i.os:
+                    user = Ostad.objects.filter(uni = a.uni,username = i.username).first()
+
+                if i.check:
+                    if a.lang == 'fa':
+                        vaziat = 'برسی شده'
+                    else:
+                        vaziat = 'Reviewed'
+                elif not i.check:
+                    if a.lang == 'fa':
+                        vaziat = 'در حال بررسی'
+                    else:
+                        vaziat = 'Pending'
+                lastlist.append([user,i,vaziat])
+
+            context = {'admin':a,'forgets':lastlist}
+            return render(request,self.template_name,context)
+        else:
+            logout2(a)
+            return HttpResponseRedirect(reverse('uni:home'))
+
+
+
+
+class Forgetpass3View(generic.TemplateView):
+    template_name = 'uni/forget3.html'
+    
+    
+    def get(self,request,admin_id,ostad_id):
+        a = Admin2.objects.get(pk = admin_id)
+        self.template_name = changetemplate(a,self.template_name)
+        os = Ostad.objects.get(pk = ostad_id)
+        cookie  = str(request.COOKIES.get('access'))
+        if CheckCookie(a,cookie) and request.user.is_authenticated:
+            if a.lang == 'fa':
+                form = ChangePass2()
+            else:
+                form = ChangePass2_en()
+
+            context = {'admin':a,'form':form}
+            return render(request,self.template_name,context)
+        else:
+            logout2(a)
+            return HttpResponseRedirect(reverse('uni:home'))
+    def post(self,request,admin_id,ostad_id):
+        
+        a = Admin2.objects.get(pk = admin_id)
+        os = Ostad.objects.get(pk = ostad_id)
+        self.template_name = changetemplate(os,self.template_name)
+        cookie  = str(request.COOKIES.get('access'))
+        if CheckCookie(a,cookie) and request.user.is_authenticated:
+            if a.lang == 'fa':
+                form = ChangePass2(request.POST)
+            else:
+                form = ChangePass2_en(request.POST)
+
+            if form.is_valid():
+                
+                if form.cleaned_data['pass2'] == form.cleaned_data['pass3']:
+                    
+                    Ostad.objects.filter(pk = ostad_id).update(password = oracle10.hash(form.cleaned_data['pass2'],user=os.username))
+                    os = Ostad.objects.filter(pk = ostad_id).first()
+                    t = Account.objects.filter(username = os.username).first()
+                    t.set_password(form.cleaned_data['pass3'])
+                    t.save()
+                    os.save()
+
+                    global gb
+                    gb = 1
+                    if request.method == 'POST':
+                        f2 = request.POST.get('forget')
+                        if f2 == '1':
+                            f1 = Forget.objects.filter(uni = os.uni,username = os.username,check = False,os = True).first()
+                            if f1:
+                                f1.check = True
+                                f1.save()
+
+                    return HttpResponseRedirect(reverse('uni:page2',args = [a.id]))
+                else:
+                    if a.lang == 'fa':
+                        error_message = 'تکرار پسوورد جدید همخوانی ندارد.'
+                    else:
+                        error_message = 'New Passwords Must Be Same.'
+                    context = {'form':form,'admin':a,'error_message':error_message}
+                    return render(request,self.template_name,context)
+                
+            else:
+                if a.lang == 'fa':
+                    error_message = 'لطفا فرم را کامل پر کنید.'
+                else:
+                    error_message = 'Please Complete The Form'
+                context = {'form':form,'admin':a,'error_message':error_message}
+                return render(request,self.template_name,context)   
+        else:
+            logout2(a)
+            return HttpResponseRedirect(reverse('uni:home'))
+        

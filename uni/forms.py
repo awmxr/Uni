@@ -41,15 +41,21 @@ class sabtform(forms.ModelForm):
             # 'birthday'
         ]
         widgets = {
-            'password' : forms.PasswordInput,
+            'name': forms.TextInput(attrs={'autocomplete': 'off'}),
+            'last_name': forms.TextInput(attrs={'autocomplete': 'off'}),
+            'father_name': forms.TextInput(attrs={'autocomplete': 'off'}),
+            'melli_code': forms.TextInput(attrs={'autocomplete': 'off'}),
+            'phone': forms.TextInput(attrs={'autocomplete': 'off'}),
+            'parents_phone': forms.TextInput(attrs={'autocomplete': 'off'}),
+            
             'student_live': forms.Select(choices= choices.live_choices),
             'uni': forms.Select(choices= choices.uni_choices),
-            'College': forms.Select(choices= choices.college_choices,attrs={'onchange': 'submit();'}),
+            'College': forms.Select(choices= choices.college_choices),
             'religion' : forms.Select(choices= choices.religion_choices),
             'enter_year': forms.Select(choices= choices.enter_year_choices),
             'grade': forms.Select(choices= choices.grade_choices),
             'course': forms.Select(choices= choices.course_choices),
-            'field': forms.Select(),
+            'field': forms.Select(choices = choices.field1_choices + choices.field2_choices + choices.fileld3_choices + choices.fileld4_choices+choices.fileld5_choices),
             # 'username':forms.TextInput(attrs = {'placeholder':'شماره دانشجویی'}),
             # 'name' : forms.TextInput(attrs = {'placeholder':'نام'}),
             
@@ -84,15 +90,15 @@ class ChangeForm(forms.ModelForm):
         model = Student
 
         fields = [
-            'username',
+            
             'name',
             'last_name',
-            'father_name',
-            'melli_code',
+            
+        
             'phone',
             'student_live',
             'religion',
-            'parents_phone',
+            
         ]
         labels = {
             'religion':'مذهب',
@@ -106,6 +112,12 @@ class ChangeForm(forms.ModelForm):
             'parents_phone':'تلفن همراه والد',
             
         }
+        widgets = {
+            'student_live': forms.Select(choices= choices.live_choices),            
+            'religion' : forms.Select(choices= choices.religion_choices),
+            
+ 
+        } 
 class ChangePass(forms.Form):
     pass1 = forms.CharField(widget = forms.PasswordInput,label = 'پسوورد قدیمی')
     pass2 = forms.CharField(widget = forms.PasswordInput,label = 'پسوورد جدید')
@@ -162,12 +174,12 @@ class Change2Form(forms.ModelForm):
             'password' : forms.PasswordInput,
             'student_live': forms.Select(choices= choices.live_choices),
             'uni': forms.Select(choices= choices.uni_choices),
-            # 'College': forms.Select(choices= choices.college_choices,attrs={'onchange': 'submit();'}),
+            'College': forms.Select(choices= choices.college_choices),
             'religion' : forms.Select(choices= choices.religion_choices),
             'enter_year': forms.Select(choices= choices.enter_year_choices),
             'grade': forms.Select(choices= choices.grade_choices),
             'course': forms.Select(choices= choices.course_choices),
-            # 'field': forms.Select(),
+            'field': forms.Select(choices = choices.field1_choices +choices.field2_choices + choices.fileld3_choices + choices.fileld4_choices+choices.fileld5_choices),
             # 'username':forms.TextInput(attrs = {'placeholder':'شماره دانشجویی'}),
             # 'name' : forms.TextInput(attrs = {'placeholder':'نام'}),
             
@@ -181,60 +193,7 @@ class Change2Form(forms.ModelForm):
 
 
 
-class sabtform2(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super(forms.ModelForm, self).__init__(*args, **kwargs)
-
-        for key in self.fields:
-            self.fields[key].required = False 
-    class Meta:
-        
-        model = Ostad
-        fields = [
-            'username',
-            'name',
-            'last_name',
-            
-            'melli_code',
-            'uni',
-            'grade',
-            'field',
-            'password',
-            'phone',
-            'religion',
-            
-        ]
-        widgets = {
-            'password' : forms.PasswordInput,
-            
-            'uni': forms.Select(choices= choices.uni_choices),
-            
-            'religion' : forms.Select(choices= choices.religion_choices),
-            
-            'grade': forms.Select(choices= choices.grade_choices),
-            
-            'field': forms.Select(choices= choices.field1_choices + choices.field2_choices + choices.fileld3_choices + choices.fileld4_choices + choices.fileld5_choices),
-            
-            
-            
-        } 
-        
-        
-        labels = {
-            'religion':'مذهب',
-            "username": "شماره استادی",
-            'name':'نام',
-            'melli_code':'کد ملی',
-            'uni':'دانشگاه',
-            'last_name':'نام خانوادگی',
-            'password':'پسوورد',
-            'phone':'تلفن همراه استاد',
-            'field':'رشته تحصیلی',
-            'grade':'مقطع تحصیلی',
-        }
-
-
-
+# 
 
 
         
@@ -310,6 +269,12 @@ class sabtform2(forms.ModelForm):
             
         ]
         widgets = {
+            'name': forms.TextInput(attrs={'autocomplete': 'off'}),
+            'last_name': forms.TextInput(attrs={'autocomplete': 'off'}),
+            'melli_code': forms.TextInput(attrs={'autocomplete': 'off'}),
+            
+            'phone': forms.TextInput(attrs={'autocomplete': 'off'}),
+            
             'password' : forms.PasswordInput,
             
             'uni': forms.Select(choices= choices.uni_choices),
@@ -327,7 +292,7 @@ class sabtform2(forms.ModelForm):
         
         labels = {
             'religion':'مذهب',
-            "username": "شماره استادی",
+            "username": "کد کاربری",
             'name':'نام',
             'melli_code':'کد ملی',
             'uni':'دانشگاه',
@@ -362,6 +327,9 @@ class sabtform3(forms.ModelForm):
             
         ]
         widgets = {
+            'name': forms.TextInput(attrs={'autocomplete': 'off'}),
+            'last_name': forms.TextInput(attrs={'autocomplete': 'off'}),
+            'phone': forms.TextInput(attrs={'autocomplete': 'off'}),
             'password' : forms.PasswordInput,
             
             'uni': forms.Select(choices= choices.uni_choices),
@@ -410,6 +378,9 @@ class sabtform4(forms.ModelForm):
             
         ]
         widgets = {
+            'name': forms.TextInput(attrs={'autocomplete': 'off'}),
+            'last_name': forms.TextInput(attrs={'autocomplete': 'off'}),
+            'phone': forms.TextInput(attrs={'autocomplete': 'off'}),
             'password' : forms.PasswordInput,
             'college': forms.Select(choices= choices.college_choices),
             
@@ -422,7 +393,7 @@ class sabtform4(forms.ModelForm):
             
             "username": "شماره کاربری",
             'name':'نام',
-            
+            'College':'دانشکده',
             'uni':'دانشگاه',
             'last_name':'نام خانوادگی',
             'password':'پسوورد',
@@ -442,12 +413,17 @@ class KlassForm(forms.ModelForm):
             'floor',
             'public_date',
             'uni',
+            'khali',
         ]
         widgets = {
+            'number': forms.TextInput(attrs={'autocomplete': 'off'}),
+            'floor': forms.TextInput(attrs={'autocomplete': 'off'}),
+            
             'college' : forms.HiddenInput(),
             'address' : forms.Textarea() ,  
             'public_date' : forms.HiddenInput(),
             'uni':forms.HiddenInput(),
+            'khali':forms.HiddenInput(),
         }
         labels = {
             'number':'شماره کلاس',

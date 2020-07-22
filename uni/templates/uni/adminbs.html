@@ -3,9 +3,8 @@
 <html>
     <body>
         <ul>
-            <li><a href="{% url 'uni:boss' boss.id %}">خانه</a></li>
-            <li><a href="{% url 'uni:vahedbs2' boss.id admin.id %}">واحد های ارائه شده</a></li>
-            
+          <li><a href="{% url 'uni:boss' boss.id %}">خانه</a></li>
+          <li><a href="{% url 'uni:vahedbs2' boss.id admin.id %}">واحد های ارائه شده</a></li>
             
             <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
           </ul>
@@ -16,7 +15,7 @@
             
             <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
             <h2 style="text-align: right; " >{{ admin.name  }} {{  admin.last_name  }}</h2> 
-            <h2 style="text-align: right; " >ادمین دانشکده  {{admin.College}}</h2> 
+            <h2 style="text-align: right; " >ادمین دانشکده  {{college}}</h2> 
             {% if messages %}
         <ul style="color: aliceblue ;background-color: rgb(8, 148, 78);" class="messages">
             {% for message in messages %}

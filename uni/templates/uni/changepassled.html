@@ -12,9 +12,11 @@
 
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <ul>
-        <li><a href="{% url 'uni:leader' leader.id %}">خانه</a></li>
-            <li><a href="{% url 'uni:createboss' leader.id %}">ساخت ادمین دانشگاه</a></li>
-            <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
+      <li><a href="{% url 'uni:leader' leader.id %}">خانه</a></li>
+      <li><a href="{% url 'uni:createboss' leader.id %}">ساخت ادمین دانشگاه</a></li>
+      <li><a href="{% url 'uni:changepassled' leader.id %}">تغییر رمز عبور</a></li>
+      
+      <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
     </ul>
   </div>
 

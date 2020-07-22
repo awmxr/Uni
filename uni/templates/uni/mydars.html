@@ -30,13 +30,19 @@ tr:nth-child(even) {
 
     
     <ul>
-        <li><a href="{% url 'uni:page' student.id %}">خانه</a></li>
+      <li><a href="{% url 'uni:page' student.id %}">خانه</a></li>
             
-        <li><a href="{% url 'uni:aboutS' student.id %}">اطلاعات دانشجو</a></li>
-        <li><a href="{% url 'uni:students2' student.id %}">دانشجویان</a></li>
-        
-        <li><a href="{% url 'uni:changepass' student.id %}">تغیر رمز عبور</a></li>
-      <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
+      <li><a href="{% url 'uni:aboutS' student.id %}">اطلاعات دانشجو</a></li>
+      <li><a href="{% url 'uni:students2' student.id %}">دانشجویان</a></li>
+      <li><a href=" {% url 'uni:entekhab' student.id %} ">دروس ارائه شده</a></li>
+      <li><a href=" {% url 'uni:entekhab2' student.id %} ">انتخاب واحد</a></li>
+      <li><a href=" {% url 'uni:mydars' student.id %} ">درس های من</a></li>
+      <li><a href=" {% url 'uni:karname' student.id %} ">مشاهده کارنامه</a></li>
+      <li><a href=" {% url 'uni:darkhast4' student.id %} ">درخواست های من</a></li>
+      
+      <li><a href="{% url 'uni:changepass' student.id %}">تغیر رمز عبور</a></li>
+      
+<a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
     </ul>
 
 
@@ -83,7 +89,7 @@ tr:nth-child(even) {
           
           <th style="text-align: center;"> <button type="submit" name="laghv" value="{{  i.0.id  }}" >درخواست حذف</button> </th>
           {% endif %}
-            <th style="text-align: center;">{{i.0.sex}}</th>
+            <th style="text-align: center;">{{i.6}}</th>
             <th style="text-align: center;">{{i.0.capacity}}</th>
             <th style="text-align: center;">{{i.3}} <br> {{i.4}}</th>
             
@@ -97,7 +103,7 @@ tr:nth-child(even) {
             <th style="text-align: center;">{{i.0.dars_code}}</th>
             <th style="text-align: center;">{{i.0.goruh}}</th>
             <th style="text-align: center;">{{i.0.vahed2}}</th>
-            <th style="text-align: center;">{{i.0.dars}}</th>
+            <th style="text-align: center;">{{i.7}}</th>
             
           </tr>
 

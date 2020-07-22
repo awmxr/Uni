@@ -30,10 +30,16 @@ tr:nth-child(even) {
 
     
     <ul>
-      <li><a href="{% url 'uni:page3' ostad.id%}">خانه</a></li>  
-      <li><a href="{% url 'uni:students3' ostad.id %}">دانشجویان</a></li>
-      <li><a href="{% url 'uni:changepass4' ostad.id %}">تغیر رمز عبور</a></li>
-      <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
+      <li><a href="{% url 'uni:page3' ostad.id %}">خانه</a></li>
+            
+            <li><a href="{% url 'uni:elam1' ostad.id %}">اعلام برنامه ترم</a></li>
+            <li><a href="{% url 'uni:vaziat' ostad.id %}">وضعیت درخواست ها</a></li>
+            <li><a href="{% url 'uni:students3' ostad.id %}">دانشجویان</a></li>
+            <li><a href="{% url 'uni:mydars2' ostad.id %}">درس های من</a></li>
+            <li><a href="{% url 'uni:eteraz3' ostad.id %}">اعتراضات نمره</a></li>
+            <li><a href="{% url 'uni:changepass4' ostad.id %}">تغیر رمز عبور</a></li>
+            
+            <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
     </ul>
 
 
@@ -67,11 +73,11 @@ tr:nth-child(even) {
 
         <tr>
             
-          <th style="text-align: center;"><a href="{% url 'uni:vaziat2' ostad.id i.id %}">جزییات</a></th>
-            <th style="text-align: center;">{{i.vaziat}}</th>
-            <th style="text-align: center;">{{i.college}}</th>
-            <th style="text-align: center;">{{i.uni}}</th>
-            <th style="text-align: center;">{{i.dars}}</th>
+          <th style="text-align: center;"><a href="{% url 'uni:vaziat2' ostad.id i.0.id %}">جزییات</a></th>
+            <th style="text-align: center;">{{i.1}}</th>
+            <th style="text-align: center;">{{i.4}}</th>
+            <th style="text-align: center;">{{i.3}}</th>
+            <th style="text-align: center;">{{i.2}}</th>
             
           </tr>
 

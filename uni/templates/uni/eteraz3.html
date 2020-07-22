@@ -30,15 +30,16 @@ tr:nth-child(even) {
 
     
     <ul>
-        <li><a href="{% url 'uni:page3' ostad.id %}">خانه</a></li>
+      <li><a href="{% url 'uni:page3' ostad.id %}">خانه</a></li>
             
-            <li><a href="{% url 'uni:elam1' ostad.id %}">اعلام برنامه ترم</a></li>
-            <li><a href="{% url 'uni:vaziat' ostad.id %}">وضعیت درخواست ها</a></li>
-            <li><a href="{% url 'uni:students3' ostad.id %}">دانشجویان</a></li>
-            <li><a href="{% url 'uni:mydars2' ostad.id %}">درس های من</a></li>
-            
-            <li><a href="{% url 'uni:changepass4' ostad.id %}">تغیر رمز عبور</a></li>
-            <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
+      <li><a href="{% url 'uni:elam1' ostad.id %}">اعلام برنامه ترم</a></li>
+      <li><a href="{% url 'uni:vaziat' ostad.id %}">وضعیت درخواست ها</a></li>
+      <li><a href="{% url 'uni:students3' ostad.id %}">دانشجویان</a></li>
+      <li><a href="{% url 'uni:mydars2' ostad.id %}">درس های من</a></li>
+      <li><a href="{% url 'uni:eteraz3' ostad.id %}">اعتراضات نمره</a></li>
+      <li><a href="{% url 'uni:changepass4' ostad.id %}">تغیر رمز عبور</a></li>
+      
+      <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
     </ul>
 
 
@@ -74,13 +75,17 @@ tr:nth-child(even) {
         {% for i in nomres %}
 
         <tr>
+          {% if i.1.final %}
+          <th style="text-align: center;">نمره نهایی درس اعلام شده</th>
+        {% elif not i.1.final %}
             <th style="text-align: center;"><a href="{% url 'uni:eteraz4' ostad.id i.5.id %}">بررسی</a></th>
+            {% endif %}
         <th style="text-align: center;"> <p style="color: {{i.4}};"> {{ i.3 }}</p></th>
         <th style="text-align: center;">{{ i.2 }}</th>
         <th style="text-align: center;">{{ i.1.goruh }}</th>
         <th style="text-align: center;">{{ i.1.dars_code }}</th>
         
-        <th style="text-align: center;">{{ i.1.dars }}</th>
+        <th style="text-align: center;">{{ i.6 }}</th>
         <th style="text-align: center;">{{i.0.username}}</th>
         <th style="text-align: center;">{{ i.0.name }} {{ i.0.last_name }}</th>    
         </tr>

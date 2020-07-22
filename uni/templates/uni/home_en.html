@@ -1,0 +1,43 @@
+{% load static %}
+
+
+<link rel="icon" href="{% static 'uni/images/13.png' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'uni/style.css' %}">
+<body>
+
+
+<!-- charset=utf-8 -->
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<ul>
+  <li><a href="{% url 'uni:home' %}">Home</a></li>
+  <li><a href="{% url 'uni:login' lang %}">Login</a></li>
+  
+  <li><a href="{% url 'uni:aboutus' lang %}">About US</a></li>
+  <form method ="POST" >
+    {% csrf_token %}
+  <select   onchange="this.form.submit()"   name='lang'  style="height: 40px;width: 100px; background-color: rgb(39, 37, 37); border-color: rgb(39, 37, 37); color:aliceblue">
+    <option value="en" selected>English</option>
+    <option value="fa">فارسی</option>
+    
+    
+  </select>
+</form>
+</ul>
+{{name}}
+{% if messages %}
+        <ul style="color: aliceblue ;background-color: rgb(8, 148, 78);" class="messages">
+            {% for message in messages %}
+            <h2>  <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>  {{ message }}</li></h2>
+            {% endfor %}
+        </ul>
+{% endif %}
+
+
+
+</body>
+
+<form id="logoutform" method="POST" action="{% url 'uni:logout' %}">
+  {% csrf_token %}
+  <input type="hidden">
+  </form>
+

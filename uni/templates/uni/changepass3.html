@@ -35,7 +35,7 @@
               <!-- <label for="psw"><b>Password</b></label> -->
               <!-- <input type="password" placeholder="Enter Password" name="psw" required> -->
               {% if error_message %}<p style="color: red;">{{ error_message }}</p>{% endif %}
-             <a href="{% url 'uni:change' admin.id %}"> <button style="background-color: #13b30e; font-size: large;" type="submit">تایید</button></a>
+             <a href="{% url 'uni:change' admin.id %}"> <button style="background-color: #13b30e; font-size: large;" type="submit" name = 'forget' value="1">تایید</button></a>
             </div>
         
             <div class="container" style="background-color:#f1f1f1">

@@ -30,10 +30,16 @@ tr:nth-child(even) {
 
     
     <ul>
-      <li><a href="{% url 'uni:page3' ostad.id%}">خانه</a></li>  
-      <li><a href="{% url 'uni:students3' ostad.id %}">دانشجویان</a></li>
-      <li><a href="{% url 'uni:changepass4' ostad.id %}">تغیر رمز عبور</a></li>
-      <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
+      <li><a href="{% url 'uni:page3' ostad.id %}">خانه</a></li>
+            
+            <li><a href="{% url 'uni:elam1' ostad.id %}">اعلام برنامه ترم</a></li>
+            <li><a href="{% url 'uni:vaziat' ostad.id %}">وضعیت درخواست ها</a></li>
+            <li><a href="{% url 'uni:students3' ostad.id %}">دانشجویان</a></li>
+            <li><a href="{% url 'uni:mydars2' ostad.id %}">درس های من</a></li>
+            <li><a href="{% url 'uni:eteraz3' ostad.id %}">اعتراضات نمره</a></li>
+            <li><a href="{% url 'uni:changepass4' ostad.id %}">تغیر رمز عبور</a></li>
+           
+            <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
     </ul>
 
 
@@ -73,9 +79,9 @@ tr:nth-child(even) {
             <th style="text-align: center;">{{vahed.capacity}}</th>
             <th style="text-align: center;">{{vahed.goruh}}</th>
             <th style="text-align: center;">{{vahed.dars_code}}</th>
-            <th style="text-align: center;">{{vahed.college}}</th>
-            <th style="text-align: center;">{{vahed.uni}}</th>
-            <th style="text-align: center;">{{vahed.dars}}</th>
+            <th style="text-align: center;">{{college}}</th>
+            <th style="text-align: center;">{{uni}}</th>
+            <th style="text-align: center;">{{dars}}</th>
             
           </tr>
           
@@ -105,10 +111,10 @@ tr:nth-child(even) {
           <th style="text-align: center;">درس</th>
         </tr>
         <tr>   
-            <th style="text-align: center;">{{elam.capocity}}</th>
-              <th style="text-align: center;">{{elam.college}}</th>
-              <th style="text-align: center;">{{elam.uni}}</th>
-              <th style="text-align: center;">{{elam.dars}}</th>
+            <th style="text-align: center;">{{elam.capacity}}</th>
+              <th style="text-align: center;">{{college}}</th>
+              <th style="text-align: center;">{{uni}}</th>
+              <th style="text-align: center;">{{dars}}</th>
         </tr>
     </table>
 <table>
@@ -133,9 +139,9 @@ tr:nth-child(even) {
             </tr>
             <tr>   
                 <th style="text-align: center;">{{elam.capacity}}</th>
-                  <th style="text-align: center;">{{elam.college}}</th>
-                  <th style="text-align: center;">{{elam.uni}}</th>
-                  <th style="text-align: center;">{{elam.dars}}</th>
+                  <th style="text-align: center;">{{college}}</th>
+                  <th style="text-align: center;">{{uni}}</th>
+                  <th style="text-align: center;">{{dars}}</th>
             </tr>
 
             <table>

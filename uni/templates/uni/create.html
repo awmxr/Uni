@@ -13,11 +13,19 @@
 <body style="text-align: right;">
 <div style="text-align: left;">
     <ul>
-        <li><a href="{% url 'uni:page2' admin.id %}">خانه</a></li>
-        <li><a href="{% url 'uni:students' admin.id %}">دانشجویان</a></li>
-        <li><a href="{% url 'uni:changepass2' admin.id %}">تغیر رمز عبور</a></li>
-        <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
-        <input  style="text-align-last: right;" type="search" placeholder="جست و جو " aria-label="Search" name="search" >
+      <li><a href="{% url 'uni:page2' admin.id %}">خانه</a></li>
+      <li><a href="{% url 'uni:students' admin.id %}">دانشجویان</a></li>
+      <li><a href="{% url 'uni:create' admin.id %}">دانشجوی جدید</a></li>
+      <li><a href="{% url 'uni:create2' admin.id %}">استاد جدید</a></li>
+      <li><a href="{% url 'uni:barname1' admin.id  %}">برنامه استادان</a></li>
+      <li><a href="{% url 'uni:barname3' admin.id  %}">برنامه های رد شده</a></li>
+      <li><a href="{% url 'uni:vahed' admin.id  %}">واحد های ارعه شده</a></li>
+      <li><a href="{% url 'uni:ejaze' admin.id  %}">اجازه انتخاب واحد</a></li>
+      <li><a href="{% url 'uni:darkhast2' admin.id  %}">درخواست های حذف</a></li>
+      <li><a href="{% url 'uni:createklass' admin.id %}">ثبت کلاس</a></li>
+      <li><a href="{% url 'uni:changepass2' admin.id %}">تغیر رمز عبور</a></li>
+      
+      <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
     </ul>
 </div>
 
@@ -37,6 +45,10 @@
       <h1 style="text-align: center;"> فرم ثبت نام دانشجو</h1>
     <div style="text-align: right;" class="container">
       {{ form.as_p }}
+      <h6>جنسیت</h6>
+      <input type="radio" name ='sex' value = '2'> مرد
+      <br>
+      <input type="radio" name ='sex' value = '1'> زن
       <h6>تاریخ تولد</h6>
       <input type="date" name = 'date'>
       <!-- <label for="uname"><b>Username</b></label> -->

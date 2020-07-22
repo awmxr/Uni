@@ -1,0 +1,50 @@
+{% load static %}
+<link rel="icon" href="{% static 'uni/images/13.png' %}">
+<html>
+    <body>
+        <ul>
+            <li><a href="{% url 'uni:page2' admin.id %}">Home</a></li>
+            <li><a href="{% url 'uni:aboutS2' admin.id  student.id %}">Student Informations</a></li>
+            <li><a href="{% url 'uni:vahed2' admin.id  student.id %}">Student Units</a></li>
+            <li><a href="{% url 'uni:karname2' admin.id  student.id %}">Student Report Card</a></li>
+            <li><a href="{% url 'uni:changepass3' admin.id  student.id %}">Change Student Password</a></li>
+            <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">Exit</button></a>
+          </ul>
+    
+        <link rel="stylesheet" type="text/css" href="{% static 'uni/style2.css' %}">
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <div class="w3-container w3-dark-grey">
+            
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+            <h2 style="text-align: left; " > {% if student.online %}
+                <img src= "{% static 'uni/images/14.png' %}" style="width: 25px;" alt="online" class="online">
+                {% endif  %}{{ student.name  }} {{  student.last_name  }}</h2>  
+            
+            {% if messages %}
+        <ul style="color: aliceblue ;background-color: rgb(8, 148, 78);" class="messages">
+            {% for message in messages %}
+            <h2>  <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>  {{ message }}</li></h2>
+            {% endfor %}
+        </ul>
+            {% endif %}
+            
+
+            
+        </div>
+    </body>
+
+
+
+    <form id="logoutform" method="POST" action="{% url 'uni:logout' %}">
+        {% csrf_token %}
+        <input type="hidden">
+        </form>
+
+
+
+
+
+
+
+</html>
+

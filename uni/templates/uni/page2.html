@@ -17,13 +17,24 @@
             <li><a href="{% url 'uni:vahed' admin.id  %}">واحد های ارعه شده</a></li>
             <li><a href="{% url 'uni:ejaze' admin.id  %}">اجازه انتخاب واحد</a></li>
             <li><a href="{% url 'uni:darkhast2' admin.id  %}">درخواست های حذف</a></li>
-
             <li><a href="{% url 'uni:createklass' admin.id %}">ثبت کلاس</a></li>
-
-
+            <li><a href="{% url 'uni:forget2' admin.id %}">درخواست های تغیر رمز عبور</a></li>
             <li><a href="{% url 'uni:changepass2' admin.id %}">تغیر رمز عبور</a></li>
+            <form method ="POST" >
+                {% csrf_token %}
+              <select  onchange="this.form.submit()"   name='lang'  style="height: 40px;width: 100px; background-color: rgb(39, 37, 37); border-color: rgb(39, 37, 37); color:aliceblue">
+                {% if admin.lang == 'fa' %}
+                <option selected value="fa">فارسی</option>
+                <option value="en">English</option>
+                {% else %}
+                <option selected value="en">English</option>
+                <option value="fa">فارسی</option>
+                {% endif %}
+                
+              </select>
+            </form>
             <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
-            <!-- <input  style="text-align-last: right;" type="search" placeholder="جست و جو " aria-label="Search" name="search"  > -->
+            
             
         </ul>
 
@@ -31,9 +42,9 @@
         <div class="w3-container w3-dark-grey">
             <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
             <h2 style="text-align: right;" >{{ admin.name  }} {{  admin.last_name  }}   </h2> 
-            <h2 style="text-align: right;" >دانشگاه {{ admin.uni  }}   </h2> 
+            <h2 style="text-align: right;" >دانشگاه {{ uni2  }}   </h2> 
 
-            <h2 style="text-align: right;">ادمین دانشکده {{ admin.College }}</h2>
+            <h2 style="text-align: right;">ادمین دانشکده {{ college2 }}</h2>
         </div>
         
         

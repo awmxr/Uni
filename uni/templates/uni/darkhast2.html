@@ -31,20 +31,19 @@ tr:nth-child(even) {
     
     <ul>
         
-        <li><a href="{% url 'uni:page2' admin.id %}">خانه</a></li>
-            <li><a href="{% url 'uni:students' admin.id %}">دانشجویان</a></li>
-            <li><a href="{% url 'uni:create' admin.id %}">دانشجوی جدید</a></li>
-            <li><a href="{% url 'uni:create2' admin.id %}">استاد جدید</a></li>
-            <li><a href="{% url 'uni:barname1' admin.id  %}">برنامه استادان</a></li>
-            <li><a href="{% url 'uni:barname3' admin.id  %}">برنامه های رد شده</a></li>
-            <li><a href="{% url 'uni:vahed' admin.id  %}">واحد های ارعه شده</a></li>
-            
-
-            <li><a href="{% url 'uni:createklass' admin.id %}">ثبت کلاس</a></li>
-
-
-            <li><a href="{% url 'uni:changepass2' admin.id %}">تغیر رمز عبور</a></li>
-            <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
+      <li><a href="{% url 'uni:page2' admin.id %}">خانه</a></li>
+      <li><a href="{% url 'uni:students' admin.id %}">دانشجویان</a></li>
+      <li><a href="{% url 'uni:create' admin.id %}">دانشجوی جدید</a></li>
+      <li><a href="{% url 'uni:create2' admin.id %}">استاد جدید</a></li>
+      <li><a href="{% url 'uni:barname1' admin.id  %}">برنامه استادان</a></li>
+      <li><a href="{% url 'uni:barname3' admin.id  %}">برنامه های رد شده</a></li>
+      <li><a href="{% url 'uni:vahed' admin.id  %}">واحد های ارعه شده</a></li>
+      <li><a href="{% url 'uni:ejaze' admin.id  %}">اجازه انتخاب واحد</a></li>
+      <li><a href="{% url 'uni:darkhast2' admin.id  %}">درخواست های حذف</a></li>
+      <li><a href="{% url 'uni:createklass' admin.id %}">ثبت کلاس</a></li>
+      <li><a href="{% url 'uni:changepass2' admin.id %}">تغیر رمز عبور</a></li>
+      
+      <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
     </ul>
 
 
@@ -81,7 +80,7 @@ tr:nth-child(even) {
         <!-- <th style="text-align: center;"> <a href="">{{ i.0.text }}</a></th> -->
         <th style="text-align: center;"><a href="{% url 'uni:darkhast3' admin.id  i.0.id %}">مشاهده متن درخواست</a></th>
         <th style="text-align: center;">{{ i.2.ostad }}</th>
-        <th style="text-align: center;">{{ i.2.dars }}</th>
+        <th style="text-align: center;">{{ i.3 }}</th>
         <th style="text-align: center;">{{i.1.username}}</th>
         <th style="text-align: center;">{{ i.1.name }} {{ i.1.last_name }}</th>    
         </tr>

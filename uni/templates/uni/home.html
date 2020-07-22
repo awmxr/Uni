@@ -10,10 +10,21 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <ul>
   <li><a href="{% url 'uni:home' %}">خانه</a></li>
-  <li><a href="{% url 'uni:login' %}">ورود</a></li>
+  <li><a href="{% url 'uni:login' lang %}">ورود</a></li>
   
-  <li><a href="{% url 'uni:aboutus' %}">درباره ما</a></li>
+  <li><a href="{% url 'uni:aboutus' lang %}">درباره ما</a></li>
+  <form method ="POST" >
+    {% csrf_token %}
+  <select   onchange="this.form.submit()"   name='lang'  style="height: 40px;width: 100px; background-color: rgb(39, 37, 37); border-color: rgb(39, 37, 37); color:aliceblue">
+    <option value="en">English</option>
+    <option value="fa" selected>فارسی</option>
+    
+    
+  </select>
+</form>
+
 </ul>
+{{name}}
 {% if messages %}
         <ul style="color: aliceblue ;background-color: rgb(8, 148, 78);" class="messages">
             {% for message in messages %}

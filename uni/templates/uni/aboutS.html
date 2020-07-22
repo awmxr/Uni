@@ -5,6 +5,29 @@
     
 
 <head>
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<style>
+  table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: right;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+</style>
+<!DOCTYPE html>
+<html>
+    
+
+<head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" type="text/css" href="{% static 'uni/style2.css' %}">
 </head>
@@ -13,10 +36,19 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <ul>
       <li><a href="{% url 'uni:page' student.id %}">خانه</a></li>
-      <li><a href="#contact">مخاطبان</a></li>
-      <li><a href="#about">درباره</a></li>
-      <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
-        <input  style="text-align-last: right;" type="search" placeholder="جست و جو " aria-label="Search" name="search" >
+            
+            <li><a href="{% url 'uni:aboutS' student.id %}">اطلاعات دانشجو</a></li>
+            <li><a href="{% url 'uni:students2' student.id %}">دانشجویان</a></li>
+            <li><a href=" {% url 'uni:entekhab' student.id %} ">دروس ارائه شده</a></li>
+            <li><a href=" {% url 'uni:entekhab2' student.id %} ">انتخاب واحد</a></li>
+            <li><a href=" {% url 'uni:mydars' student.id %} ">درس های من</a></li>
+            <li><a href=" {% url 'uni:karname' student.id %} ">مشاهده کارنامه</a></li>
+            <li><a href=" {% url 'uni:darkhast4' student.id %} ">درخواست های من</a></li>
+            
+            <li><a href="{% url 'uni:changepass' student.id %}">تغیر رمز عبور</a></li>
+            
+            <div>
+            <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
     </ul>
   </div>
 
@@ -26,7 +58,7 @@
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
       <h2 style="text-align: right;" >{{ student.name  }} {{  student.last_name  }}</h2> 
   </div>
-  <form id = "dem"class="modal-content animate" method="post">{% csrf_token %}
+  <form id = "dem"class="modal-content animate" method="post" style="width: 1300px;">{% csrf_token %}
     <div class="imgcontainer">
       <a href="{% url 'uni:page' student.id %}"><span class="close" title="Close Modal">&times;</span></a>
       <br>
@@ -36,15 +68,30 @@
       <!-- <label for="uname"><b>Username</b></label> -->
       <!-- <input id = "usernamee" type="text" placeholder="Enter Username" name="uname" value="awmxr"> -->
       
-      <h3 style="text-align: right; " >نام : {{ student.name  }} <br> 
-        نام خانوادگی : {{ student.last_name  }} <br> نام پدر  : {{ student.father_name }} <br>
-        شماره دانشجویی : {{ student.username }} <br> کد ملی : {{ student.melli_code }} <br>
-        تلفن همراه : {{ student.phone }} <br> دانشگاه : {{ student.uni }} <br> دانشکده : {{ student.College }} <br>
-        رشته تحصیلی : {{ student.field }} <br> ورودی : {{ student.enter_year }} <b>
-        
-        
-        
-   </h3> 
+      <table>
+        <tr>
+          <th style="text-align: center;"> ورودی </th>
+          <th style="text-align: center;"> رشته تحصیلی </th>
+          <th style="text-align: center;">تلفن همراه</th>
+          <th style="text-align: center;"> دانشکده </th>
+          <th style="text-align: center;"> دانشگاه </th>
+          <th style="text-align: center;"> کد ملی </th>
+          <th style="text-align: center;"> شماره دانشجویی </th>
+          <th style="text-align: center;"> نام پدر </th>
+          <th style="text-align: center;">نام و نام خانوادگی</th>
+        </tr>
+        <tr>
+          <th style="text-align: center;"> {{ student.enter_year }} </th>
+          <th style="text-align: center;"> {{ field }} </th>
+          <th style="text-align: center;">{{ student.phone }}</th>
+          <th style="text-align: center;"> {{ college }} </th>
+          <th style="text-align: center;"> {{ uni }} </th>
+          <th style="text-align: center;">  {{ student.melli_code }}</th>
+          <th style="text-align: center;"> {{ student.username }} </th>
+          <th style="text-align: center;"> {{ student.father_name }}</th>
+          <th style="text-align: center;"> {{ student.name  }} {{ student.last_name  }}</th>
+        </tr>
+      </table>
       
 
       <!-- <label for="psw"><b>Password</b></label> -->

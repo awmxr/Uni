@@ -1,0 +1,14 @@
+user(leader) : amir
+pass : 0
+#####################################
+user(admin boss) : doctor_amir
+pass : 0
+#####################################
+user(admin college) : admin
+pass : 0
+#####################################
+user(student) : 98122910036
+pass: 0
+#####################################
+user(ostad) : mostafa_bastam
+pass : 0

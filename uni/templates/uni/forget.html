@@ -1,0 +1,76 @@
+{% load static %}
+<link rel="icon" href="{% static 'uni/images/13.png' %}">
+<!DOCTYPE html>
+<html>
+    
+
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="{% static 'uni/style2.css' %}">
+</head>
+<body style="text-align: right;">
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <ul>
+      <li><a href="{% url 'uni:home' %}">خانه</a></li>
+      <li><a href="{% url 'uni:login' lang %}">ورود</a></li>
+      <li><a href="#contact">مخاطبان</a></li>
+      <li><a href="#about">درباره</a></li>
+    </ul>
+    
+  <form id = "dem"class="modal-content animate" method="post">{% csrf_token %}
+    <div class="imgcontainer">
+      <a href="{% url 'uni:home' %}"><span onclick="document.getElementById('dem').style.display='none'" class="close" title="Close Modal">&times;</span></a>
+      
+    </div>
+    
+    <div style="text-align: right;" class="container">
+      <!-- <label for="uname"><b>Username</b></label> -->
+      <!-- <input id = "usernamee" type="text" placeholder="Enter Username" name="uname" value="awmxr"> -->
+      <h3>کد کاربری خود را وارد کنید</h3>
+      <input type="text" name = 'forget'>
+      <!-- <div>
+        <label >ادمین</label>
+        <input id="radio1" name="tip" type="radio" value="radio1">
+        <label  >دانشجو</label>
+        <input id="radio2" name="tip" type="radio" value="radio2">
+      </div>
+     -->
+      {% if error_message %}<p style="color: red;">{{ error_message }}</p>{% endif %}
+      
+      
+
+      <!-- <label for="psw"><b>Password</b></label> -->
+      <!-- <input type="password" placeholder="Enter Password" name="psw" required> -->
+        
+      <button style="background-color: #333333; font-size: large;" type="submit">تایید</button>
+    </div>
+
+    <div class="container" style="background-color:#f1f1f1">
+      <div style="text-align: left;">
+        <a href="{% url 'uni:home' %}"><button type="button" style="text-align: right;" class="cancelbtn">لغو</button></a>
+      </div>
+    </div>
+
+  </form>
+
+
+<script>
+// Get the modal
+username = document.getElementsById("usernamee").value
+var modal = document.getElementById('id01');
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+</script>
+
+</body>
+<form id="logoutform" method="POST" action="{% url 'uni:logout' %}">
+  {% csrf_token %}
+  <input type="hidden">
+  </form>
+</html>

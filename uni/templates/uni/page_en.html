@@ -1,0 +1,62 @@
+{% load static %}
+<link rel="icon" href="{% static 'uni/images/13.png' %}">
+<html>
+    <body>
+        <ul>
+            <li><a href="{% url 'uni:page' student.id %}">Home</a></li>
+            
+            <li><a href="{% url 'uni:aboutS' student.id %}">Student Informations</a></li>
+            <li><a href="{% url 'uni:students2' student.id %}">Students</a></li>
+            <li><a href=" {% url 'uni:entekhab' student.id %} ">Available Courses</a></li>
+            <li><a href=" {% url 'uni:entekhab2' student.id %} ">Unit Selection</a></li>
+            <li><a href=" {% url 'uni:mydars' student.id %} ">My Courses</a></li>
+            <li><a href=" {% url 'uni:karname' student.id %} ">Show Report Card</a></li>
+            <li><a href=" {% url 'uni:darkhast4' student.id %} ">My Requests</a></li>
+            
+            <li><a href="{% url 'uni:changepass' student.id %}">Change Password</a></li>
+            <form method ="POST" >
+                {% csrf_token %}
+              <select  onchange="this.form.submit()"   name='lang'  style="height: 40px;width: 100px; background-color: rgb(39, 37, 37); border-color: rgb(39, 37, 37); color:aliceblue">
+                {% if student.lang == 'fa' %}
+                <option selected value="fa">فارسی</option>
+                <option value="en">English</option>
+                {% else %}
+                <option selected value="en">English</option>
+                <option value="fa">فارسی</option>
+                {% endif %}
+                
+              </select>
+            </form>
+            <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">Exit</button></a>
+          </ul>
+    
+        <link rel="stylesheet" type="text/css" href="{% static 'uni/style2.css' %}">
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <div class="w3-container w3-dark-grey">
+            
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+            <h2 style="text-align: left; " >{{ student.name  }} {{  student.last_name  }}</h2> 
+            
+
+            
+        </div>
+    </body>
+
+
+    <form id="logoutform" method="POST" action="{% url 'uni:logout' %}">
+        {% csrf_token %}
+        <input type="hidden">
+        </form>
+
+
+
+
+
+
+
+
+
+
+
+</html>
+

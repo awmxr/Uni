@@ -1,0 +1,98 @@
+{% load static %}
+<link rel="icon" href="{% static 'uni/images/13.png' %}">
+<html>
+    <head>
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css">
+        
+    </head>
+    <body>
+        
+    
+        <ul>
+          <li><a href="{% url 'uni:leader' boss.id %}">Home</a></li>
+          <li><a href="{% url 'uni:createadmin' boss.id %}">Create College Admin</a></li>
+          <li><a href="{% url 'uni:studentsbs' boss.id %}">Students</a></li>
+          <li><a href="{% url 'uni:adminsbs' boss.id %}">Admins</a></li>
+          <li><a href="{% url 'uni:changepassbs' boss.id %}">Change Password</a></li>
+          
+          <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">Exit</button></a>
+            
+            
+        </ul>
+
+        <link rel="stylesheet" type="text/css" href="{% static 'uni/style2.css' %}">
+        <div class="w3-container w3-dark-grey">
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+            <h2 style="text-align: left;" >{{ boss.name  }} {{  boss.last_name  }}</h2> 
+        </div>
+        <form id = "dem"class="modal-content animate" method="post">{% csrf_token %}
+            <div class="imgcontainer">
+              <a href="{% url 'uni:boss' boss.id %}"><span  class="close" title="Close Modal">&times;</span></a>
+              <!-- <img src= "{% static 'D:/Amir/Project/mysite/uni/static/uni/images/12.jpg' %}" alt="Avatar" class="avatar"> -->
+            </div>
+            
+            <div style="text-align: left;" class="container">
+              <!-- <label for="uname"><b>Username</b></label> -->
+              <!-- <input id = "usernamee" type="text" placeholder="Enter Username" name="uname" value="awmxr"> -->
+              
+              <!-- <div>
+                <label >ادمین</label>
+                <input id="radio1" name="tip" type="radio" value="radio1">
+                <label  >دانشجو</label>
+                <input id="radio2" name="tip" type="radio" value="radio2">
+              </div>
+            -->
+            <br><br>
+             <form method="POST">
+                <select style="width: 100%; height: 50px;" id="search" class="chosen" name = "search" onchange='submit();'>
+                    <option >Search</option>
+                    {% for i in Students %}
+                    <option  style="color: aliceblue;">{{ i }}</option>
+                    {% endfor %}
+                    {% for i in Students %}
+                    <option  style="color: aliceblue;">{{ i.username }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+                {% for i in Students %}
+                    <a href="{% url 'uni:studentbs' boss.id i.id %}"> <h5>{{ i }}</h5></a> 
+                    {% endfor %}
+                    <br>
+                {% if error_message %}<p style="color: red;">{{ error_message }}</p>{% endif %}
+              
+              
+        
+              <!-- <label for="psw"><b>Password</b></label> -->
+              <!-- <input type="password" placeholder="Enter Password" name="psw" required> -->
+              <a href="{% url 'uni:boss' boss.id %}"><button type="button" style="text-align: left;"  class="cancelbtn">Cancel</button></a>
+                
+              
+            </div>
+        
+            
+        
+          </form>
+        
+        <!-- {% if messages %}
+        <ul style="color: aliceblue ;background-color: rgb(8, 148, 78);" class="messages">
+            {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %} -->
+    </body>
+    <script type="text/javascript">
+    $(".chosen").chosen();
+    </script>
+    
+    <form id="logoutform" method="POST" action="{% url 'uni:logout' %}">
+      {% csrf_token %}
+      <input type="hidden">
+      </form>
+</html>
+

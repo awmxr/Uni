@@ -1,0 +1,124 @@
+{% load static %}
+<link rel="icon" href="{% static 'uni/images/13.png' %}">
+<!DOCTYPE html>
+<html>
+    
+
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="{% static 'uni/style2.css' %}">
+</head>
+<body style="text-align: left;">
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <ul>
+      <li><a href="{% url 'uni:page2' admin.id %}">Home</a></li>
+            <li><a href="{% url 'uni:students' admin.id %}">Students</a></li>
+            <li><a href="{% url 'uni:create' admin.id %}">New Student</a></li>
+            <li><a href="{% url 'uni:create2' admin.id %}">New Professor</a></li>
+            <li><a href="{% url 'uni:barname1' admin.id  %}">Professors' Schedule</a></li>
+            <li><a href="{% url 'uni:barname3' admin.id  %}">Rejected Schedules</a></li>
+            <li><a href="{% url 'uni:vahed' admin.id  %}">Available Courses</a></li>
+            <li><a href="{% url 'uni:ejaze' admin.id  %}">Unit Selection Permission</a></li>
+            <li><a href="{% url 'uni:darkhast2' admin.id  %}">Course Delete Requests</a></li>
+
+            <li><a href="{% url 'uni:createklass' admin.id %}">Add Class</a></li>
+
+
+            <li><a href="{% url 'uni:changepass2' admin.id %}">Change Password</a></li>
+            
+            <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">Exit</button></a>
+    </ul>
+    
+  <form id = "dem"class="modal-content animate" method="post">{% csrf_token %}
+    <div class="imgcontainer">
+      <a href="{% url 'uni:page2' admin.id %}"><span class="close" title="Close Modal">&times;</span></a>
+      <br>
+      <br>
+      <h2>Semester 991</h2>
+    </div>
+    
+    <div style="text-align: left;" class="container">
+      <!-- <label for="uname"><b>Username</b></label> -->
+      <!-- <input id = "usernamee" type="text" placeholder="Enter Username" name="uname" value="awmxr"> -->
+      
+      {% if 1399 in lastlist  %}
+    <p style="text-align: center;"><input  type="checkbox" value="1399" name = 'ejaze' checked>1399</p>
+    {% elif not 1399 in lastlist %}
+    <p style="text-align: center;"><input  type="checkbox" value="1399" name = 'ejaze' >1399</p>
+    {% endif %}
+    {% if 1398 in lastlist  %}
+    <p style="text-align: center;"><input  type="checkbox" value="1398" name = 'ejaze' checked>1398</p>
+    {% elif not 1398 in lastlist %}
+    <p style="text-align: center;"><input  type="checkbox" value="1398" name = 'ejaze' >1398</p>
+    {% endif %}
+    {% if 1397 in lastlist  %}
+    <p style="text-align: center;"><input  type="checkbox" value="1397" name = 'ejaze' checked>1397</p>
+    {% elif not 1397 in lastlist %}
+    <p style="text-align: center;"><input  type="checkbox" value="1397" name = 'ejaze' >1397</p>
+    {% endif %}
+    {% if 1396 in lastlist  %}
+    <p style="text-align: center;"><input  type="checkbox" value="1396" name = 'ejaze' checked>1396</p>
+    {% elif not 1396 in lastlist %}
+    <p style="text-align: center;"><input  type="checkbox" value="1396" name = 'ejaze' >1396</p>
+    {% endif %}
+    {% if 1395 in lastlist  %}
+    <p style="text-align: center;"><input  type="checkbox" value="1395" name = 'ejaze' checked>1395</p>
+    {% elif not 1395 in lastlist %}
+    <p style="text-align: center;"><input  type="checkbox" value="1395" name = 'ejaze' >1395</p>
+    {% endif %}
+    {% if 1394 in lastlist  %}
+    <p style="text-align: center;"><input  type="checkbox" value="1394" name = 'ejaze' checked>1394 & Before</p>
+    {% elif not 1394 in lastlist %}
+    <p style="text-align: center;"><input  type="checkbox" value="1394" name = 'ejaze' >1394 & Before</p>
+    {% endif %}
+      
+      <!-- <div>
+        <label >ادمین</label>
+        <input id="radio1" name="tip" type="radio" value="radio1">
+        <label  >دانشجو</label>
+        <input id="radio2" name="tip" type="radio" value="radio2">
+      </div>
+     -->
+      {% if error_message %}<p style="color: red;">{{ error_message }}</p>{% endif %}
+      
+      
+
+      <!-- <label for="psw"><b>Password</b></label> -->
+      <!-- <input type="password" placeholder="Enter Password" name="psw" required> -->
+        
+      <button style="background-color: #333333; font-size: large;" type="submit">Confirm</button>
+      <label>
+        
+      </label>
+    </div>
+
+    <div class="container" style="background-color:#f1f1f1">
+      <div style="text-align: right;">
+        <button type="button" style="text-align: left;" onclick="document.getElementById('dem').style.display='none'" class="cancelbtn">Cancel</button>
+        
+      </div>
+    </div>
+
+  </form>
+
+
+<script>
+// Get the modal
+username = document.getElementsById("usernamee").value
+var modal = document.getElementById('id01');
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+</script>
+
+</body>
+<form id="logoutform" method="POST" action="{% url 'uni:logout' %}">
+  {% csrf_token %}
+  <input type="hidden">
+  </form>
+</html>

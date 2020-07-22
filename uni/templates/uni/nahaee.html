@@ -31,18 +31,19 @@ tr:nth-child(even) {
 
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <ul>
-        <li><a href="{% url 'uni:page2' admin.id %}">خانه</a></li>
-        <!-- <li><a href="{% url 'uni:students' admin.id %}">دانشجویان</a></li> -->
-        <!-- <li><a href="{% url 'uni:create' admin.id %}">دانشجوی جدید</a></li> -->
-        <!-- <li><a href="{% url 'uni:create2' admin.id %}">استاد جدید</a></li> -->
-        <!-- <li><a href="{% url 'uni:barname1' admin.id %}">برنامه استادان</a></li> -->
-
-        <!-- <li><a href="{% url 'uni:createklass' admin.id %}">ثبت کلاس</a></li> -->
-
-
-        <!-- <li><a href="{% url 'uni:changepass2' admin.id %}">تغیر رمز عبور</a></li>   -->
-        <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
-        <!-- <input  style="text-align-last: right;" type="search" placeholder="جست و جو " aria-label="Search" name="search"  > -->
+      <li><a href="{% url 'uni:page2' admin.id %}">خانه</a></li>
+      <li><a href="{% url 'uni:students' admin.id %}">دانشجویان</a></li>
+      <li><a href="{% url 'uni:create' admin.id %}">دانشجوی جدید</a></li>
+      <li><a href="{% url 'uni:create2' admin.id %}">استاد جدید</a></li>
+      <li><a href="{% url 'uni:barname1' admin.id  %}">برنامه استادان</a></li>
+      <li><a href="{% url 'uni:barname3' admin.id  %}">برنامه های رد شده</a></li>
+      <li><a href="{% url 'uni:vahed' admin.id  %}">واحد های ارعه شده</a></li>
+      <li><a href="{% url 'uni:ejaze' admin.id  %}">اجازه انتخاب واحد</a></li>
+      <li><a href="{% url 'uni:darkhast2' admin.id  %}">درخواست های حذف</a></li>
+      <li><a href="{% url 'uni:createklass' admin.id %}">ثبت کلاس</a></li>
+      <li><a href="{% url 'uni:changepass2' admin.id %}">تغیر رمز عبور</a></li>
+      
+      <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
         
     </ul>
   </div>
@@ -53,7 +54,7 @@ tr:nth-child(even) {
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
       <h2 style="text-align: right;" >{{ admin.name  }} {{  admin.last_name  }}</h2> 
   </div>
-  <form id = "dem"class="modal-content animate" method="post">{% csrf_token %}
+  <form id = "dem"class="modal-content animate" method="post" style="width: 1300px;">{% csrf_token %}
     <div class="imgcontainer">
       <a href="{% url 'uni:page2' admin.id %}"><span class="close" title="Close Modal">&times;</span></a>
       <br>
@@ -63,20 +64,44 @@ tr:nth-child(even) {
       <!-- <label for="uname"><b>Username</b></label> -->
       <!-- <input id = "usernamee" type="text" placeholder="Enter Username" name="uname" value="awmxr"> -->
       
-      <h3 style="text-align: right; " >درس : {{ vahed.dars  }} <br> 
-        استاد مربوطه : {{ vahed.ostad  }} <br> گروه  : {{ vahed.goruh }} <br>
-        ظرفیت : {{ vahed.capacity }} <br> جنسیت : {{ vahed.sex }}<br> کد درس : {{ vahed.dars_code }} <br>
-        واحد : {{ vahed.vahed2 }} <br>
+  
+
+
+
+
+        <table>
+          <tr>
+            <th style="text-align: center;">گروه</th>
+            <th style="text-align: center;">استاد مربوطه</th>
+            <th style="text-align: center;">ظرفیت</th>
+            <th style="text-align: center;">جنسیت</th>
+            <th style="text-align: center;">واحد</th>
+            <th style="text-align: center;">کد درس</th>
+            <th style="text-align: center;">درس</th>
+          </tr>
+          <tr>
+            <th style="text-align: center;">{{elam.goruh}}</th>
+            <th style="text-align: center;">{{ os.name  }} {{os.last_name}}</th>
+            <th style="text-align: center;">{{elam.capacity}}</th>
+            <th style="text-align: center;">{{sex}}</th>
+            <th style="text-align: center;">{{elam.vahed}}</th>
+            <th style="text-align: center;">{{exter.code}}</th>
+            <th style="text-align: center;">{{dars}}</th>
+          </tr>
+        </table>
+
+
+
         <br>
         <br>
-        <h3>تاریخ و ساعت امتحان</h3>
+        <h3 >تاریخ و ساعت امتحان</h3>
         <input type="datetime-local" name="exam">
         <h2>روز های انتخابی</h2>
         <table >
             
             {% for i in list1 %}
             <tr>
-              <th><h3 style="text-align: right;">{{ i }}</h3></th>
+              <th ><h3 style="text-align: center;">{{ i }}</h3></th>
             </tr>
             {% endfor %}
         </table>
@@ -86,18 +111,18 @@ tr:nth-child(even) {
         
         
         
-   </h3> 
+   
       
-
+   {% if error_message %}<p style="color: red;">{{ error_message }}</p>{% endif %}
       <!-- <label for="psw"><b>Password</b></label> -->
       <!-- <input type="password" placeholder="Enter Password" name="psw" required> -->
         
      
     </div>
-
+    
     <div class="container" style="background-color:#f1f1f1">
       <div style="text-align: left;">
-       <a href="{% url 'uni:page2' admin.id  %}"> <button type="button" style="text-align: right;" class="cancelbtn">لغو</button></a>
+       <a href="{% url 'uni:page2' admin.id  %}"> <button type="submit" name = 'erae' value="no" style="text-align: right;" class="cancelbtn">لغو</button></a>
       </div>
     </div>
 

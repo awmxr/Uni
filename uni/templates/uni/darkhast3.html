@@ -31,20 +31,19 @@ tr:nth-child(even) {
     
     <ul>
         
-        <li><a href="{% url 'uni:page2' admin.id %}">خانه</a></li>
-            <li><a href="{% url 'uni:students' admin.id %}">دانشجویان</a></li>
-            <li><a href="{% url 'uni:create' admin.id %}">دانشجوی جدید</a></li>
-            <li><a href="{% url 'uni:create2' admin.id %}">استاد جدید</a></li>
-            <li><a href="{% url 'uni:barname1' admin.id  %}">برنامه استادان</a></li>
-            <li><a href="{% url 'uni:barname3' admin.id  %}">برنامه های رد شده</a></li>
-            <li><a href="{% url 'uni:vahed' admin.id  %}">واحد های ارعه شده</a></li>
-            
-
-            <li><a href="{% url 'uni:createklass' admin.id %}">ثبت کلاس</a></li>
-
-
-            <li><a href="{% url 'uni:changepass2' admin.id %}">تغیر رمز عبور</a></li>
-            <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
+      <li><a href="{% url 'uni:page2' admin.id %}">خانه</a></li>
+      <li><a href="{% url 'uni:students' admin.id %}">دانشجویان</a></li>
+      <li><a href="{% url 'uni:create' admin.id %}">دانشجوی جدید</a></li>
+      <li><a href="{% url 'uni:create2' admin.id %}">استاد جدید</a></li>
+      <li><a href="{% url 'uni:barname1' admin.id  %}">برنامه استادان</a></li>
+      <li><a href="{% url 'uni:barname3' admin.id  %}">برنامه های رد شده</a></li>
+      <li><a href="{% url 'uni:vahed' admin.id  %}">واحد های ارعه شده</a></li>
+      <li><a href="{% url 'uni:ejaze' admin.id  %}">اجازه انتخاب واحد</a></li>
+      <li><a href="{% url 'uni:darkhast2' admin.id  %}">درخواست های حذف</a></li>
+      <li><a href="{% url 'uni:createklass' admin.id %}">ثبت کلاس</a></li>
+      <li><a href="{% url 'uni:changepass2' admin.id %}">تغیر رمز عبور</a></li>
+      
+      <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
     </ul>
 
 

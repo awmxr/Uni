@@ -1,0 +1,72 @@
+{% load static %}
+<link rel="icon" href="{% static 'uni/images/13.png' %}">
+<html>
+    <head>
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    </head>
+    <body>
+        
+    
+        <ul>
+            <li><a href="{% url 'uni:page2' admin.id %}">Home</a></li>
+            <li><a href="{% url 'uni:students' admin.id %}">Students</a></li>
+            <li><a href="{% url 'uni:create' admin.id %}">New Student</a></li>
+            <li><a href="{% url 'uni:create2' admin.id %}">New Professor</a></li>
+            <li><a href="{% url 'uni:barname1' admin.id  %}">Professors' Schedule</a></li>
+            <li><a href="{% url 'uni:barname3' admin.id  %}">Rejected Schedules</a></li>
+            <li><a href="{% url 'uni:vahed' admin.id  %}">Available Courses</a></li>
+            <li><a href="{% url 'uni:ejaze' admin.id  %}">Unit Selection Permission</a></li>
+            <li><a href="{% url 'uni:darkhast2' admin.id  %}">Course Delete Requests</a></li>
+
+            <li><a href="{% url 'uni:createklass' admin.id %}">Add Class</a></li>
+            <li><a href="{% url 'uni:forget2' admin.id %}">Change Password Requests</a></li>
+
+
+            <li><a href="{% url 'uni:changepass2' admin.id %}">Change Password</a></li>
+            <form method ="POST" >
+                {% csrf_token %}
+              <select  onchange="this.form.submit()"   name='lang'  style="height: 40px;width: 100px; background-color: rgb(39, 37, 37); border-color: rgb(39, 37, 37); color:aliceblue">
+                {% if admin.lang == 'fa' %}
+                <option selected value="fa">فارسی</option>
+                <option value="en">English</option>
+                {% else %}
+                <option selected value="en">English</option>
+                <option value="fa">فارسی</option>
+                {% endif %}
+                
+              </select>
+            </form>
+            <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">Exit</button></a>
+            
+            
+        </ul>
+
+        <link rel="stylesheet" type="text/css" href="{% static 'uni/style2.css' %}">
+        <div class="w3-container w3-dark-grey">
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+            <h2 style="text-align: left;" >{{ admin.name  }} {{  admin.last_name  }}   </h2> 
+            <h2 style="text-align: left;" > {{uni2 }}   </h2> 
+
+            <h2 style="text-align: left;">Admin of {{ college2 }} College </h2>
+        </div>
+        
+        
+        <!-- {% if messages %}
+        <ul style="color: aliceblue ;background-color: rgb(8, 148, 78);" class="messages">
+            {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %} -->
+    </body>
+    <script type="text/javascript">
+    $(".chosen").chosen();
+    </script>
+
+<form id="logoutform" method="POST" action="{% url 'uni:logout' %}">
+    {% csrf_token %}
+    <input type="hidden">
+    </form>
+
+</html>
+

@@ -1,0 +1,75 @@
+{% load static %}
+<link rel="icon" href="{% static 'uni/images/13.png' %}">
+<!DOCTYPE html>
+<html>
+    
+
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="{% static 'uni/style2.css' %}">
+</head>
+<body style="text-align: right;">
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <ul>
+      <li><a href="{% url 'uni:page2' admin.id %}">Home</a></li>
+      <li><a href="#contact">Contacs</a></li>
+      <li><a href="#about">About</a></li>
+      <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">Exit</button></a>
+        <input  style="text-align-last: left;" type="search" placeholder="search " aria-label="Search" name="search" >
+    </ul>
+  </div>
+
+  <link rel="stylesheet" type="text/css" href="{% static 'uni/style2.css' %}">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <div class="w3-container w3-dark-grey">
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <h2 style="text-align: left;" >{{ student.name  }} {{  student.last_name  }}</h2> 
+  </div>
+  <form id = "dem"class="modal-content animate" method="post">{% csrf_token %}
+    <div class="imgcontainer">
+      <a href="{% url 'uni:student1' admin.id  student.id %}"><span class="close" title="Close Modal">&times;</span></a>
+      <br>
+    </div>
+    
+    <div style="text-align: left;" class="container">
+      <!-- <label for="uname"><b>Username</b></label> -->
+      <!-- <input id = "usernamee" type="text" placeholder="Enter Username" name="uname" value="awmxr"> -->
+      
+      {{ form.as_p }}
+      
+
+      <!-- <label for="psw"><b>Password</b></label> -->
+      <!-- <input type="password" placeholder="Enter Password" name="psw" required> -->
+      {% if error_message %}<p style="color: red;">{{ error_message }}</p>{% endif %}
+     <a href="{% url 'uni:student1' admin.id student.id %}"> <button style="background-color: #13b30e; font-size: large;" type="submit">Confirm</button></a>
+    </div>
+
+    <div class="container" style="background-color:#f1f1f1">
+      <div style="text-align: right;">
+       <a href="{% url 'uni:student1' admin.id  student.id %}"> <button type="button" style="text-align: left;" onclick="document.getElementById('dem').style.display='none'" class="cancelbtn">Cancel</button></a>
+      </div>
+    </div>
+
+  </form>
+
+
+<script>
+// Get the modal
+username = document.getElementsById("usernamee").value
+var modal = document.getElementById('id01');
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+</script>
+
+</body>
+<form id="logoutform" method="POST" action="{% url 'uni:logout' %}">
+  {% csrf_token %}
+  <input type="hidden">
+  </form>
+</html>

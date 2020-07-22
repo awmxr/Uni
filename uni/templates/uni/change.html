@@ -13,10 +13,18 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <ul>
       <li><a href="{% url 'uni:page' student.id %}">خانه</a></li>
-      <li><a href="#contact">مخاطبان</a></li>
-      <li><a href="#about">درباره</a></li>
+            
+            <li><a href="{% url 'uni:aboutS' student.id %}">اطلاعات دانشجو</a></li>
+            <li><a href="{% url 'uni:students2' student.id %}">دانشجویان</a></li>
+            <li><a href=" {% url 'uni:entekhab' student.id %} ">دروس ارائه شده</a></li>
+            <li><a href=" {% url 'uni:entekhab2' student.id %} ">انتخاب واحد</a></li>
+            <li><a href=" {% url 'uni:mydars' student.id %} ">درس های من</a></li>
+            <li><a href=" {% url 'uni:karname' student.id %} ">مشاهده کارنامه</a></li>
+            <li><a href=" {% url 'uni:darkhast4' student.id %} ">درخواست های من</a></li>
+            
+            <li><a href="{% url 'uni:changepass' student.id %}">تغیر رمز عبور</a></li>
+            
       <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
-        <input  style="text-align-last: right;" type="search" placeholder="جست و جو " aria-label="Search" name="search" >
     </ul>
   </div>
 

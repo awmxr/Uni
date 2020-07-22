@@ -17,13 +17,14 @@
             <li><a href="{% url 'uni:aboutS' student.id %}">اطلاعات دانشجو</a></li>
             <li><a href="{% url 'uni:students2' student.id %}">دانشجویان</a></li>
             <li><a href=" {% url 'uni:entekhab' student.id %} ">دروس ارائه شده</a></li>
-            
+            <li><a href=" {% url 'uni:entekhab2' student.id %} ">انتخاب واحد</a></li>
             <li><a href=" {% url 'uni:mydars' student.id %} ">درس های من</a></li>
             <li><a href=" {% url 'uni:karname' student.id %} ">مشاهده کارنامه</a></li>
             <li><a href=" {% url 'uni:darkhast4' student.id %} ">درخواست های من</a></li>
             
             <li><a href="{% url 'uni:changepass' student.id %}">تغیر رمز عبور</a></li>
-            <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
+           
+      <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
     </ul>
     
   <form id = "dem"class="modal-content animate" method="post">{% csrf_token %}

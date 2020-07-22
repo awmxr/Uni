@@ -16,10 +16,7 @@ def starfunc(a):
         a += ' '
     
     return a
-
-
-
-b = ' 12  13  14    '
-b = starfunc(b)
-b += 'amir'
+a = '12 23'
+b = starfunc(a)
+b += 'aa'
 print(b)

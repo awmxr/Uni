@@ -36,7 +36,8 @@ class MyAccountManager(BaseUserManager):
 
 class Account(AbstractBaseUser):
     username = models.CharField(max_length=200,unique=True)
-    
+    ip_address = models.CharField(max_length=200)
+    lang = models.CharField(max_length=20)
     is_admin2 = models.BooleanField(default=False)
     is_leader = models.BooleanField(default=False)
     is_boss = models.BooleanField(default=False)
@@ -87,6 +88,7 @@ class Student(models.Model):
     phone = models.CharField(max_length=11)
     field = models.CharField(max_length=200)
     student_live = models.CharField(max_length=200)
+    lang = models.CharField(max_length=20)
     parents_phone = models.CharField(max_length=200)
     religion = models.CharField(max_length=200 )
     public_date = models.DateTimeField(null = True)
@@ -114,12 +116,13 @@ class Admin2(models.Model):
     phone = models.CharField(max_length=200)
     password = models.CharField(max_length=200)
     public_date = models.DateTimeField(null = True)
+    lang = models.CharField(max_length=20)
     login_date = models.DateTimeField(null = True)
     login_date2 = models.DateTimeField(null = True) 
     login_times = models.CharField(max_length = 10000) 
     online = models.BooleanField(default = False)
     College = models.CharField(max_length=2000, choices= choices.college_choices)
-    ejaze = models.CharField(max_length = 10000) 
+    ejaze = models.CharField(max_length = 10000,blank = True) 
     
     uni = models.CharField(max_length=2000, choices= choices.uni_choices)
     
@@ -132,6 +135,7 @@ class  Leader(models.Model):
     last_name = models.CharField(max_length=200)
     password = models.CharField(max_length=200)
     public_date = models.DateTimeField(null = True)
+    lang = models.CharField(max_length=20)
     login_date = models.DateTimeField(null = True)
     login_date2 = models.DateTimeField(null = True) 
     login_times = models.CharField(max_length = 10000) 
@@ -143,6 +147,7 @@ class Boss(models.Model):
     last_name = models.CharField(max_length=200)
     phone = models.CharField(max_length=200)
     uni = models.CharField(max_length=200)
+    lang = models.CharField(max_length=20)
     password = models.CharField(max_length=200)
     public_date = models.DateTimeField(null = True)
     login_date = models.DateTimeField(null = True)
@@ -162,6 +167,7 @@ class Ostad(models.Model) :
     religion = models.CharField(max_length=200 )
     public_date = models.DateTimeField(null = True)
     login_date = models.DateTimeField(null = True) 
+    lang = models.CharField(max_length=20)
     login_date2 = models.DateTimeField(null = True) 
     birthday = models.DateField(blank = True , null = True) 
     login_times = models.CharField(max_length = 10000) 
@@ -185,6 +191,7 @@ class Elam(models.Model):
     goruh = models.CharField(max_length=1000)
     # dascode = models.CharField(max_length=1000)
     uni = models.CharField(max_length=2000)
+    
     ostad_id = models.CharField(max_length=200)
     vaziat = models.CharField(max_length=2000,default = 'درحال بررسی')
     sex = models.CharField(max_length=200)
@@ -222,7 +229,7 @@ class Vahed(models.Model):
     capacity = models.CharField(max_length=200)
     capacity2 = models.CharField(max_length=200)
     por = models.CharField(max_length=200,blank = True)
-    klas_id = models.CharField(max_length=200)
+    # klas_id = models.CharField(max_length=200)
     ostad_id = models.CharField(max_length=200)
     sex = models.CharField(max_length=200)
     students = models.CharField(max_length=1000000, blank = True)
@@ -265,4 +272,27 @@ class Eteraz(models.Model):
     college = models.CharField(max_length=200) 
     reject = models.BooleanField(default=False)
     accept = models.BooleanField(default=False)
+
+
+
+class Exter(models.Model):
+    elam_id = models.CharField(max_length=200)
+    ostad_id = models.CharField(max_length=200)
+    time_klass = models.CharField(max_length=500)
+    code = models.CharField(max_length=5000)
+    time = models.CharField(max_length=200)
+    
+
+class  Forget(models.Model):
+    username = models.CharField(max_length=200)
+    uni = models.CharField(max_length=200)
+    college = models.CharField(max_length=200,blank = True)
+    s = models.BooleanField(default=False)
+    # a = models.BooleanField(default=False)
+    os = models.BooleanField(default=False)
+    # bs = models.BooleanField(default=False)
+    check = models.BooleanField(default=False)
+    public_date = models.DateTimeField(null = True)
+
+    
     

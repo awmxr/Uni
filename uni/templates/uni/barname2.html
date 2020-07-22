@@ -30,10 +30,19 @@ tr:nth-child(even) {
 
     
     <ul>
-      <li><a href="{% url 'uni:page2' admin.id%}">خانه</a></li>  
-      <li><a href="{% url 'uni:students' admin.id %}">دانشجویان</a></li>
-      <li><a href="{% url 'uni:changepass2' admin.id %}">تغیر رمز عبور</a></li>
-      <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
+      <li><a href="{% url 'uni:page2' admin.id %}">خانه</a></li>
+            <li><a href="{% url 'uni:students' admin.id %}">دانشجویان</a></li>
+            <li><a href="{% url 'uni:create' admin.id %}">دانشجوی جدید</a></li>
+            <li><a href="{% url 'uni:create2' admin.id %}">استاد جدید</a></li>
+            <li><a href="{% url 'uni:barname1' admin.id  %}">برنامه استادان</a></li>
+            <li><a href="{% url 'uni:barname3' admin.id  %}">برنامه های رد شده</a></li>
+            <li><a href="{% url 'uni:vahed' admin.id  %}">واحد های ارعه شده</a></li>
+            <li><a href="{% url 'uni:ejaze' admin.id  %}">اجازه انتخاب واحد</a></li>
+            <li><a href="{% url 'uni:darkhast2' admin.id  %}">درخواست های حذف</a></li>
+            <li><a href="{% url 'uni:createklass' admin.id %}">ثبت کلاس</a></li>
+            <li><a href="{% url 'uni:changepass2' admin.id %}">تغیر رمز عبور</a></li>
+            
+            <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
     </ul>
 
 
@@ -56,23 +65,23 @@ tr:nth-child(even) {
       <!-- <input id = "usernamee" type="text" placeholder="Enter Username" name="uname" value="awmxr"> -->
       <table>
         <tr>
-          <th>شماره تلفن همراه</th>
-          <th>کد گروه</th>
-          <th>جنسیت</th>
-          <th>ظرفیت</th>
-          <th>درس</th>
-          <th>واحد</th>
-          <th>استاد</th>
+          <th style="text-align: center;">شماره تلفن همراه</th>
+          <th style="text-align: center;">کد گروه</th>
+          <th style="text-align: center;">جنسیت</th>
+          <th style="text-align: center;">ظرفیت</th>
+          <th style="text-align: center;">درس</th>
+          <th style="text-align: center;">واحد</th>
+          <th style="text-align: center;">استاد</th>
           
         </tr>
         <tr>
-          <th>{{ i.phone }}</th>
-          <th>{{ i.goruh }}</th>
-          <th>{{ i.sex }}</th>
-          <th>{{ i.capacity }}</th>
-          <th>{{ i.dars }}</th>
-          <th>{{ i.vahed }}</th>
-          <th>{{ i.ostad }}</th>
+          <th style="text-align: center;">{{ i.phone }}</th>
+          <th style="text-align: center;">{{ i.goruh }}</th>
+          <th style="text-align: center;">{{ sex }}</th>
+          <th style="text-align: center;">{{ i.capacity }}</th>
+          <th style="text-align: center;">{{ dars }}</th>
+          <th style="text-align: center;">{{ i.vahed }}</th>
+          <th style="text-align: center;">{{ i.ostad }}</th>
           
         </tr>
       </table>
@@ -80,7 +89,7 @@ tr:nth-child(even) {
       <table >
       {% for i in lis1 %}
       <tr>
-        <th><h3 style="text-align: right;">{{ i }}</h3></th>
+        <th><h3 style="text-align: center;">{{ i }}</h3></th>
       </tr>
       {% endfor %}
     </table>

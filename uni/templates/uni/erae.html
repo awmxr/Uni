@@ -30,9 +30,18 @@ tr:nth-child(even) {
 
     
     <ul>
-      <li><a href="{% url 'uni:page2' admin.id%}">خانه</a></li>  
+      <li><a href="{% url 'uni:page2' admin.id %}">خانه</a></li>
       <li><a href="{% url 'uni:students' admin.id %}">دانشجویان</a></li>
+      <li><a href="{% url 'uni:create' admin.id %}">دانشجوی جدید</a></li>
+      <li><a href="{% url 'uni:create2' admin.id %}">استاد جدید</a></li>
+      <li><a href="{% url 'uni:barname1' admin.id  %}">برنامه استادان</a></li>
+      <li><a href="{% url 'uni:barname3' admin.id  %}">برنامه های رد شده</a></li>
+      <li><a href="{% url 'uni:vahed' admin.id  %}">واحد های ارعه شده</a></li>
+      <li><a href="{% url 'uni:ejaze' admin.id  %}">اجازه انتخاب واحد</a></li>
+      <li><a href="{% url 'uni:darkhast2' admin.id  %}">درخواست های حذف</a></li>
+      <li><a href="{% url 'uni:createklass' admin.id %}">ثبت کلاس</a></li>
       <li><a href="{% url 'uni:changepass2' admin.id %}">تغیر رمز عبور</a></li>
+      
       <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
     </ul>
 
@@ -56,20 +65,19 @@ tr:nth-child(even) {
       <!-- <input id = "usernamee" type="text" placeholder="Enter Username" name="uname" value="awmxr"> -->
       <table>
         <tr>
-          <th>مشاهده کلاس</th>
-          <th>انتخاب شده</th>
-          <th>تعداد زمان خالی منطبق با تایم استاد</th>
-          <th>تعداد زمان خالی</th>
-          <th>کلاس</th>
+          <th style="text-align: center;">مشاهده کلاس</th>
+          <th style="text-align: center;">تعداد زمان خالی منطبق با تایم استاد</th>
+          <th style="text-align: center;">تعداد زمان خالی</th>
+          <th style="text-align: center;">کلاس</th>
         </tr>
+        
         {% for i in klas %}
 
         <tr>
-          <th> <a href="{% url 'uni:erae2' admin.id elam.id i.0.id %}  ">مشاهده کلاس</a></th>
-          <th>{{i.2}}</th>
-            <th>{{i.1}}</th>
-            <th>{{i.0.khali}}</th>
-            <th>{{i.0.number}}</th>
+          <th style="text-align: center;"> <a href="{% url 'uni:erae2' admin.id elam.id i.0.id %}  ">مشاهده کلاس</a></th>
+            <th style="text-align: center;">{{i.1}}</th>
+            <th style="text-align: center;">{{i.0.khali}}</th>
+            <th style="text-align: center;">{{i.0.number}}</th>
             
           </tr>
         {% endfor %}

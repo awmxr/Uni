@@ -14,7 +14,22 @@
             <li><a href=" {% url 'uni:darkhast4' student.id %} ">درخواست های من</a></li>
             
             <li><a href="{% url 'uni:changepass' student.id %}">تغیر رمز عبور</a></li>
+            <form method ="POST" >
+                {% csrf_token %}
+              <select  onchange="this.form.submit()"   name='lang'  style="height: 40px;width: 100px; background-color: rgb(39, 37, 37); border-color: rgb(39, 37, 37); color:aliceblue">
+                {% if student.lang == 'fa' %}
+                <option selected value="fa">فارسی</option>
+                <option value="en">English</option>
+                {% else %}
+                <option selected value="en">English</option>
+                <option value="fa">فارسی</option>
+                {% endif %}
+                
+              </select>
+            </form>
+            <div>
             <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
+        </div>
           </ul>
     
         <link rel="stylesheet" type="text/css" href="{% static 'uni/style2.css' %}">

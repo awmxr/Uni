@@ -10,13 +10,17 @@
             <li><a href="{% url 'uni:changepass3' admin.id  student.id %}">تغییر رمز عبور دانشجو</a></li>
             <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
           </ul>
+          
     
         <link rel="stylesheet" type="text/css" href="{% static 'uni/style2.css' %}">
         <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
         <div class="w3-container w3-dark-grey">
             
             <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-            <h2 style="text-align: right; " >{{ student.name  }} {{  student.last_name  }}</h2> 
+            <h2 style="text-align: right; " >{{ student.name  }} {{  student.last_name  }} {% if student.online %}
+                <img src= "{% static 'uni/images/14.png' %}" style="width: 25px;" alt="online" class="online">
+                {% endif  %}</h2> 
+            
             {% if messages %}
         <ul style="color: aliceblue ;background-color: rgb(8, 148, 78);" class="messages">
             {% for message in messages %}

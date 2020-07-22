@@ -6,4 +6,3 @@ admin.site.register(Admin)
 admin.site.register(Exter)
 admin.site.register(Ostad)
 admin.site.register(Elam)
- 

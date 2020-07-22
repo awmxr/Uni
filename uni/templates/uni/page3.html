@@ -11,6 +11,19 @@
             <li><a href="{% url 'uni:mydars2' ostad.id %}">درس های من</a></li>
             <li><a href="{% url 'uni:eteraz3' ostad.id %}">اعتراضات نمره</a></li>
             <li><a href="{% url 'uni:changepass4' ostad.id %}">تغیر رمز عبور</a></li>
+            <form method ="POST" >
+                {% csrf_token %}
+              <select  onchange="this.form.submit()"   name='lang'  style="height: 40px;width: 100px; background-color: rgb(39, 37, 37); border-color: rgb(39, 37, 37); color:aliceblue">
+                {% if ostad.lang == 'fa' %}
+                <option selected value="fa">فارسی</option>
+                <option value="en">English</option>
+                {% else %}
+                <option selected value="en">English</option>
+                <option value="fa">فارسی</option>
+                {% endif %}
+                
+              </select>
+            </form>
             <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
             
           </ul>

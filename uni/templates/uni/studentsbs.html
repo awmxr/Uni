@@ -14,7 +14,13 @@
         
     
         <ul>
-            <li><a href="{% url 'uni:boss' boss.id %}">خانه</a></li>
+          <li><a href="{% url 'uni:leader' boss.id %}">خانه</a></li>
+          <li><a href="{% url 'uni:createadmin' boss.id %}">ساخت ادمین دانشکده</a></li>
+          <li><a href="{% url 'uni:studentsbs' boss.id %}">دانشجویان</a></li>
+          <li><a href="{% url 'uni:adminsbs' boss.id %}">ادمین ها</a></li>
+          <li><a href="{% url 'uni:changepassbs' boss.id %}">تغییر رمزعبور</a></li>
+          
+          <a  onClick="document.getElementById('logoutform').submit()" ><button class="cancelbtn"  style=" height: 54px;" type="button">خروج</button></a>
             
             
         </ul>
