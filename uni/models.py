@@ -121,7 +121,7 @@ class Admin2(models.Model):
     login_date2 = models.DateTimeField(null = True) 
     login_times = models.CharField(max_length = 10000) 
     online = models.BooleanField(default = False)
-    College = models.CharField(max_length=2000, choices= choices.college_choices)
+    College = models.CharField(max_length=2000)
     ejaze = models.CharField(max_length = 10000,blank = True) 
     
     uni = models.CharField(max_length=2000, choices= choices.uni_choices)

@@ -383,7 +383,7 @@ class sabtform4(forms.ModelForm):
             'last_name': forms.TextInput(attrs={'autocomplete': 'off'}),
             'phone': forms.TextInput(attrs={'autocomplete': 'off'}),
             'password' : forms.PasswordInput,
-            'college': forms.Select(choices= choices.college_choices),
+            'College': forms.Select(choices= choices.college_choices),
             
             
             
