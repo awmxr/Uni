@@ -47,6 +47,7 @@ class sabtform(forms.ModelForm):
             'melli_code': forms.TextInput(attrs={'autocomplete': 'off'}),
             'phone': forms.TextInput(attrs={'autocomplete': 'off'}),
             'parents_phone': forms.TextInput(attrs={'autocomplete': 'off'}),
+            'password' : forms.PasswordInput,
             
             'student_live': forms.Select(choices= choices.live_choices),
             'uni': forms.Select(choices= choices.uni_choices),

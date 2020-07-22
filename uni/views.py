@@ -539,6 +539,14 @@ class CreateView(generic.TemplateView):#create student by admin
 
                 
                 date1 = request.POST.get('date')
+                if date1 == '':
+                    if a.lang == 'fa':
+                            error_message = 'لطفا فرم را کامل پر کنید'
+                    else:
+                        error_message = 'Please Complete The Form'
+                    context = {'form':form,'admin':a,'error_message':error_message}
+                    return render(request ,self.template_name,context)
+
                 form.save()
                 Student.objects.filter(username = z).update(birthday = date1)
                 Student.objects.filter(username = z).update(login_times = '0')
@@ -619,7 +627,7 @@ class LoginView(generic.TemplateView):#login page
                 else:
                     error_message = "Wrong Username or Password !"
             
-                context = {'form' : form ,'error_message':error_message }
+                context = {'form' : form ,'error_message':error_message,'lang':lang }
                 return render(request , self.template_name ,context)
             if user.is_student :
                 
@@ -2128,7 +2136,9 @@ class NahaeeView(generic.TemplateView):
                     os.time += ' '+exter2.time+' '
                     os.time = starfunc(os.time)
                     os.save()
+                    
                     vahed1 = Vahed.objects.filter(ostad_id = elam.ostad_id,elam_id = elam_id).first()
+                    
                     if vahed1:
                         vahed1.time = vahedtime(exter2.time_klass)
                         vahed1.laghv = False
@@ -2151,6 +2161,8 @@ class NahaeeView(generic.TemplateView):
                     vahed1.exam = request.POST.get('exam')
                     vahed1.active = True
                     vahed1.laghv = False
+                    vahed1.dars_code = exter2.code
+                    vahed1.save()
                     vahed1.save()
                     exter2 = Exter.objects.filter(elam_id = elam_id).first().delete()
                     
@@ -3695,9 +3707,11 @@ class Darkhast3View(generic.TemplateView):
 
                     vahed1.save()
                     if a.lang == 'fa':
-                        message = f'درس {vahed1.dars} برای دانشجو {s.name} {s.last_name} با موفقیت حذف شد'
+                        dars2 = darsdict[vahed1.dars]
+                        message = f'درس {dars2} برای دانشجو {s.name} {s.last_name} با موفقیت حذف شد'
                     else:
-                        message = f'Course {vahed1.dars} Has Been Deleted Successfully For {s.name} {s.last_name}'
+                        dars2 = darsdict_en[vahed1.dars]
+                        message = f'Course {dars2} Has Been Deleted Successfully For {s.name} {s.last_name}'
 
                     return HttpResponseRedirect(reverse('uni:messagea',args = [a.id,message]))
                 elif request.POST.get('darkhast3') == 'no':
